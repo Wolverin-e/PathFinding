@@ -8,7 +8,7 @@ const td = (x, y) => {
 
     tdElem.on('click', (event) => {
         let data = $(event.currentTarget).data("coords");
-        console.log(data);
+        console.log("x:", data.x, ", y:", data.y);
     })
     return tdElem;
 }
