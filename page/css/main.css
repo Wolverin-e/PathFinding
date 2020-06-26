@@ -18,8 +18,8 @@ td {
     padding: 0;
     margin: 0;
     text-align: center;
-    height: 1vw;
-    width: 1vw;
+    /* height: 1vw; */
+    /* width: 1vw; */
     border-left: solid 1px black;
     border-top: solid 1px black;
 }
