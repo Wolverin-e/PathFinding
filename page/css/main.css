@@ -4,9 +4,10 @@ html, body, head {
 }
 
 table {
-    width: 100vh;
-    height: 100vh;
+    position: absolute;
     border-collapse: collapse;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 tr {
@@ -17,6 +18,15 @@ td {
     padding: 0;
     margin: 0;
     text-align: center;
+    height: 1vw;
+    width: 1vw;
     border-left: solid 1px black;
     border-top: solid 1px black;
+}
+
+#grid-container{
+    height: 100%;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
 }

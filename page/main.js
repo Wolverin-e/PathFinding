@@ -1,6 +1,6 @@
 var table = $("#grid");
 
-let rows=10,coulmns=10;
+let rows=100, coulmns=100;
 
 const td = (x, y) => {
     let tdElem = $("<td>");
