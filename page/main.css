@@ -1,0 +1,19 @@
+table {
+    border: solid 2px black;
+    /* height: 200px;
+    width: 200px; */
+    border-collapse: collapse;
+}
+
+tr {
+    border: solid 2px black;
+}
+
+td {
+    padding: 0;
+    margin: 0;
+    height: 10px;
+    width: 12px;
+    text-align: center;
+    border: solid 2px black;
+}
