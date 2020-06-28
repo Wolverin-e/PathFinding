@@ -7,6 +7,9 @@
 		"jquery": true, 
 		"es6": true
 	}, 
+	"globals": { //Custom Global Vars
+		"PathFinding": "readonly"
+	}, 
 	"rules": {
 		"indent": [
             "warn",

@@ -34,7 +34,8 @@ export default {
 		}]
 	}, 
 	stats: {
-		colors: true
+		colors: true, 
+		modules: false
 	},
 	devServer: {
 		publicPath: '/PathFinding/build/',
