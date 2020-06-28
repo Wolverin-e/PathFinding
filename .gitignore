@@ -6,6 +6,3 @@ node_modules
 
 # CUSTOM SCRIPTS
 gitflow.sh
-
-# SOURCE-MAPS
-*.js.map

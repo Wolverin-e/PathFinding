@@ -128,8 +128,25 @@ var Grid = /*#__PURE__*/function () {
 
   _createClass(Grid, [{
     key: "changeIntensity",
-    value: function changeIntensity(i, j) {
-      this.matrix[i][j] = 1;
+    value: function changeIntensity(i, j, table) {
+      this.matrix[i][j] = 1; // $(table.children()[i-1].children[j-1]).css("background-color", "black")
+
+      $(table.children()[i - 1].children[j - 1]).addClass("wallElem");
+    }
+  }, {
+    key: "invertIntensity",
+    value: function invertIntensity(initial, target) {
+      var _target$data = target.data("coords"),
+          x = _target$data.x,
+          y = _target$data.y;
+
+      if (initial) {
+        this.matrix[y][x] = 0;
+        target.removeClass("wallElem");
+      } else {
+        this.matrix[y][x] = 1;
+        target.addClass("wallElem");
+      }
     }
   }]);
 
