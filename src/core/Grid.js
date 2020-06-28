@@ -9,8 +9,21 @@ class Grid{
 		}
 	}
 
-	changeIntensity(i, j){
+	changeIntensity(i, j, table){
 		this.matrix[i][j] = 1;
+		// $(table.children()[i-1].children[j-1]).css("background-color", "black")
+		$(table.children()[i-1].children[j-1]).addClass("wallElem");
+	}
+
+	invertIntensity(initial, target){
+		const {x, y} = target.data("coords");
+		if(initial){
+			this.matrix[y][x] = 0;
+			target.removeClass("wallElem");
+		} else {
+			this.matrix[y][x] = 1;
+			target.addClass("wallElem");
+		}
 	}
 }
 

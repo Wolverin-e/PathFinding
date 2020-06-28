@@ -5,7 +5,8 @@ export default {
 	entry: path.join(__dirname, './src/index.js'), 
 	output: {
 		path: path.join(__dirname, './build/'), 
-		filename: 'PathFinding.bundle.js'
+		filename: 'PathFinding.bundle.js', 
+		library: 'PathFinding'
 	}, 
 	module: {
 		rules: [{
