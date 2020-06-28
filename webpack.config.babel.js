@@ -1,9 +1,10 @@
 import path from 'path';
 
 export default {
+	mode: "development", 
 	entry: path.join(__dirname, './src/index.js'), 
 	output: {
-		path: path.join(__dirname, './page/scripts/'), 
+		path: path.join(__dirname, './build/'), 
 		filename: 'PathFinding.bundle.js'
 	}, 
 	module: {
@@ -35,7 +36,7 @@ export default {
 		colors: true
 	},
 	devServer: {
-		publicPath: '/PathFinding/page/scripts/',
+		publicPath: '/PathFinding/build/',
 		contentBase: path.join(__dirname, './page'), 
 		contentBasePublicPath: '/PathFinding/page/', 
 		watchContentBase: true, 

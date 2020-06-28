@@ -5,7 +5,10 @@
  "main": "index.js",
  "scripts": {
   "test": "",
-  "start": "webpack-dev-server"
+  "start": "webpack-dev-server", 
+  "build": "webpack", 
+  "lintTest": "eslint ./", 
+  "lint": "eslint ./ --fix"
  },
  "repository": {
   "type": "git",
