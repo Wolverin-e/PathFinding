@@ -1,0 +1,29 @@
+{
+	"parser": "babel-eslint", 
+	"extends": "eslint:recommended",
+	"env" : {
+		"node": true, 
+		"browser": true, 
+		"jquery": true, 
+		"es6": true
+	}, 
+	"rules": {
+		"indent": [
+            "warn",
+            "tab"
+        ],
+        "linebreak-style": 0,
+        "quotes": 0,
+        "semi": [
+            "warn",
+            "always"
+		], 
+		"no-console": [
+            "warn", 
+            {
+                "allow": ["log"]
+            }
+		], 
+		"eol-last": 2
+	}
+}
