@@ -36,6 +36,16 @@ td {
     animation: wallGrowShrink 100ms linear normal;
 }
 
+.startPoint {
+    background-color: greenyellow;
+    /* border: solid 1px rgba(0, 0, 0, 1); */
+}
+
+.endPoint {
+    background-color: red;
+    /* border: solid 1px rgba(0, 0, 0, 1); */
+}
+
 /* .wallElem:hover {
     background-color: black;
     transform: scale(1.5);

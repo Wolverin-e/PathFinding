@@ -18,7 +18,7 @@ class ViewRenderer{
 
 	renderGrid(){
 		const td = (y, x) => {
-			let tdElement = $("<td draggable='true'></td>");
+			let tdElement = $("<td></td>");
 			tdElement.width(this.nodeSize+'vw');
 			tdElement.height(this.nodeSize+'vw');
 			tdElement.data("coords", {x, y});
@@ -44,6 +44,32 @@ class ViewRenderer{
 
 	makeWall(x, y){
 		$(this.tableElement.children()[y].children[x]).addClass("wallElem");
+	}
+	
+	removeWall(x, y){
+		$(this.tableElement.children()[y].children[x]).removeClass("wallElem");
+	}
+
+	shiftStartPoint(x, y){
+		if(this.startPoint){
+			$(this.tableElement.children()[this.startPoint.y].children[this.startPoint.x]).removeClass("startPoint");
+			this.startPoint = {x, y};
+			$(this.tableElement.children()[y].children[x]).addClass("startPoint");
+		} else {
+			this.startPoint = {x, y};
+			$(this.tableElement.children()[y].children[x]).addClass("startPoint");
+		}
+	}
+	
+	shiftEndPoint(x, y){
+		if(this.endPoint){
+			$(this.tableElement.children()[this.endPoint.y].children[this.endPoint.x]).removeClass("endPoint");
+			this.endPoint = {x, y};
+			$(this.tableElement.children()[y].children[x]).addClass("endPoint");
+		} else {
+			this.endPoint = {x, y};
+			$(this.tableElement.children()[y].children[x]).addClass("endPoint");
+		}
 	}
 }
 

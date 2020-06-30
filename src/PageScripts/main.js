@@ -11,7 +11,6 @@ export function init(){
 		columns, 
 		tableSelector
 	});
-	viewRenderer.init();
 
 	let controller = new Controller({
 		rows, 
