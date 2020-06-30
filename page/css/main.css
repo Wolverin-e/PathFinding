@@ -15,8 +15,6 @@ html, body, head {
 table {
     position: absolute;
     border-collapse: collapse;
-    top: 50%;
-    transform: translateY(-50%);
 }
 
 tr {

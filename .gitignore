@@ -1,5 +1,6 @@
 .DS_Store
 .vscode
+sandbox
 
 # node_modules
 node_modules

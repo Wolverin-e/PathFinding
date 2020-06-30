@@ -82,15 +82,15 @@ var PathFinding =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./src/index.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./src/PathFinding/index.js");
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "./src/algorithms/BreadthFirstSearch.js":
-/*!**********************************************!*\
-  !*** ./src/algorithms/BreadthFirstSearch.js ***!
-  \**********************************************/
+/***/ "./src/PathFinding/algorithms/BreadthFirstSearch.js":
+/*!**********************************************************!*\
+  !*** ./src/PathFinding/algorithms/BreadthFirstSearch.js ***!
+  \**********************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -98,75 +98,40 @@ var PathFinding =
 
 /***/ }),
 
-/***/ "./src/core/Grid.js":
-/*!**************************!*\
-  !*** ./src/core/Grid.js ***!
-  \**************************/
+/***/ "./src/PathFinding/core/Grid.js":
+/*!**************************************!*\
+  !*** ./src/PathFinding/core/Grid.js ***!
+  \**************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+var Grid = function Grid(options) {
+  _classCallCheck(this, Grid);
 
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+  this.rows = options.rows;
+  this.columns = options.columns;
 
-var Grid = /*#__PURE__*/function () {
-  function Grid(rows, cols) {
-    _classCallCheck(this, Grid);
-
-    this.matrix = [];
-
-    for (var i = 1; i < rows; i++) {
-      this.matrix[i] = [];
-
-      for (var j = 1; j < cols; j++) {
-        this.matrix[i][j] = 0;
-      }
-    }
+  for (var y = 0; y < this.rows; y++) {
+    this[y] = new Array(this.columns).fill(0);
   }
-
-  _createClass(Grid, [{
-    key: "changeIntensity",
-    value: function changeIntensity(i, j, table) {
-      this.matrix[i][j] = 1; // $(table.children()[i-1].children[j-1]).css("background-color", "black")
-
-      $(table.children()[i - 1].children[j - 1]).addClass("wallElem");
-    }
-  }, {
-    key: "invertIntensity",
-    value: function invertIntensity(initial, target) {
-      var _target$data = target.data("coords"),
-          x = _target$data.x,
-          y = _target$data.y;
-
-      if (initial) {
-        this.matrix[y][x] = 0;
-        target.removeClass("wallElem");
-      } else {
-        this.matrix[y][x] = 1;
-        target.addClass("wallElem");
-      }
-    }
-  }]);
-
-  return Grid;
-}();
+};
 
 module.exports = Grid;
 
 /***/ }),
 
-/***/ "./src/index.js":
-/*!**********************!*\
-  !*** ./src/index.js ***!
-  \**********************/
+/***/ "./src/PathFinding/index.js":
+/*!**********************************!*\
+  !*** ./src/PathFinding/index.js ***!
+  \**********************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = {
-  'Grid': __webpack_require__(/*! ./core/Grid */ "./src/core/Grid.js"),
-  'BreadthFirstSearch': __webpack_require__(/*! ./algorithms/BreadthFirstSearch */ "./src/algorithms/BreadthFirstSearch.js")
+  'Grid': __webpack_require__(/*! ./core/Grid */ "./src/PathFinding/core/Grid.js"),
+  'BreadthFirstSearch': __webpack_require__(/*! ./algorithms/BreadthFirstSearch */ "./src/PathFinding/algorithms/BreadthFirstSearch.js")
 };
 
 /***/ })

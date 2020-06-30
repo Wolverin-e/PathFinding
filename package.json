@@ -5,9 +5,9 @@
  "main": "index.js",
  "scripts": {
   "test": "",
-  "start": "webpack-dev-server", 
-  "build": "webpack", 
-  "lintTest": "eslint ./", 
+  "start": "webpack-dev-server",
+  "build": "webpack",
+  "lintTest": "eslint ./",
   "lint": "eslint ./ --fix"
  },
  "repository": {
@@ -33,5 +33,7 @@
   "webpack-cli": "^3.3.12",
   "webpack-dev-server": "^3.11.0"
  },
- "dependencies": {}
+ "dependencies": {
+  "jquery": "^3.5.1"
+ }
 }

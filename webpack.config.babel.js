@@ -2,11 +2,14 @@ import path from 'path';
 
 export default {
 	mode: "development", 
-	entry: path.join(__dirname, './src/index.js'), 
+	entry: {
+		'PathFinding': path.join(__dirname, './src/PathFinding/index.js'), 
+		'PageScripts': path.join(__dirname, './src/PageScripts/index.js')
+	}, 
 	output: {
 		path: path.join(__dirname, './build/'), 
-		filename: 'PathFinding.bundle.js', 
-		library: 'PathFinding'
+		filename: '[name].bundle.js', 
+		library: '[name]'
 	}, 
 	module: {
 		rules: [{
