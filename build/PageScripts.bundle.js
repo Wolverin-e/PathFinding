@@ -1,4 +1,4 @@
-var PageInit =
+var PageScripts =
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -82,7 +82,7 @@ var PageInit =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./src/PageScripts/main.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./src/PageScripts/index.js");
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -10971,41 +10971,6 @@ return jQuery;
 
 /***/ }),
 
-/***/ "./node_modules/webpack/buildin/harmony-module.js":
-/*!*******************************************!*\
-  !*** (webpack)/buildin/harmony-module.js ***!
-  \*******************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = function(originalModule) {
-	if (!originalModule.webpackPolyfill) {
-		var module = Object.create(originalModule);
-		// module.parent = undefined by default
-		if (!module.children) module.children = [];
-		Object.defineProperty(module, "loaded", {
-			enumerable: true,
-			get: function() {
-				return module.l;
-			}
-		});
-		Object.defineProperty(module, "id", {
-			enumerable: true,
-			get: function() {
-				return module.i;
-			}
-		});
-		Object.defineProperty(module, "exports", {
-			enumerable: true
-		});
-		module.webpackPolyfill = 1;
-	}
-	return module;
-};
-
-
-/***/ }),
-
 /***/ "./src/PageScripts/Controller.js":
 /*!***************************************!*\
   !*** ./src/PageScripts/Controller.js ***!
@@ -11168,24 +11133,40 @@ var ViewRenderer = /*#__PURE__*/function () {
 
 /***/ }),
 
+/***/ "./src/PageScripts/index.js":
+/*!**********************************!*\
+  !*** ./src/PageScripts/index.js ***!
+  \**********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var _require = __webpack_require__(/*! ./main */ "./src/PageScripts/main.js"),
+    init = _require.init;
+
+module.exports = {
+  init: init
+};
+
+/***/ }),
+
 /***/ "./src/PageScripts/main.js":
 /*!*********************************!*\
   !*** ./src/PageScripts/main.js ***!
   \*********************************/
-/*! no exports provided */
+/*! exports provided: init */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* WEBPACK VAR INJECTION */(function(module) {/* harmony import */ var _Controller__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Controller */ "./src/PageScripts/Controller.js");
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "init", function() { return init; });
+/* harmony import */ var _Controller__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Controller */ "./src/PageScripts/Controller.js");
 /* harmony import */ var _ViewRenderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ViewRenderer */ "./src/PageScripts/ViewRenderer.js");
 
 
 var rows = 50,
     columns = 50,
     tableSelector = "#grid";
-
-var init = function init() {
+function init() {
   var viewRenderer = new _ViewRenderer__WEBPACK_IMPORTED_MODULE_1__["default"]({
     rows: rows,
     columns: columns,
@@ -11198,10 +11179,7 @@ var init = function init() {
     viewRenderer: viewRenderer
   });
   controller.init();
-};
-
-module.exports = init;
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../node_modules/webpack/buildin/harmony-module.js */ "./node_modules/webpack/buildin/harmony-module.js")(module)))
+}
 
 /***/ }),
 
@@ -11255,4 +11233,4 @@ module.exports = {
 /***/ })
 
 /******/ });
-//# sourceMappingURL=PageInit.bundle.js.map
+//# sourceMappingURL=PageScripts.bundle.js.map
