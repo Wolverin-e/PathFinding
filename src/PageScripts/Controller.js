@@ -66,21 +66,13 @@ class Controller{
 		this.viewRenderer = options.viewRenderer;
 		this.rows = options.rows;
 		this.columns = options.columns;
+		this.startPoint = options.startPoint;
+		this.endPoint = options.endPoint;
 
 		this.grid = new PathFinding.Grid({
 			rows: this.rows, 
 			columns: this.columns
 		});
-
-		this.startPoint = {
-			x: 10, 
-			y: 10
-		};
-
-		this.endPoint = {
-			x: 30, 
-			y: 10
-		};
 	}
 
 	init(){

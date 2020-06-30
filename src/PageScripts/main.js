@@ -3,7 +3,15 @@ import ViewRenderer from './ViewRenderer';
 
 let rows=50, 
 	columns=50, 
-	tableSelector="#grid";
+	tableSelector="#grid", 
+	startPoint={
+		x: 20-1, 
+		y: 11
+	}, 
+	endPoint={
+		x: 30-1, 
+		y: 11
+	};
 
 export function init(){
 	let viewRenderer = new ViewRenderer({
@@ -15,7 +23,9 @@ export function init(){
 	let controller = new Controller({
 		rows, 
 		columns, 
-		viewRenderer
+		viewRenderer, 
+		startPoint, 
+		endPoint
 	});
 	controller.init();
 }
