@@ -3,7 +3,7 @@ import path from 'path';
 export default {
 	mode: "development", 
 	entry: {
-		'PathFindinder': path.join(__dirname, './src/PathFinding/index.js'), 
+		'PathFinder': path.join(__dirname, './src/PathFinding/index.js'), 
 		'PageScript': path.join(__dirname, './src/PageScripts/index.js')
 	}, 
 	output: {

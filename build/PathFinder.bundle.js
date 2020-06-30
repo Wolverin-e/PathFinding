@@ -1,4 +1,4 @@
-var PathFindinder =
+var PathFinder =
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -137,4 +137,4 @@ module.exports = {
 /***/ })
 
 /******/ });
-//# sourceMappingURL=PathFindinder.bundle.js.map
+//# sourceMappingURL=PathFinder.bundle.js.map
