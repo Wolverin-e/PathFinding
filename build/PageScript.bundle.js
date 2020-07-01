@@ -11724,16 +11724,10 @@ var Controller = /*#__PURE__*/function () {
     this.columns = options.columns;
     this.grid = new _PathFinding_index__WEBPACK_IMPORTED_MODULE_0___default.a.Grid({
       rows: this.rows,
-      columns: this.columns
+      columns: this.columns,
+      startPoint: options.startPoint,
+      endPoint: options.endPoint
     });
-    this.startPoint = {
-      x: 10,
-      y: 10
-    };
-    this.endPoint = {
-      x: 30,
-      y: 10
-    };
   }
 
   _createClass(Controller, [{
@@ -11741,8 +11735,8 @@ var Controller = /*#__PURE__*/function () {
     value: function init() {
       controllerStateMachine.startRendering();
       this.viewRenderer.init();
-      this.shiftStartPoint(this.startPoint.x, this.startPoint.y);
-      this.shiftEndPoint(this.endPoint.x, this.endPoint.y);
+      this.shiftStartPoint(this.grid.startPoint.x, this.grid.startPoint.y);
+      this.shiftEndPoint(this.grid.endPoint.x, this.grid.endPoint.y);
       controllerStateMachine.edit();
       this.bindEventListeners();
     }
@@ -11761,7 +11755,7 @@ var Controller = /*#__PURE__*/function () {
   }, {
     key: "shiftStartPoint",
     value: function shiftStartPoint(x, y) {
-      this.startPoint = {
+      this.grid.startPoint = {
         x: x,
         y: y
       };
@@ -11770,7 +11764,7 @@ var Controller = /*#__PURE__*/function () {
   }, {
     key: "shiftEndPoint",
     value: function shiftEndPoint(x, y) {
-      this.endPoint = {
+      this.grid.endPoint = {
         x: x,
         y: y
       };
@@ -11779,12 +11773,12 @@ var Controller = /*#__PURE__*/function () {
   }, {
     key: "isStartPoint",
     value: function isStartPoint(x, y) {
-      return this.startPoint.x === x && this.startPoint.y === y;
+      return this.grid.startPoint.x === x && this.grid.startPoint.y === y;
     }
   }, {
     key: "isEndPoint",
     value: function isEndPoint(x, y) {
-      return this.endPoint.x === x && this.endPoint.y === y;
+      return this.grid.endPoint.x === x && this.grid.endPoint.y === y;
     }
   }, {
     key: "bindEventListeners",
@@ -12011,7 +12005,15 @@ __webpack_require__.r(__webpack_exports__);
 
 var rows = 50,
     columns = 50,
-    tableSelector = "#grid";
+    tableSelector = "#grid",
+    startPoint = {
+  x: 20 - 1,
+  y: 11
+},
+    endPoint = {
+  x: 30 - 1,
+  y: 11
+};
 function init() {
   var viewRenderer = new _ViewRenderer__WEBPACK_IMPORTED_MODULE_1__["default"]({
     rows: rows,
@@ -12021,7 +12023,9 @@ function init() {
   var controller = new _Controller__WEBPACK_IMPORTED_MODULE_0__["default"]({
     rows: rows,
     columns: columns,
-    viewRenderer: viewRenderer
+    viewRenderer: viewRenderer,
+    startPoint: startPoint,
+    endPoint: endPoint
   });
   controller.init();
 }
@@ -12053,6 +12057,8 @@ var Grid = function Grid(options) {
 
   this.rows = options.rows;
   this.columns = options.columns;
+  this.startPoint = options.startPoint;
+  this.endPoint = options.endPoint;
 
   for (var y = 0; y < this.rows; y++) {
     this[y] = new Array(this.columns).fill(0);

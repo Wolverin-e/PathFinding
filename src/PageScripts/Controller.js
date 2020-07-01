@@ -66,20 +66,20 @@ class Controller{
 		this.viewRenderer = options.viewRenderer;
 		this.rows = options.rows;
 		this.columns = options.columns;
-		this.startPoint = options.startPoint;
-		this.endPoint = options.endPoint;
 
 		this.grid = new PathFinding.Grid({
 			rows: this.rows, 
-			columns: this.columns
+			columns: this.columns, 
+			startPoint: options.startPoint, 
+			endPoint: options.endPoint
 		});
 	}
 
 	init(){
 		controllerStateMachine.startRendering();
 		this.viewRenderer.init();
-		this.shiftStartPoint(this.startPoint.x, this.startPoint.y);
-		this.shiftEndPoint(this.endPoint.x, this.endPoint.y);
+		this.shiftStartPoint(this.grid.startPoint.x, this.grid.startPoint.y);
+		this.shiftEndPoint(this.grid.endPoint.x, this.grid.endPoint.y);
 		controllerStateMachine.edit();
 		this.bindEventListeners();
 	}
@@ -95,21 +95,21 @@ class Controller{
 	}
 
 	shiftStartPoint(x, y){
-		this.startPoint = {x, y};
+		this.grid.startPoint = {x, y};
 		this.viewRenderer.shiftStartPoint(x, y);
 	}
 	
 	shiftEndPoint(x, y){
-		this.endPoint = {x, y};
+		this.grid.endPoint = {x, y};
 		this.viewRenderer.shiftEndPoint(x, y);
 	}
 
 	isStartPoint(x, y){
-		return ((this.startPoint.x === x )&&(this.startPoint.y === y));
+		return ((this.grid.startPoint.x === x )&&(this.grid.startPoint.y === y));
 	}
 	
 	isEndPoint(x, y){
-		return ((this.endPoint.x === x )&&(this.endPoint.y === y));
+		return ((this.grid.endPoint.x === x )&&(this.grid.endPoint.y === y));
 	}
 
 	bindEventListeners(){

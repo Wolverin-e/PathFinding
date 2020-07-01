@@ -112,6 +112,8 @@ var Grid = function Grid(options) {
 
   this.rows = options.rows;
   this.columns = options.columns;
+  this.startPoint = options.startPoint;
+  this.endPoint = options.endPoint;
 
   for (var y = 0; y < this.rows; y++) {
     this[y] = new Array(this.columns).fill(0);
