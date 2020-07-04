@@ -11660,20 +11660,36 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var javascript_state_machine__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! javascript-state-machine */ "./node_modules/javascript-state-machine/lib/state-machine.js");
 /* harmony import */ var javascript_state_machine__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(javascript_state_machine__WEBPACK_IMPORTED_MODULE_2__);
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 
 
-var controllerStateMachine = new javascript_state_machine__WEBPACK_IMPORTED_MODULE_2___default.a({
-  init: 'Initializing',
+
+var stateMachineData = {
+  init: 'steady',
   transitions: [{
-    name: 'startRendering',
-    from: 'Initializing',
+    name: 'initialize',
+    from: 'steady',
     to: 'Rendering'
   }, {
     name: 'edit',
@@ -11684,77 +11700,86 @@ var controllerStateMachine = new javascript_state_machine__WEBPACK_IMPORTED_MODU
     from: 'Editing',
     to: 'AddingWalls'
   }, {
-    name: 'stopAddingWalls',
-    from: 'AddingWalls',
-    to: 'Editing'
+    name: 'startShiftingEndPoint',
+    from: 'Editing',
+    to: 'ShiftingEndPoint'
   }, {
     name: 'startRemovingWalls',
     from: 'Editing',
     to: 'RemovingWalls'
   }, {
-    name: 'stopRemovingWalls',
-    from: 'RemovingWalls',
-    to: 'Editing'
-  }, {
     name: 'startShiftingStartPoint',
     from: 'Editing',
     to: 'ShiftingStartPoint'
   }, {
-    name: 'stopShiftingStartPoint',
-    from: 'ShiftingStartPoint',
+    name: 'goBackToEditing',
+    from: ['AddingWalls', 'RemovingWalls', 'ShiftingStartPoint', 'ShiftingEndPoint'],
     to: 'Editing'
-  }, {
-    name: 'startShiftingEndPoint',
-    from: 'Editing',
-    to: 'ShiftingEndPoint'
-  }, {
-    name: 'stopShiftingEndPoint',
-    from: 'ShiftingEndPoint',
-    to: 'Editing'
-  }],
-  methods: {}
-});
+  }]
+};
 
-var Controller = /*#__PURE__*/function () {
+var Controller = /*#__PURE__*/function (_StateMachine) {
+  _inherits(Controller, _StateMachine);
+
+  var _super = _createSuper(Controller);
+
   function Controller(options) {
+    var _this;
+
     _classCallCheck(this, Controller);
 
-    this.viewRenderer = options.viewRenderer;
-    this.rows = options.rows;
-    this.columns = options.columns;
-    this.grid = new _PathFinding_index__WEBPACK_IMPORTED_MODULE_0___default.a.Grid({
-      rows: this.rows,
-      columns: this.columns,
+    _this = _super.call(this, stateMachineData);
+    _this.viewRenderer = options.viewRenderer;
+    _this.rows = options.rows;
+    _this.columns = options.columns;
+    _this.grid = new _PathFinding_index__WEBPACK_IMPORTED_MODULE_0___default.a.Grid({
+      rows: _this.rows,
+      columns: _this.columns,
       startPoint: options.startPoint,
       endPoint: options.endPoint
     });
+    return _this;
   }
 
   _createClass(Controller, [{
-    key: "init",
-    value: function init() {
-      controllerStateMachine.startRendering();
+    key: "makeTransitionFromEventHook",
+    value: function makeTransitionFromEventHook(transition) {
+      var _this2 = this;
+
+      return setTimeout(function () {
+        _this2[transition]();
+      }, 0);
+    }
+  }, {
+    key: "onAfterInitialize",
+    value: function onAfterInitialize() {
       this.viewRenderer.init();
       this.shiftStartPoint(this.grid.startPoint.x, this.grid.startPoint.y);
       this.shiftEndPoint(this.grid.endPoint.x, this.grid.endPoint.y);
-      controllerStateMachine.edit();
+      this.makeTransitionFromEventHook("edit");
       this.bindEventListeners();
     }
   }, {
     key: "makeWall",
     value: function makeWall(x, y) {
+      if (this.grid.isXYStartPoint(x, y)) return;
+      if (this.grid.isXYEndPoint(x, y)) return;
       this.grid[y][x] = 1;
       this.viewRenderer.makeWall(x, y);
     }
   }, {
     key: "removeWall",
     value: function removeWall(x, y) {
+      if (this.grid.isXYStartPoint(x, y)) return;
+      if (this.grid.isXYEndPoint(x, y)) return;
       this.grid[y][x] = 0;
       this.viewRenderer.removeWall(x, y);
     }
   }, {
     key: "shiftStartPoint",
     value: function shiftStartPoint(x, y) {
+      if (this.grid.isXYWallElement(x, y)) return;
+      if (this.grid.isXYEndPoint(x, y)) return;
       this.grid.startPoint = {
         x: x,
         y: y
@@ -11764,6 +11789,8 @@ var Controller = /*#__PURE__*/function () {
   }, {
     key: "shiftEndPoint",
     value: function shiftEndPoint(x, y) {
+      if (this.grid.isXYWallElement(x, y)) return;
+      if (this.grid.isXYStartPoint(x, y)) return;
       this.grid.endPoint = {
         x: x,
         y: y
@@ -11771,76 +11798,81 @@ var Controller = /*#__PURE__*/function () {
       this.viewRenderer.shiftEndPoint(x, y);
     }
   }, {
-    key: "isStartPoint",
-    value: function isStartPoint(x, y) {
-      return this.grid.startPoint.x === x && this.grid.startPoint.y === y;
-    }
-  }, {
-    key: "isEndPoint",
-    value: function isEndPoint(x, y) {
-      return this.grid.endPoint.x === x && this.grid.endPoint.y === y;
-    }
-  }, {
     key: "bindEventListeners",
     value: function bindEventListeners() {
-      var _this = this;
+      var _this3 = this;
 
       this.viewRenderer.tableElement.on('mousedown', function (event) {
-        var coords = jquery__WEBPACK_IMPORTED_MODULE_1___default()(event.target).data("coords");
+        var _$$data = jquery__WEBPACK_IMPORTED_MODULE_1___default()(event.target).data("coords"),
+            x = _$$data.x,
+            y = _$$data.y;
 
-        if (controllerStateMachine.is('Editing')) {
-          if (_this.isStartPoint(coords.x, coords.y)) {
-            controllerStateMachine.startShiftingStartPoint();
-          } else if (_this.isEndPoint(coords.x, coords.y)) {
-            controllerStateMachine.startShiftingEndPoint();
+        if (_this3.is('Editing')) {
+          if (_this3.grid.isXYStartPoint(x, y)) {
+            _this3.startShiftingStartPoint();
+
+            return;
+          }
+
+          if (_this3.grid.isXYEndPoint(x, y)) {
+            _this3.startShiftingEndPoint();
+
+            return;
+          }
+
+          if (_this3.grid.isXYWallElement(x, y)) {
+            _this3.startRemovingWalls();
+
+            _this3.removeWall(x, y);
           } else {
-            if (_this.grid[coords.y][coords.x]) {
-              controllerStateMachine.startRemovingWalls();
+            _this3.startAddingWalls();
 
-              _this.removeWall(coords.x, coords.y);
-            } else {
-              controllerStateMachine.startAddingWalls();
-
-              _this.makeWall(coords.x, coords.y);
-            }
+            _this3.makeWall(x, y);
           }
         }
       });
       this.viewRenderer.tableElement.on('mouseover', function (event) {
-        var coords = jquery__WEBPACK_IMPORTED_MODULE_1___default()(event.target).data("coords");
+        if (!jquery__WEBPACK_IMPORTED_MODULE_1___default()(event.target).is('td')) return;
 
-        if (controllerStateMachine.is('AddingWalls')) {
-          _this.makeWall(coords.x, coords.y);
-        }
+        var _$$data2 = jquery__WEBPACK_IMPORTED_MODULE_1___default()(event.target).data("coords"),
+            x = _$$data2.x,
+            y = _$$data2.y;
 
-        if (controllerStateMachine.is('RemovingWalls')) {
-          _this.removeWall(coords.x, coords.y);
-        }
+        switch (_this3.state) {
+          case 'AddingWalls':
+            _this3.makeWall(x, y);
 
-        if (controllerStateMachine.is('ShiftingStartPoint')) {
-          _this.shiftStartPoint(coords.x, coords.y);
-        }
+            break;
 
-        if (controllerStateMachine.is('ShiftingEndPoint')) {
-          _this.shiftEndPoint(coords.x, coords.y);
+          case 'RemovingWalls':
+            _this3.removeWall(x, y);
+
+            break;
+
+          case 'ShiftingStartPoint':
+            _this3.shiftStartPoint(x, y);
+
+            break;
+
+          case 'ShiftingEndPoint':
+            _this3.shiftEndPoint(x, y);
+
+            break;
+
+          default:
+            break;
         }
       });
       this.viewRenderer.tableElement.on('mouseup', function () {
-        if (controllerStateMachine.is('AddingWalls')) {
-          controllerStateMachine.stopAddingWalls();
-        } else if (controllerStateMachine.is('RemovingWalls')) {
-          controllerStateMachine.stopRemovingWalls();
-        } else if (controllerStateMachine.is('ShiftingStartPoint')) {
-          controllerStateMachine.stopShiftingStartPoint();
-        } else if (controllerStateMachine.is('ShiftingEndPoint')) {
-          controllerStateMachine.stopShiftingEndPoint();
+        if (_this3.can('goBackToEditing')) {
+          _this3.goBackToEditing();
         }
       });
     }
   }]);
 
   return Controller;
-}();
+}(javascript_state_machine__WEBPACK_IMPORTED_MODULE_2___default.a);
 
 /* harmony default export */ __webpack_exports__["default"] = (Controller);
 
@@ -11882,16 +11914,16 @@ var ViewRenderer = /*#__PURE__*/function () {
     key: "init",
     value: function init() {
       this.renderGrid();
+      this.bindControlCenterAnimLogic();
+      this.bindControlBarDragLogic();
     }
   }, {
     key: "renderGrid",
     value: function renderGrid() {
-      var _this = this;
+      jquery__WEBPACK_IMPORTED_MODULE_0___default()('head').append("<style>\n\t\t\ttd{\n\t\t\t\twidth: ".concat(this.nodeSize + 'vw', ";\n\t\t\t\theight: ").concat(this.nodeSize + 'vw', ";\n\t\t\t}\n\t\t</style>"));
 
       var td = function td(y, x) {
         var tdElement = jquery__WEBPACK_IMPORTED_MODULE_0___default()("<td></td>");
-        tdElement.width(_this.nodeSize + 'vw');
-        tdElement.height(_this.nodeSize + 'vw');
         tdElement.data("coords", {
           x: x,
           y: y
@@ -11908,6 +11940,69 @@ var ViewRenderer = /*#__PURE__*/function () {
 
         this.tableElement.append(tr);
       }
+    }
+  }, {
+    key: "bindControlCenterAnimLogic",
+    value: function bindControlCenterAnimLogic() {
+      var controlCenterSwitch = jquery__WEBPACK_IMPORTED_MODULE_0___default()("#control-center-switch");
+      var expandImage = controlCenterSwitch.find("img");
+      var controlCenter = jquery__WEBPACK_IMPORTED_MODULE_0___default()("#control-center");
+      var controlCenterWidth = "200px";
+      var negControlCenterWidth = '-' + controlCenterWidth;
+      var switchState = "closed";
+      controlCenter.css("left", negControlCenterWidth);
+      controlCenter.width(controlCenterWidth);
+      controlCenterSwitch.on('click', function () {
+        if (switchState === "closed") {
+          expandImage.css("transform", "rotate(180deg)");
+          controlCenterSwitch.css("left", controlCenterWidth);
+          controlCenter.css("left", "0px");
+          switchState = "open";
+        } else {
+          expandImage.css("transform", "rotate(0deg)");
+          controlCenter.css("left", negControlCenterWidth);
+          controlCenterSwitch.css("left", "-6px");
+          switchState = "closed";
+        }
+      });
+    }
+  }, {
+    key: "bindControlBarDragLogic",
+    value: function bindControlBarDragLogic() {
+      var controlBar = jquery__WEBPACK_IMPORTED_MODULE_0___default()("#control-bar");
+      var draggable = jquery__WEBPACK_IMPORTED_MODULE_0___default()(controlBar.find("#drag"));
+      var mouseDownOnDraggable = false;
+      var startCoords = {};
+      controlBar.find("img").each(function (i, img) {
+        jquery__WEBPACK_IMPORTED_MODULE_0___default()(img).on("dragstart", function () {
+          event.preventDefault();
+        });
+      });
+      draggable.on("mousedown", function (event) {
+        mouseDownOnDraggable = true;
+        startCoords.x = event.clientX;
+        startCoords.y = event.clientY;
+      });
+      draggable.on("mouseup", function () {
+        mouseDownOnDraggable = false;
+      });
+      controlBar.on("mousemove", function (event) {
+        if (mouseDownOnDraggable) {
+          var x = event.clientX;
+          var y = event.clientY;
+          var delLeft = startCoords.x - x;
+          var delTop = startCoords.y - y;
+          startCoords = {
+            x: x,
+            y: y
+          };
+          var curOff = controlBar.offset();
+          controlBar.offset({
+            left: curOff.left - delLeft,
+            top: curOff.top - delTop
+          });
+        }
+      });
     }
   }, {
     key: "convertToXY",
@@ -12027,7 +12122,7 @@ function init() {
     startPoint: startPoint,
     endPoint: endPoint
   });
-  controller.init();
+  controller.initialize();
 }
 
 /***/ }),
@@ -12052,18 +12147,43 @@ function init() {
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Grid = function Grid(options) {
-  _classCallCheck(this, Grid);
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-  this.rows = options.rows;
-  this.columns = options.columns;
-  this.startPoint = options.startPoint;
-  this.endPoint = options.endPoint;
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-  for (var y = 0; y < this.rows; y++) {
-    this[y] = new Array(this.columns).fill(0);
+var Grid = /*#__PURE__*/function () {
+  function Grid(options) {
+    _classCallCheck(this, Grid);
+
+    this.rows = options.rows;
+    this.columns = options.columns;
+    this.startPoint = options.startPoint;
+    this.endPoint = options.endPoint;
+
+    for (var y = 0; y < this.rows; y++) {
+      this[y] = new Array(this.columns).fill(0);
+    }
   }
-};
+
+  _createClass(Grid, [{
+    key: "isXYWallElement",
+    value: function isXYWallElement(x, y) {
+      return this[y][x] === 1;
+    }
+  }, {
+    key: "isXYStartPoint",
+    value: function isXYStartPoint(x, y) {
+      return this.startPoint.x === x && this.startPoint.y === y;
+    }
+  }, {
+    key: "isXYEndPoint",
+    value: function isXYEndPoint(x, y) {
+      return this.endPoint.x === x && this.endPoint.y === y;
+    }
+  }]);
+
+  return Grid;
+}();
 
 module.exports = Grid;
 
