@@ -9,6 +9,18 @@ class Grid{
 			this[y] = new Array(this.columns).fill(0);
 		}
 	}
+
+	isXYWallElement(x, y){
+		return (this[y][x] === 1);
+	}
+
+	isXYStartPoint(x, y){
+		return ((this.startPoint.x === x )&&(this.startPoint.y === y));
+	}
+
+	isXYEndPoint(x, y){
+		return ((this.endPoint.x === x )&&(this.endPoint.y === y));
+	}
 }
 
 module.exports = Grid;

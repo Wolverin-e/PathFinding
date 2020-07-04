@@ -2,12 +2,12 @@ import PathFinding from '../PathFinding/index';
 import $ from 'jquery';
 import StateMachine from 'javascript-state-machine';
 
-let controllerStateMachine = new StateMachine({
-	init: 'Initializing', 
+const stateMachineData = {
+	init: 'steady', 
 	transitions: [
 		{
-			name: 'startRendering', 
-			from: 'Initializing', 
+			name: 'initialize', 
+			from: 'steady', 
 			to: 'Rendering'
 		}, 
 		{
@@ -21,9 +21,9 @@ let controllerStateMachine = new StateMachine({
 			to: 'AddingWalls'
 		}, 
 		{
-			name: 'stopAddingWalls', 
-			from: 'AddingWalls', 
-			to: 'Editing'
+			name: 'startShiftingEndPoint', 
+			from: 'Editing', 
+			to: 'ShiftingEndPoint'
 		}, 
 		{
 			name: 'startRemovingWalls', 
@@ -31,42 +31,25 @@ let controllerStateMachine = new StateMachine({
 			to: 'RemovingWalls'
 		}, 
 		{
-			name: 'stopRemovingWalls', 
-			from: 'RemovingWalls', 
-			to: 'Editing'
-		}, 
-		{
 			name: 'startShiftingStartPoint', 
 			from: 'Editing', 
 			to: 'ShiftingStartPoint'
 		}, 
 		{
-			name: 'stopShiftingStartPoint', 
-			from: 'ShiftingStartPoint', 
-			to: 'Editing'
-		}, 
-		{
-			name: 'startShiftingEndPoint', 
-			from: 'Editing', 
-			to: 'ShiftingEndPoint'
-		}, 
-		{
-			name: 'stopShiftingEndPoint', 
-			from: 'ShiftingEndPoint', 
+			name: 'goBackToEditing', 
+			from: ['AddingWalls', 'RemovingWalls', 'ShiftingStartPoint', 'ShiftingEndPoint'], 
 			to: 'Editing'
 		}
-	], 
-	methods: {
-	}
-});
+	]
+};
 
-
-class Controller{
+class Controller extends StateMachine{
 	constructor(options){
+		super(stateMachineData);
 		this.viewRenderer = options.viewRenderer;
 		this.rows = options.rows;
 		this.columns = options.columns;
-
+		
 		this.grid = new PathFinding.Grid({
 			rows: this.rows, 
 			columns: this.columns, 
@@ -75,88 +58,97 @@ class Controller{
 		});
 	}
 
-	init(){
-		controllerStateMachine.startRendering();
+	makeTransitionFromEventHook(transition){
+		return setTimeout(() => {
+			this[transition]();
+		}, 0);
+	}
+
+	onAfterInitialize(){
 		this.viewRenderer.init();
 		this.shiftStartPoint(this.grid.startPoint.x, this.grid.startPoint.y);
 		this.shiftEndPoint(this.grid.endPoint.x, this.grid.endPoint.y);
-		controllerStateMachine.edit();
+		this.makeTransitionFromEventHook("edit");
 		this.bindEventListeners();
 	}
 
 	makeWall(x, y){
+		if(this.grid.isXYStartPoint(x, y)) return;
+		if(this.grid.isXYEndPoint(x, y)) return;
 		this.grid[y][x] = 1;
 		this.viewRenderer.makeWall(x, y);
 	}
 
 	removeWall(x, y){
+		if(this.grid.isXYStartPoint(x, y)) return;
+		if(this.grid.isXYEndPoint(x, y)) return;
 		this.grid[y][x] = 0;
 		this.viewRenderer.removeWall(x, y);
 	}
 
 	shiftStartPoint(x, y){
+		if(this.grid.isXYWallElement(x, y)) return;
+		if(this.grid.isXYEndPoint(x, y)) return;
 		this.grid.startPoint = {x, y};
 		this.viewRenderer.shiftStartPoint(x, y);
 	}
-	
+
 	shiftEndPoint(x, y){
+		if(this.grid.isXYWallElement(x, y)) return;
+		if(this.grid.isXYStartPoint(x, y)) return;
 		this.grid.endPoint = {x, y};
 		this.viewRenderer.shiftEndPoint(x, y);
 	}
 
-	isStartPoint(x, y){
-		return ((this.grid.startPoint.x === x )&&(this.grid.startPoint.y === y));
-	}
-	
-	isEndPoint(x, y){
-		return ((this.grid.endPoint.x === x )&&(this.grid.endPoint.y === y));
-	}
-
 	bindEventListeners(){
 		this.viewRenderer.tableElement.on('mousedown', (event) => {
-			let coords = $(event.target).data("coords");
-			if(controllerStateMachine.is('Editing')){
-				if(this.isStartPoint(coords.x, coords.y)){
-					controllerStateMachine.startShiftingStartPoint();
-				} else if(this.isEndPoint(coords.x, coords.y)){
-					controllerStateMachine.startShiftingEndPoint();
+			const {x, y} = $(event.target).data("coords");
+			if(this.is('Editing')){
+				if(this.grid.isXYStartPoint(x, y)){
+					this.startShiftingStartPoint();
+					return;
+				}
+
+				if(this.grid.isXYEndPoint(x, y)){
+					this.startShiftingEndPoint();
+					return;
+				}
+
+				if(this.grid.isXYWallElement(x, y)){
+					this.startRemovingWalls();
+					this.removeWall(x, y);
 				} else {
-					if(this.grid[coords.y][coords.x]){
-						controllerStateMachine.startRemovingWalls();
-						this.removeWall(coords.x, coords.y);
-					} else {
-						controllerStateMachine.startAddingWalls();
-						this.makeWall(coords.x, coords.y);
-					}
+					this.startAddingWalls();
+					this.makeWall(x, y);
 				}
 			}
 		});
 
 		this.viewRenderer.tableElement.on('mouseover', (event) => {
-			let coords = $(event.target).data("coords");
-			if(controllerStateMachine.is('AddingWalls')){
-				this.makeWall(coords.x, coords.y);
-			}
-			if(controllerStateMachine.is('RemovingWalls')){
-				this.removeWall(coords.x, coords.y);
-			}
-			if(controllerStateMachine.is('ShiftingStartPoint')){
-				this.shiftStartPoint(coords.x, coords.y);
-			}
-			if(controllerStateMachine.is('ShiftingEndPoint')){
-				this.shiftEndPoint(coords.x, coords.y);
+			if(!$(event.target).is('td')) return;
+			let {x, y} = $(event.target).data("coords");
+			
+			switch(this.state){
+				case 'AddingWalls':
+					this.makeWall(x, y);
+					break;
+				case 'RemovingWalls':
+					this.removeWall(x, y);
+					break;
+				case 'ShiftingStartPoint':
+					this.shiftStartPoint(x, y);
+					break;
+				case 'ShiftingEndPoint':
+					this.shiftEndPoint(x, y);
+					break;
+				default:
+					break;
 			}
 		});
 
 		this.viewRenderer.tableElement.on('mouseup', () => {
-			if(controllerStateMachine.is('AddingWalls')){
-				controllerStateMachine.stopAddingWalls();
-			} else if(controllerStateMachine.is('RemovingWalls')){
-				controllerStateMachine.stopRemovingWalls();
-			} else if(controllerStateMachine.is('ShiftingStartPoint')){
-				controllerStateMachine.stopShiftingStartPoint();
-			} else if(controllerStateMachine.is('ShiftingEndPoint')){
-				controllerStateMachine.stopShiftingEndPoint();
+			if(this.can('goBackToEditing')){
+				this.goBackToEditing();
 			}
 		});
 	}

@@ -14,13 +14,20 @@ class ViewRenderer{
 	
 	init(){
 		this.renderGrid();
+		this.bindControlCenterAnimLogic();
+		this.bindControlBarDragLogic();
 	}
 
 	renderGrid(){
+		$('head').append(`<style>
+			td{
+				width: ${this.nodeSize+'vw'};
+				height: ${this.nodeSize+'vw'};
+			}
+		</style>`);
+		
 		const td = (y, x) => {
 			let tdElement = $("<td></td>");
-			tdElement.width(this.nodeSize+'vw');
-			tdElement.height(this.nodeSize+'vw');
 			tdElement.data("coords", {x, y});
 			return tdElement;
 		};
@@ -32,6 +39,71 @@ class ViewRenderer{
 			}
 			this.tableElement.append(tr);
 		}
+	}
+
+	bindControlCenterAnimLogic(){
+		const controlCenterSwitch = $("#control-center-switch");
+		const expandImage = controlCenterSwitch.find("img");
+		const controlCenter = $("#control-center");
+		const controlCenterWidth = "200px";
+		const negControlCenterWidth = '-'+controlCenterWidth;
+		let switchState = "closed";
+
+		controlCenter.css("left", negControlCenterWidth);
+		controlCenter.width(controlCenterWidth);
+		
+		controlCenterSwitch.on('click', () => {
+			if(switchState === "closed"){
+				expandImage.css("transform", "rotate(180deg)");
+				controlCenterSwitch.css("left", controlCenterWidth);
+				controlCenter.css("left", "0px");
+				switchState = "open";
+			} else {
+				expandImage.css("transform", "rotate(0deg)");
+				controlCenter.css("left", negControlCenterWidth);
+				controlCenterSwitch.css("left", "-6px");
+				switchState = "closed";
+			}
+		});
+	}
+
+	bindControlBarDragLogic(){
+		const controlBar = $("#control-bar");
+		const draggable = $(controlBar.find("#drag"));
+		let mouseDownOnDraggable = false;
+		let startCoords = {};
+
+		controlBar.find("img").each((i, img) => {
+			$(img).on("dragstart", () => {
+				event.preventDefault();
+			});
+		});
+
+		draggable.on("mousedown", (event) => {
+			mouseDownOnDraggable = true;
+			startCoords.x = event.clientX;
+			startCoords.y = event.clientY;
+		});
+		
+		draggable.on("mouseup", () => {
+			mouseDownOnDraggable = false;
+		});
+
+		controlBar.on("mousemove", (event) => {
+			if(mouseDownOnDraggable){
+				let x = event.clientX;
+				let y = event.clientY;
+				let delLeft = startCoords.x - x;
+				let delTop = startCoords.y - y;
+
+				startCoords = {x, y};
+				let curOff = controlBar.offset();
+				controlBar.offset({
+					left: curOff.left-delLeft, 
+					top: curOff.top-delTop
+				});
+			}
+		});
 	}
 
 	convertToXY(pageX, pageY){

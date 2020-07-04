@@ -27,5 +27,5 @@ export function init(){
 		startPoint, 
 		endPoint
 	});
-	controller.init();
+	controller.initialize();
 }
