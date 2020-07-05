@@ -1,6 +1,28 @@
+/* <----------------FONTS----------------> */
+@font-face {
+    font-family: JuraBold;
+    src: url("../fonts/Jura/static/Jura-Bold.ttf");
+}
+@font-face {
+    font-family: JuraMed;
+    src: url("../fonts/Jura/static/Jura-Medium.ttf");
+}
+@font-face {
+    font-family: JuraReg;
+    src: url("../fonts/Jura/static/Jura-Regular.ttf");
+}
+@font-face {
+    font-family: JuraSemiBold;
+    src: url("../fonts/Jura/static/Jura-SemiBold.ttf");
+}
+
+/* <----------------ANIMATIONS----------------> */
 @keyframes wallGrowShrink{
     0% {
         transform: scale(1.3);
+    }
+    95% {
+        transform: scale(0.95);
     }
     100% {
         transform: scale(1);
@@ -16,6 +38,7 @@
     }
 }
 
+/* <----------------HTML,BODY,HEAD----------------> */
 html, body, head {
     margin: 0;
     padding: 0;
@@ -27,6 +50,7 @@ html, body, head {
     user-select: none;
 }
 
+/* <----------------GRID----------------> */
 #grid-container{
     height: 100%;
     width: 100%;
@@ -60,6 +84,7 @@ td {
     background-color: red;
 }
 
+/* <----------------CONTROL-CENTER----------------> */
 #control-center-switch{
     position: absolute;
     left: -6px;
@@ -85,6 +110,48 @@ td {
     transition: 200ms;
 }
 
+#controls-container{
+    position: relative;
+    width: 80%;
+    top: 50%;
+    transform: translateY(-50%);
+    padding-left: 10%;
+    padding-right: 10%;
+}
+
+#main-lable{
+    font-family: 'JuraBold', sans-serif;
+    margin: 0;
+    font-size: 30px;
+    /* text-align: center; */
+}
+
+hr{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#normal-lable{
+    padding-left: 2px;
+    font-family: 'JuraSemiBold', sans-serif;
+    margin: 0;
+    margin-bottom: 2px;
+    font-size: 13px;
+}
+
+#algorithmSelector{
+    width: 100%;
+    height: 20px;
+    font-family: 'JuraSemiBold', sans-serif;
+    font-size: 13px;
+}
+
+.algorithm-options-section{
+    font-family: 'JuraSemiBold', sans-serif;
+    font-size: 13px;
+}
+
+/* <----------------CONTROL-BAR----------------> */
 #control-bar {
     position: absolute;
     top: 90%;
@@ -93,14 +160,25 @@ td {
     background-color: rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
-    border-radius: 5px;
+    border-radius: 10px;
+    padding: 5px;
 }
 
 #control-bar img{
-    margin: 10px;
+    margin: 5px;
     height: 35px;
 }
 
 #drag{
     cursor: move;
+}
+
+.action{
+    cursor: pointer;
+    transition: 100ms;
+}
+
+.action:hover{
+    transform: scale(1.1);
+    transition: 100ms;
 }

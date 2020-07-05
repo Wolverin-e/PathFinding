@@ -1,16 +1,21 @@
 import Controller from './Controller';
 import ViewRenderer from './ViewRenderer';
 
-let rows=50, 
+const rows=50, 
 	columns=50, 
 	tableSelector="#grid", 
+	clientHeight = document.documentElement.clientHeight, 
+	clientWidth = document.documentElement.clientWidth, 
+	nodeSize = clientWidth/columns, 
+	midRowIndex = Math.floor((clientHeight/nodeSize)/2), 
+	midColIndex = Math.floor(columns/2-1), 
 	startPoint={
-		x: 20-1, 
-		y: 11
+		x: midColIndex-4, 
+		y: midRowIndex
 	}, 
 	endPoint={
-		x: 30-1, 
-		y: 11
+		x: midColIndex+4+1,
+		y: midRowIndex
 	};
 
 export function init(){

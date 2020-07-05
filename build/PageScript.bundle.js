@@ -11738,6 +11738,11 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
       startPoint: options.startPoint,
       endPoint: options.endPoint
     });
+    _this.algorithm = "AStar";
+    _this.algorithmOptions = {
+      heuristic: "manhattan",
+      allowDiagonal: true
+    };
     return _this;
   }
 
@@ -11868,6 +11873,46 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
           _this3.goBackToEditing();
         }
       });
+      var controlCenter = jquery__WEBPACK_IMPORTED_MODULE_1___default()('#control-center');
+      controlCenter.find("#algorithmSelector").on('change', function (event) {
+        _this3.algorithm = event.target.value;
+        _this3.algorithmOptions = {};
+        var radOpt = controlCenter.find("#".concat(_this3.algorithm, " .options-radio-section input[type='radio']:checked"));
+        if (radOpt) _this3.algorithmOptions['heuristic'] = radOpt.val();
+        var checkOpts = controlCenter.find("#".concat(_this3.algorithm, " .options-checkbox-section input[type='checkbox']:checked"));
+
+        if (checkOpts) {
+          checkOpts.each(function (i, elem) {
+            _this3.algorithmOptions[elem.value] = true;
+          });
+        }
+      });
+      controlCenter.find(".options-radio-section input[type='radio']").each(function (i, elem) {
+        jquery__WEBPACK_IMPORTED_MODULE_1___default()(elem).on("click", function (event) {
+          _this3.algorithmOptions.heuristic = event.target.value;
+        });
+      });
+      controlCenter.find(".options-checkbox-section input[type='checkbox']").each(function (i, elem) {
+        jquery__WEBPACK_IMPORTED_MODULE_1___default()(elem).on("click", function (event) {
+          _this3.algorithmOptions[event.target.value] = _this3.algorithmOptions[event.target.value] ? false : true;
+        });
+      });
+      var controlBar = jquery__WEBPACK_IMPORTED_MODULE_1___default()('#control-bar');
+      controlBar.find('#start').on("click", function () {
+        console.log("start");
+      });
+      controlBar.find('#pause').on("click", function () {
+        console.log("pause");
+      });
+      controlBar.find('#resume').on("click", function () {
+        console.log("resume");
+      });
+      controlBar.find('#stop').on("click", function () {
+        console.log("stop");
+      });
+      controlBar.find('#step').on("click", function () {
+        console.log("step");
+      });
     }
   }]);
 
@@ -11914,7 +11959,8 @@ var ViewRenderer = /*#__PURE__*/function () {
     key: "init",
     value: function init() {
       this.renderGrid();
-      this.bindControlCenterAnimLogic();
+      this.bindControlCenterSwitchLogic();
+      this.bindAlgorithmOptionsShowHideLogic();
       this.bindControlBarDragLogic();
     }
   }, {
@@ -11942,12 +11988,12 @@ var ViewRenderer = /*#__PURE__*/function () {
       }
     }
   }, {
-    key: "bindControlCenterAnimLogic",
-    value: function bindControlCenterAnimLogic() {
+    key: "bindControlCenterSwitchLogic",
+    value: function bindControlCenterSwitchLogic() {
       var controlCenterSwitch = jquery__WEBPACK_IMPORTED_MODULE_0___default()("#control-center-switch");
       var expandImage = controlCenterSwitch.find("img");
       var controlCenter = jquery__WEBPACK_IMPORTED_MODULE_0___default()("#control-center");
-      var controlCenterWidth = "200px";
+      var controlCenterWidth = "250px";
       var negControlCenterWidth = '-' + controlCenterWidth;
       var switchState = "closed";
       controlCenter.css("left", negControlCenterWidth);
@@ -11986,7 +12032,8 @@ var ViewRenderer = /*#__PURE__*/function () {
       draggable.on("mouseup", function () {
         mouseDownOnDraggable = false;
       });
-      controlBar.on("mousemove", function (event) {
+
+      document.onmousemove = function (event) {
         if (mouseDownOnDraggable) {
           var x = event.clientX;
           var y = event.clientY;
@@ -12002,6 +12049,20 @@ var ViewRenderer = /*#__PURE__*/function () {
             top: curOff.top - delTop
           });
         }
+      };
+    }
+  }, {
+    key: "bindAlgorithmOptionsShowHideLogic",
+    value: function bindAlgorithmOptionsShowHideLogic() {
+      var controlCenter = jquery__WEBPACK_IMPORTED_MODULE_0___default()("#control-center");
+      var algorithmSelector = controlCenter.find("#algorithmSelector");
+      controlCenter.find(".algorithm-options-section").hide();
+      var current = algorithmSelector.val();
+      controlCenter.find("#" + current).show();
+      algorithmSelector.on("change", function (event) {
+        controlCenter.find("#" + current).hide();
+        current = event.target.value;
+        controlCenter.find("#" + current).show();
       });
     }
   }, {
@@ -12101,13 +12162,18 @@ __webpack_require__.r(__webpack_exports__);
 var rows = 50,
     columns = 50,
     tableSelector = "#grid",
+    clientHeight = document.documentElement.clientHeight,
+    clientWidth = document.documentElement.clientWidth,
+    nodeSize = clientWidth / columns,
+    midRowIndex = Math.floor(clientHeight / nodeSize / 2),
+    midColIndex = Math.floor(columns / 2 - 1),
     startPoint = {
-  x: 20 - 1,
-  y: 11
+  x: midColIndex - 4,
+  y: midRowIndex
 },
     endPoint = {
-  x: 30 - 1,
-  y: 11
+  x: midColIndex + 4 + 1,
+  y: midRowIndex
 };
 function init() {
   var viewRenderer = new _ViewRenderer__WEBPACK_IMPORTED_MODULE_1__["default"]({

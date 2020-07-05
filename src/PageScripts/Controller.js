@@ -56,6 +56,12 @@ class Controller extends StateMachine{
 			startPoint: options.startPoint, 
 			endPoint: options.endPoint
 		});
+
+		this.algorithm = "AStar";
+		this.algorithmOptions = {
+			heuristic: "manhattan", 
+			allowDiagonal: true
+		};
 	}
 
 	makeTransitionFromEventHook(transition){
@@ -150,6 +156,52 @@ class Controller extends StateMachine{
 			if(this.can('goBackToEditing')){
 				this.goBackToEditing();
 			}
+		});
+
+		let controlCenter = $('#control-center');
+
+		controlCenter.find("#algorithmSelector").on('change', (event) => {
+			this.algorithm = event.target.value;
+			this.algorithmOptions = {};
+
+			let radOpt = controlCenter.find(`#${this.algorithm} .options-radio-section input[type='radio']:checked`);
+			if(radOpt) this.algorithmOptions['heuristic'] = radOpt.val();
+			
+			let checkOpts = controlCenter.find(`#${this.algorithm} .options-checkbox-section input[type='checkbox']:checked`);
+			if(checkOpts){
+				checkOpts.each((i, elem) => {
+					this.algorithmOptions[elem.value] = true;
+				});
+			}
+		});
+
+		controlCenter.find(`.options-radio-section input[type='radio']`).each((i, elem) => {
+			$(elem).on("click", (event) => {
+				this.algorithmOptions.heuristic = event.target.value;
+			});
+		});
+		
+		controlCenter.find(`.options-checkbox-section input[type='checkbox']`).each((i, elem) => {
+			$(elem).on("click", (event) => {
+				this.algorithmOptions[event.target.value] = this.algorithmOptions[event.target.value]?false:true;
+			});
+		});
+
+		let controlBar = $('#control-bar');
+		controlBar.find('#start').on("click", () => {
+			console.log("start");
+		});
+		controlBar.find('#pause').on("click", () => {
+			console.log("pause");
+		});
+		controlBar.find('#resume').on("click", () => {
+			console.log("resume");
+		});
+		controlBar.find('#stop').on("click", () => {
+			console.log("stop");
+		});
+		controlBar.find('#step').on("click", () => {
+			console.log("step");
 		});
 	}
 }

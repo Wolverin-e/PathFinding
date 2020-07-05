@@ -10,25 +10,73 @@
             </table>
         </div>
 
+        <div id="control-bar">
+            <img id="drag" src="./public/imgs/drag.png">
+            <img id="start" class="action" src="./public/imgs/start.png">
+            <img id="pause" class="action" src="./public/imgs/pause.png">
+            <img id="resume" class="action" src="./public/imgs/resume.png">
+            <img id="stop" class="action" src="./public/imgs/stop.png">
+            <img id="step" class="action" src="./public/imgs/step.png">
+        </div>
+
         <div id="control-center-switch">
             <img src="./public/imgs/expand.png" height="40px" width="30px">
         </div>
         
         <div id="control-center">
-        </div>
+            <div id="controls-container">
+                <p id="main-lable">PATHFINDER</p>
+                <hr />
 
-        <div id="control-bar">
-            <img id="drag" src="./public/imgs/drag.png">
-            <img id="start" src="./public/imgs/start.png">
-            <img id="pause" src="./public/imgs/pause.png">
-            <img id="resume" src="./public/imgs/resume.png">
-            <img id="stop" src="./public/imgs/stop.png">
-            <img id="step" src="./public/imgs/step.png">
+                <!-- ALGORITHM SELECTOR -->
+                <p id="normal-lable">ALGORITHM</p>
+                <select name="algorithm" id="algorithmSelector">
+                    <!-- <optgroup label="searchparty">searchparty</optgroup> -->
+                    <option value="AStar">AStar</option>
+                    <option value="BreadthFirstSearch">BreadthFirstSearch</option>
+                </select>
+                <hr />
+
+                <!-- ALGORITHM OPTIONS -->
+                <div id="AStar" class="algorithm-options-section">
+                    Heuristic
+                    <div class="options-radio-section">
+                        <input type="radio" id="manhattan" name="heuristic" value="manhattan" checked />
+                            <label for="manhattan">Manhattan</label>
+                            <br />
+                        <input type="radio" id="euclidean" name="heuristic" value="euclidean" />
+                            <label for="euclidean">Euclidean</label>
+                            <br />
+                        <input type="radio" id="octile" name="heuristic" value="octile" />
+                            <label for="octile">Octile</label>
+                            <br />
+                        <input type="radio" id="chebyshev" name="heuristic" value="chebyshev" />
+                            <label for="chebyshev">Chebyshev</label>
+                            <br />
+                    </div>
+                    <br />
+                    Options
+                    <div class="options-checkbox-section">
+                        <input type="checkbox" id="allowDiagonal" value="allowDiagonal" checked>
+                            <label for="allowDiagonal">Allow Diagonal</label>
+                            <br />
+                        <input type="checkbox" id="biDirectional" value="biDirectional">
+                            <label for="biDirectional">Bi Directional</label>
+                            <br />
+                        <input type="checkbox" id="doNotCrossCorners" value="doNotCrossCorners">
+                            <label for="doNotCrossCorners">Do Not Cross Corners</label>
+                            <br />
+                    </div>
+                </div>
+
+                <div id="BreadthFirstSearch" class="algorithm-options-section">
+                </div>
+            </div>
         </div>
 
         <script src="/PathFinding/build/PageScript.bundle.js"> </script>
         <script>
-            PageScript.init()
+            PageScript.init();
         </script>
     </body>
 </html>

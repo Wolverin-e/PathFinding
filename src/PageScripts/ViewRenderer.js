@@ -14,7 +14,8 @@ class ViewRenderer{
 	
 	init(){
 		this.renderGrid();
-		this.bindControlCenterAnimLogic();
+		this.bindControlCenterSwitchLogic();
+		this.bindAlgorithmOptionsShowHideLogic();
 		this.bindControlBarDragLogic();
 	}
 
@@ -25,7 +26,7 @@ class ViewRenderer{
 				height: ${this.nodeSize+'vw'};
 			}
 		</style>`);
-		
+
 		const td = (y, x) => {
 			let tdElement = $("<td></td>");
 			tdElement.data("coords", {x, y});
@@ -41,11 +42,11 @@ class ViewRenderer{
 		}
 	}
 
-	bindControlCenterAnimLogic(){
+	bindControlCenterSwitchLogic(){
 		const controlCenterSwitch = $("#control-center-switch");
 		const expandImage = controlCenterSwitch.find("img");
 		const controlCenter = $("#control-center");
-		const controlCenterWidth = "200px";
+		const controlCenterWidth = "250px";
 		const negControlCenterWidth = '-'+controlCenterWidth;
 		let switchState = "closed";
 
@@ -70,6 +71,7 @@ class ViewRenderer{
 	bindControlBarDragLogic(){
 		const controlBar = $("#control-bar");
 		const draggable = $(controlBar.find("#drag"));
+		
 		let mouseDownOnDraggable = false;
 		let startCoords = {};
 
@@ -89,7 +91,7 @@ class ViewRenderer{
 			mouseDownOnDraggable = false;
 		});
 
-		controlBar.on("mousemove", (event) => {
+		document.onmousemove = (event) => {
 			if(mouseDownOnDraggable){
 				let x = event.clientX;
 				let y = event.clientY;
@@ -103,6 +105,21 @@ class ViewRenderer{
 					top: curOff.top-delTop
 				});
 			}
+		};
+	}
+
+	bindAlgorithmOptionsShowHideLogic(){
+		const controlCenter = $("#control-center");
+		const algorithmSelector = controlCenter.find("#algorithmSelector");
+		
+		controlCenter.find(".algorithm-options-section").hide();
+		let current = algorithmSelector.val();
+		controlCenter.find("#"+current).show();
+		
+		algorithmSelector.on("change", (event) => {
+			controlCenter.find("#"+current).hide();
+			current = event.target.value;
+			controlCenter.find("#"+current).show();
 		});
 	}
 
