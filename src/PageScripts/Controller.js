@@ -1,47 +1,9 @@
-import PathFinding from '../PathFinding/index';
 import $ from 'jquery';
 import StateMachine from 'javascript-state-machine';
 
-const stateMachineData = {
-	init: 'steady', 
-	transitions: [
-		{
-			name: 'initialize', 
-			from: 'steady', 
-			to: 'Rendering'
-		}, 
-		{
-			name: 'edit', 
-			from: 'Rendering', 
-			to: 'Editing'
-		}, 
-		{
-			name: 'startAddingWalls', 
-			from: 'Editing', 
-			to: 'AddingWalls'
-		}, 
-		{
-			name: 'startShiftingEndPoint', 
-			from: 'Editing', 
-			to: 'ShiftingEndPoint'
-		}, 
-		{
-			name: 'startRemovingWalls', 
-			from: 'Editing', 
-			to: 'RemovingWalls'
-		}, 
-		{
-			name: 'startShiftingStartPoint', 
-			from: 'Editing', 
-			to: 'ShiftingStartPoint'
-		}, 
-		{
-			name: 'goBackToEditing', 
-			from: ['AddingWalls', 'RemovingWalls', 'ShiftingStartPoint', 'ShiftingEndPoint'], 
-			to: 'Editing'
-		}
-	]
-};
+import PathFinding from '../PathFinding/index';
+import stateMachineData from './ControllerStates';
+
 
 class Controller extends StateMachine{
 	constructor(options){
@@ -57,9 +19,8 @@ class Controller extends StateMachine{
 			endPoint: options.endPoint
 		});
 
-		this.algorithm = "AStar";
+		this.algorithm = "BreadthFirstSearch";
 		this.algorithmOptions = {
-			heuristic: "manhattan", 
 			allowDiagonal: true
 		};
 	}
@@ -75,7 +36,9 @@ class Controller extends StateMachine{
 		this.shiftStartPoint(this.grid.startPoint.x, this.grid.startPoint.y);
 		this.shiftEndPoint(this.grid.endPoint.x, this.grid.endPoint.y);
 		this.makeTransitionFromEventHook("edit");
-		this.bindEventListeners();
+		this.bindGridEventListeners();
+		this.bindControlCenterEventListeners();
+		this.bindControlBarEventListeners();
 	}
 
 	makeWall(x, y){
@@ -106,7 +69,7 @@ class Controller extends StateMachine{
 		this.viewRenderer.shiftEndPoint(x, y);
 	}
 
-	bindEventListeners(){
+	bindGridEventListeners(){
 		this.viewRenderer.tableElement.on('mousedown', (event) => {
 			const {x, y} = $(event.target).data("coords");
 			if(this.is('Editing')){
@@ -157,19 +120,21 @@ class Controller extends StateMachine{
 				this.goBackToEditing();
 			}
 		});
+	}
 
+	bindControlCenterEventListeners(){
 		let controlCenter = $('#control-center');
 
 		controlCenter.find("#algorithmSelector").on('change', (event) => {
 			this.algorithm = event.target.value;
 			this.algorithmOptions = {};
 
-			let radOpt = controlCenter.find(`#${this.algorithm} .options-radio-section input[type='radio']:checked`);
-			if(radOpt) this.algorithmOptions['heuristic'] = radOpt.val();
+			let radioOpt = controlCenter.find(`#${this.algorithm} .options-radio-section input[type='radio']:checked`);
+			if(radioOpt.length) this.algorithmOptions['heuristic'] = radioOpt.val();
 			
-			let checkOpts = controlCenter.find(`#${this.algorithm} .options-checkbox-section input[type='checkbox']:checked`);
-			if(checkOpts){
-				checkOpts.each((i, elem) => {
+			let checkBoxOpts = controlCenter.find(`#${this.algorithm} .options-checkbox-section input[type='checkbox']:checked`);
+			if(checkBoxOpts.length){
+				checkBoxOpts.each((i, elem) => {
 					this.algorithmOptions[elem.value] = true;
 				});
 			}
@@ -186,7 +151,9 @@ class Controller extends StateMachine{
 				this.algorithmOptions[event.target.value] = this.algorithmOptions[event.target.value]?false:true;
 			});
 		});
+	}
 
+	bindControlBarEventListeners(){
 		let controlBar = $('#control-bar');
 		controlBar.find('#start').on("click", () => {
 			console.log("start");

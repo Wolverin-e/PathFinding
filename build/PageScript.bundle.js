@@ -11654,12 +11654,13 @@ return jQuery;
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _PathFinding_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../PathFinding/index */ "./src/PathFinding/index.js");
-/* harmony import */ var _PathFinding_index__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_PathFinding_index__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
-/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var javascript_state_machine__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! javascript-state-machine */ "./node_modules/javascript-state-machine/lib/state-machine.js");
-/* harmony import */ var javascript_state_machine__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(javascript_state_machine__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var javascript_state_machine__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! javascript-state-machine */ "./node_modules/javascript-state-machine/lib/state-machine.js");
+/* harmony import */ var javascript_state_machine__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(javascript_state_machine__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _PathFinding_index__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../PathFinding/index */ "./src/PathFinding/index.js");
+/* harmony import */ var _PathFinding_index__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_PathFinding_index__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _ControllerStates__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ControllerStates */ "./src/PageScripts/ControllerStates.js");
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -11685,38 +11686,7 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 
 
 
-var stateMachineData = {
-  init: 'steady',
-  transitions: [{
-    name: 'initialize',
-    from: 'steady',
-    to: 'Rendering'
-  }, {
-    name: 'edit',
-    from: 'Rendering',
-    to: 'Editing'
-  }, {
-    name: 'startAddingWalls',
-    from: 'Editing',
-    to: 'AddingWalls'
-  }, {
-    name: 'startShiftingEndPoint',
-    from: 'Editing',
-    to: 'ShiftingEndPoint'
-  }, {
-    name: 'startRemovingWalls',
-    from: 'Editing',
-    to: 'RemovingWalls'
-  }, {
-    name: 'startShiftingStartPoint',
-    from: 'Editing',
-    to: 'ShiftingStartPoint'
-  }, {
-    name: 'goBackToEditing',
-    from: ['AddingWalls', 'RemovingWalls', 'ShiftingStartPoint', 'ShiftingEndPoint'],
-    to: 'Editing'
-  }]
-};
+
 
 var Controller = /*#__PURE__*/function (_StateMachine) {
   _inherits(Controller, _StateMachine);
@@ -11728,19 +11698,18 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
 
     _classCallCheck(this, Controller);
 
-    _this = _super.call(this, stateMachineData);
+    _this = _super.call(this, _ControllerStates__WEBPACK_IMPORTED_MODULE_3__["default"]);
     _this.viewRenderer = options.viewRenderer;
     _this.rows = options.rows;
     _this.columns = options.columns;
-    _this.grid = new _PathFinding_index__WEBPACK_IMPORTED_MODULE_0___default.a.Grid({
+    _this.grid = new _PathFinding_index__WEBPACK_IMPORTED_MODULE_2___default.a.Grid({
       rows: _this.rows,
       columns: _this.columns,
       startPoint: options.startPoint,
       endPoint: options.endPoint
     });
-    _this.algorithm = "AStar";
+    _this.algorithm = "BreadthFirstSearch";
     _this.algorithmOptions = {
-      heuristic: "manhattan",
       allowDiagonal: true
     };
     return _this;
@@ -11762,7 +11731,9 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
       this.shiftStartPoint(this.grid.startPoint.x, this.grid.startPoint.y);
       this.shiftEndPoint(this.grid.endPoint.x, this.grid.endPoint.y);
       this.makeTransitionFromEventHook("edit");
-      this.bindEventListeners();
+      this.bindGridEventListeners();
+      this.bindControlCenterEventListeners();
+      this.bindControlBarEventListeners();
     }
   }, {
     key: "makeWall",
@@ -11803,12 +11774,12 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
       this.viewRenderer.shiftEndPoint(x, y);
     }
   }, {
-    key: "bindEventListeners",
-    value: function bindEventListeners() {
+    key: "bindGridEventListeners",
+    value: function bindGridEventListeners() {
       var _this3 = this;
 
       this.viewRenderer.tableElement.on('mousedown', function (event) {
-        var _$$data = jquery__WEBPACK_IMPORTED_MODULE_1___default()(event.target).data("coords"),
+        var _$$data = jquery__WEBPACK_IMPORTED_MODULE_0___default()(event.target).data("coords"),
             x = _$$data.x,
             y = _$$data.y;
 
@@ -11837,9 +11808,9 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
         }
       });
       this.viewRenderer.tableElement.on('mouseover', function (event) {
-        if (!jquery__WEBPACK_IMPORTED_MODULE_1___default()(event.target).is('td')) return;
+        if (!jquery__WEBPACK_IMPORTED_MODULE_0___default()(event.target).is('td')) return;
 
-        var _$$data2 = jquery__WEBPACK_IMPORTED_MODULE_1___default()(event.target).data("coords"),
+        var _$$data2 = jquery__WEBPACK_IMPORTED_MODULE_0___default()(event.target).data("coords"),
             x = _$$data2.x,
             y = _$$data2.y;
 
@@ -11873,31 +11844,41 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
           _this3.goBackToEditing();
         }
       });
-      var controlCenter = jquery__WEBPACK_IMPORTED_MODULE_1___default()('#control-center');
-      controlCenter.find("#algorithmSelector").on('change', function (event) {
-        _this3.algorithm = event.target.value;
-        _this3.algorithmOptions = {};
-        var radOpt = controlCenter.find("#".concat(_this3.algorithm, " .options-radio-section input[type='radio']:checked"));
-        if (radOpt) _this3.algorithmOptions['heuristic'] = radOpt.val();
-        var checkOpts = controlCenter.find("#".concat(_this3.algorithm, " .options-checkbox-section input[type='checkbox']:checked"));
+    }
+  }, {
+    key: "bindControlCenterEventListeners",
+    value: function bindControlCenterEventListeners() {
+      var _this4 = this;
 
-        if (checkOpts) {
-          checkOpts.each(function (i, elem) {
-            _this3.algorithmOptions[elem.value] = true;
+      var controlCenter = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#control-center');
+      controlCenter.find("#algorithmSelector").on('change', function (event) {
+        _this4.algorithm = event.target.value;
+        _this4.algorithmOptions = {};
+        var radioOpt = controlCenter.find("#".concat(_this4.algorithm, " .options-radio-section input[type='radio']:checked"));
+        if (radioOpt.length) _this4.algorithmOptions['heuristic'] = radioOpt.val();
+        var checkBoxOpts = controlCenter.find("#".concat(_this4.algorithm, " .options-checkbox-section input[type='checkbox']:checked"));
+
+        if (checkBoxOpts.length) {
+          checkBoxOpts.each(function (i, elem) {
+            _this4.algorithmOptions[elem.value] = true;
           });
         }
       });
       controlCenter.find(".options-radio-section input[type='radio']").each(function (i, elem) {
-        jquery__WEBPACK_IMPORTED_MODULE_1___default()(elem).on("click", function (event) {
-          _this3.algorithmOptions.heuristic = event.target.value;
+        jquery__WEBPACK_IMPORTED_MODULE_0___default()(elem).on("click", function (event) {
+          _this4.algorithmOptions.heuristic = event.target.value;
         });
       });
       controlCenter.find(".options-checkbox-section input[type='checkbox']").each(function (i, elem) {
-        jquery__WEBPACK_IMPORTED_MODULE_1___default()(elem).on("click", function (event) {
-          _this3.algorithmOptions[event.target.value] = _this3.algorithmOptions[event.target.value] ? false : true;
+        jquery__WEBPACK_IMPORTED_MODULE_0___default()(elem).on("click", function (event) {
+          _this4.algorithmOptions[event.target.value] = _this4.algorithmOptions[event.target.value] ? false : true;
         });
       });
-      var controlBar = jquery__WEBPACK_IMPORTED_MODULE_1___default()('#control-bar');
+    }
+  }, {
+    key: "bindControlBarEventListeners",
+    value: function bindControlBarEventListeners() {
+      var controlBar = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#control-bar');
       controlBar.find('#start').on("click", function () {
         console.log("start");
       });
@@ -11917,16 +11898,61 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
   }]);
 
   return Controller;
-}(javascript_state_machine__WEBPACK_IMPORTED_MODULE_2___default.a);
+}(javascript_state_machine__WEBPACK_IMPORTED_MODULE_1___default.a);
 
 /* harmony default export */ __webpack_exports__["default"] = (Controller);
 
 /***/ }),
 
-/***/ "./src/PageScripts/ViewRenderer.js":
-/*!*****************************************!*\
-  !*** ./src/PageScripts/ViewRenderer.js ***!
-  \*****************************************/
+/***/ "./src/PageScripts/ControllerStates.js":
+/*!*********************************************!*\
+  !*** ./src/PageScripts/ControllerStates.js ***!
+  \*********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+var stateMachineData = {
+  init: 'steady',
+  transitions: [{
+    name: 'initialize',
+    from: 'steady',
+    to: 'Rendering'
+  }, {
+    name: 'edit',
+    from: 'Rendering',
+    to: 'Editing'
+  }, {
+    name: 'startAddingWalls',
+    from: 'Editing',
+    to: 'AddingWalls'
+  }, {
+    name: 'startShiftingEndPoint',
+    from: 'Editing',
+    to: 'ShiftingEndPoint'
+  }, {
+    name: 'startRemovingWalls',
+    from: 'Editing',
+    to: 'RemovingWalls'
+  }, {
+    name: 'startShiftingStartPoint',
+    from: 'Editing',
+    to: 'ShiftingStartPoint'
+  }, {
+    name: 'goBackToEditing',
+    from: ['AddingWalls', 'RemovingWalls', 'ShiftingStartPoint', 'ShiftingEndPoint'],
+    to: 'Editing'
+  }]
+};
+/* harmony default export */ __webpack_exports__["default"] = (stateMachineData);
+
+/***/ }),
+
+/***/ "./src/PageScripts/Logic.js":
+/*!**********************************!*\
+  !*** ./src/PageScripts/Logic.js ***!
+  \**********************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -11940,56 +11966,16 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-// import PathFinding from '../PathFinding/index';
 
 
-var ViewRenderer = /*#__PURE__*/function () {
-  function ViewRenderer(options) {
-    _classCallCheck(this, ViewRenderer);
-
-    this.rows = options.rows;
-    this.columns = options.columns;
-    this.tableSelector = options.tableSelector; // PROCESSING
-
-    this.tableElement = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this.tableSelector);
-    this.nodeSize = 100 / this.columns; //in vw
+var PageActionsLogicAttacher = /*#__PURE__*/function () {
+  function PageActionsLogicAttacher() {
+    _classCallCheck(this, PageActionsLogicAttacher);
   }
 
-  _createClass(ViewRenderer, [{
-    key: "init",
-    value: function init() {
-      this.renderGrid();
-      this.bindControlCenterSwitchLogic();
-      this.bindAlgorithmOptionsShowHideLogic();
-      this.bindControlBarDragLogic();
-    }
-  }, {
-    key: "renderGrid",
-    value: function renderGrid() {
-      jquery__WEBPACK_IMPORTED_MODULE_0___default()('head').append("<style>\n\t\t\ttd{\n\t\t\t\twidth: ".concat(this.nodeSize + 'vw', ";\n\t\t\t\theight: ").concat(this.nodeSize + 'vw', ";\n\t\t\t}\n\t\t</style>"));
-
-      var td = function td(y, x) {
-        var tdElement = jquery__WEBPACK_IMPORTED_MODULE_0___default()("<td></td>");
-        tdElement.data("coords", {
-          x: x,
-          y: y
-        });
-        return tdElement;
-      };
-
-      for (var y = 0; y < this.rows; y++) {
-        var tr = jquery__WEBPACK_IMPORTED_MODULE_0___default()("<tr>");
-
-        for (var x = 0; x < this.columns; x++) {
-          tr.append(td(y, x));
-        }
-
-        this.tableElement.append(tr);
-      }
-    }
-  }, {
-    key: "bindControlCenterSwitchLogic",
-    value: function bindControlCenterSwitchLogic() {
+  _createClass(PageActionsLogicAttacher, [{
+    key: "attachControlCenterSwitchLogic",
+    value: function attachControlCenterSwitchLogic() {
       var controlCenterSwitch = jquery__WEBPACK_IMPORTED_MODULE_0___default()("#control-center-switch");
       var expandImage = controlCenterSwitch.find("img");
       var controlCenter = jquery__WEBPACK_IMPORTED_MODULE_0___default()("#control-center");
@@ -12013,8 +11999,8 @@ var ViewRenderer = /*#__PURE__*/function () {
       });
     }
   }, {
-    key: "bindControlBarDragLogic",
-    value: function bindControlBarDragLogic() {
+    key: "attachControlBarDragLogic",
+    value: function attachControlBarDragLogic() {
       var controlBar = jquery__WEBPACK_IMPORTED_MODULE_0___default()("#control-bar");
       var draggable = jquery__WEBPACK_IMPORTED_MODULE_0___default()(controlBar.find("#drag"));
       var mouseDownOnDraggable = false;
@@ -12052,8 +12038,8 @@ var ViewRenderer = /*#__PURE__*/function () {
       };
     }
   }, {
-    key: "bindAlgorithmOptionsShowHideLogic",
-    value: function bindAlgorithmOptionsShowHideLogic() {
+    key: "attachAlgorithmOptionsShowHideLogic",
+    value: function attachAlgorithmOptionsShowHideLogic() {
       var controlCenter = jquery__WEBPACK_IMPORTED_MODULE_0___default()("#control-center");
       var algorithmSelector = controlCenter.find("#algorithmSelector");
       controlCenter.find(".algorithm-options-section").hide();
@@ -12064,6 +12050,81 @@ var ViewRenderer = /*#__PURE__*/function () {
         current = event.target.value;
         controlCenter.find("#" + current).show();
       });
+    }
+  }]);
+
+  return PageActionsLogicAttacher;
+}();
+
+/* harmony default export */ __webpack_exports__["default"] = (new PageActionsLogicAttacher());
+
+/***/ }),
+
+/***/ "./src/PageScripts/ViewRenderer.js":
+/*!*****************************************!*\
+  !*** ./src/PageScripts/ViewRenderer.js ***!
+  \*****************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _Logic__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Logic */ "./src/PageScripts/Logic.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+// import PathFinding from '../PathFinding/index';
+
+
+
+var ViewRenderer = /*#__PURE__*/function () {
+  function ViewRenderer(options) {
+    _classCallCheck(this, ViewRenderer);
+
+    this.rows = options.rows;
+    this.columns = options.columns;
+    this.tableSelector = options.tableSelector; // PROCESSING
+
+    this.tableElement = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this.tableSelector);
+    this.nodeSize = 100 / this.columns; //in vw
+  }
+
+  _createClass(ViewRenderer, [{
+    key: "init",
+    value: function init() {
+      this.renderGrid();
+      _Logic__WEBPACK_IMPORTED_MODULE_1__["default"].attachControlCenterSwitchLogic();
+      _Logic__WEBPACK_IMPORTED_MODULE_1__["default"].attachAlgorithmOptionsShowHideLogic();
+      _Logic__WEBPACK_IMPORTED_MODULE_1__["default"].attachControlBarDragLogic();
+    }
+  }, {
+    key: "renderGrid",
+    value: function renderGrid() {
+      jquery__WEBPACK_IMPORTED_MODULE_0___default()('head').append("<style>\n\t\t\ttd{\n\t\t\t\twidth: ".concat(this.nodeSize + 'vw', ";\n\t\t\t\theight: ").concat(this.nodeSize + 'vw', ";\n\t\t\t}\n\t\t</style>"));
+
+      var td = function td(y, x) {
+        var tdElement = jquery__WEBPACK_IMPORTED_MODULE_0___default()("<td></td>");
+        tdElement.data("coords", {
+          x: x,
+          y: y
+        });
+        return tdElement;
+      };
+
+      for (var y = 0; y < this.rows; y++) {
+        var tr = jquery__WEBPACK_IMPORTED_MODULE_0___default()("<tr>");
+
+        for (var x = 0; x < this.columns; x++) {
+          tr.append(td(y, x));
+        }
+
+        this.tableElement.append(tr);
+      }
     }
   }, {
     key: "convertToXY",

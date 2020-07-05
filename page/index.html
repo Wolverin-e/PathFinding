@@ -1,8 +1,15 @@
 <html>
     <head>
         <title>PathFinder</title>
+        
         <link rel="icon" type="image/png" sizes="32x32" href="/PathFinding/page/public/imgs/favicon.png">
-        <link rel="stylesheet" type="text/css" href="/PathFinding/page/public/css/main.css">
+        
+        <link rel="stylesheet" type="text/css" href="/PathFinding/page/public/css/Animations.css">
+        <link rel="stylesheet" type="text/css" href="/PathFinding/page/public/css/ControlBar.css">
+        <link rel="stylesheet" type="text/css" href="/PathFinding/page/public/css/ControlCenter.css">
+        <link rel="stylesheet" type="text/css" href="/PathFinding/page/public/css/Fonts.css">
+        <link rel="stylesheet" type="text/css" href="/PathFinding/page/public/css/Grid.css">
+        <link rel="stylesheet" type="text/css" href="/PathFinding/page/public/css/Main.css">
     </head>
     <body>
         <div id="grid-container">
@@ -32,14 +39,14 @@
                 <p id="normal-lable">ALGORITHM</p>
                 <select name="algorithm" id="algorithmSelector">
                     <!-- <optgroup label="searchparty">searchparty</optgroup> -->
-                    <option value="AStar">AStar</option>
                     <option value="BreadthFirstSearch">BreadthFirstSearch</option>
+                    <option value="AStar">AStar</option>
                 </select>
                 <hr />
 
                 <!-- ALGORITHM OPTIONS -->
                 <div id="AStar" class="algorithm-options-section">
-                    Heuristic
+                    HEURISTIC
                     <div class="options-radio-section">
                         <input type="radio" id="manhattan" name="heuristic" value="manhattan" checked />
                             <label for="manhattan">Manhattan</label>
@@ -55,7 +62,7 @@
                             <br />
                     </div>
                     <br />
-                    Options
+                    OPTIONS
                     <div class="options-checkbox-section">
                         <input type="checkbox" id="allowDiagonal" value="allowDiagonal" checked>
                             <label for="allowDiagonal">Allow Diagonal</label>
@@ -70,6 +77,18 @@
                 </div>
 
                 <div id="BreadthFirstSearch" class="algorithm-options-section">
+                    OPTIONS
+                    <div class="options-checkbox-section">
+                        <input type="checkbox" id="allowDiagonal" value="allowDiagonal" checked>
+                            <label for="allowDiagonal">Allow Diagonal</label>
+                            <br />
+                        <input type="checkbox" id="biDirectional" value="biDirectional">
+                            <label for="biDirectional">Bi Directional</label>
+                            <br />
+                        <input type="checkbox" id="doNotCrossCorners" value="doNotCrossCorners">
+                            <label for="doNotCrossCorners">Do Not Cross Corners</label>
+                            <br />
+                    </div>
                 </div>
             </div>
         </div>
