@@ -3,14 +3,14 @@
     font-family: JuraBold;
     src: url("../fonts/Jura/static/Jura-Bold.ttf");
 }
-@font-face {
+/* @font-face {
     font-family: JuraMed;
     src: url("../fonts/Jura/static/Jura-Medium.ttf");
-}
-@font-face {
+} */
+/* @font-face {
     font-family: JuraReg;
     src: url("../fonts/Jura/static/Jura-Regular.ttf");
-}
+} */
 @font-face {
     font-family: JuraSemiBold;
     src: url("../fonts/Jura/static/Jura-SemiBold.ttf");

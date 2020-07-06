@@ -2,10 +2,13 @@ import $ from 'jquery';
 import StateMachine from 'javascript-state-machine';
 
 import PathFinding from '../PathFinding/index';
-import stateMachineData from './ControllerStates';
+import stateMachineData from './Configs/ControllerStates';
+import controlBarOptions from './Configs/ControlBarOptions';
 
 
 class Controller extends StateMachine{
+
+	// CONSTRUCTOR
 	constructor(options){
 		super(stateMachineData);
 		this.viewRenderer = options.viewRenderer;
@@ -25,22 +28,77 @@ class Controller extends StateMachine{
 		};
 	}
 
+	// UTILITIES
 	makeTransitionFromEventHook(transition){
 		return setTimeout(() => {
 			this[transition]();
 		}, 0);
 	}
 
+	// STATE-MACHINE EVENT-HOOKS
 	onAfterInitialize(){
 		this.viewRenderer.init();
 		this.shiftStartPoint(this.grid.startPoint.x, this.grid.startPoint.y);
 		this.shiftEndPoint(this.grid.endPoint.x, this.grid.endPoint.y);
+		this.bindEventListeners();
 		this.makeTransitionFromEventHook("edit");
-		this.bindGridEventListeners();
-		this.bindControlCenterEventListeners();
-		this.bindControlBarEventListeners();
 	}
 
+	onEnterEditing(){
+		controlBarOptions.Editing.allowed.forEach(opt => {
+			this.controlBar[opt].show();
+		});
+		controlBarOptions.Editing.notAllowed.forEach(opt => {
+			this.controlBar[opt].hide();
+		});
+	}
+
+	onEnterComputing(){
+		controlBarOptions.Computing.allowed.forEach(opt => {
+			this.controlBar[opt].show();
+		});
+		controlBarOptions.Computing.notAllowed.forEach(opt => {
+			this.controlBar[opt].hide();
+		});
+	}
+
+	onEnterPlaying(){
+		controlBarOptions.Playing.allowed.forEach(opt => {
+			this.controlBar[opt].show();
+		});
+		controlBarOptions.Playing.notAllowed.forEach(opt => {
+			this.controlBar[opt].hide();
+		});
+	}
+
+	onEnterPaused(){
+		controlBarOptions.Paused.allowed.forEach(opt => {
+			this.controlBar[opt].show();
+		});
+		controlBarOptions.Paused.notAllowed.forEach(opt => {
+			this.controlBar[opt].hide();
+		});
+	}
+
+	onEnterFinished(){
+		controlBarOptions.Finished.allowed.forEach(opt => {
+			this.controlBar[opt].show();
+		});
+		controlBarOptions.Finished.notAllowed.forEach(opt => {
+			this.controlBar[opt].hide();
+		});
+	}
+	
+	onEnterPathCleared(){
+		controlBarOptions.PathCleared.allowed.forEach(opt => {
+			this.controlBar[opt].show();
+		});
+		controlBarOptions.PathCleared.notAllowed.forEach(opt => {
+			this.controlBar[opt].hide();
+		});
+	}
+
+	// CONTROLLER TO VIEW PROXIES
 	makeWall(x, y){
 		if(this.grid.isXYStartPoint(x, y)) return;
 		if(this.grid.isXYEndPoint(x, y)) return;
@@ -69,9 +127,17 @@ class Controller extends StateMachine{
 		this.viewRenderer.shiftEndPoint(x, y);
 	}
 
+	// EVENT LISTENERS
+	bindEventListeners(){
+		this.bindGridEventListeners();
+		this.bindControlCenterEventListeners();
+		this.bindControlBarEventListeners();
+	}
+
 	bindGridEventListeners(){
 		this.viewRenderer.tableElement.on('mousedown', (event) => {
 			const {x, y} = $(event.target).data("coords");
+			console.warn("non Editing==Finished State handling is left");
 			if(this.is('Editing')){
 				if(this.grid.isXYStartPoint(x, y)){
 					this.startShiftingStartPoint();
@@ -154,21 +220,147 @@ class Controller extends StateMachine{
 	}
 
 	bindControlBarEventListeners(){
-		let controlBar = $('#control-bar');
-		controlBar.find('#start').on("click", () => {
+		let controlBar = $("#control-bar");
+		this.controlBar = {
+			start: controlBar.find('#start'), 
+			pause: controlBar.find('#pause'), 
+			stop: controlBar.find('#stop'), 
+			restart: controlBar.find('#restart'), 
+			clearPath: controlBar.find('#clearPath'), 
+			clearWalls: controlBar.find('#clearWalls'), 
+			undo: controlBar.find('#undo'), 
+			step: controlBar.find('#step')
+		};
+		
+		this.controlBar.start.on("click", () => {
 			console.log("start");
+			// Editing | Paused
+			switch(this.state){
+				case "Editing":
+					this.compute();
+					this.play();
+					break;
+				case "Paused":
+					this.resume();
+					break;
+				default:
+					console.warn("Undefined State Behaviour");
+					break;
+			}
 		});
-		controlBar.find('#pause').on("click", () => {
+		this.controlBar.pause.on("click", () => {
 			console.log("pause");
+			this.pause();
+			// Playing
 		});
-		controlBar.find('#resume').on("click", () => {
-			console.log("resume");
-		});
-		controlBar.find('#stop').on("click", () => {
+		this.controlBar.stop.on("click", () => {
 			console.log("stop");
+			// Playing | Paused
+			switch(this.state){
+				case "Playing":
+					this.pause();
+					this.finish();
+					break;
+				case "Paused":
+					this.finish();
+					break;
+				default:
+					console.warn("Undefined State Behaviour");
+					break;
+			}
 		});
-		controlBar.find('#step').on("click", () => {
+		this.controlBar.restart.on("click", () => {
+			console.log("restart");
+			// Playing | Paused | Finished
+			switch(this.state){
+				case "Playing":
+					this.pause();
+					this.restart();
+					break;
+				case "Paused":
+					this.restart();
+					break;
+				case "Finished":
+					this.restart();
+					break;
+				case "pathCleared":
+					break;
+				default:
+					console.warn("Undefined State Behaviour");
+					break;
+			}
+		});
+		this.controlBar.clearPath.on("click", () => {
+			console.log("clearPath");
+			// Playing | Paused | Finished
+			switch(this.state){
+				case "Playing":
+					this.pause();
+					this.clearPath();
+					break;
+				case "Paused":
+					this.clearPath();
+					break;
+				case "Finished":
+					this.clearPath();
+					break;
+				default:
+					console.warn("Undefined State Behaviour");
+					break;
+			}
+		});
+		this.controlBar.clearWalls.on("click", () => {
+			console.log("clearWalls");
+			// Playing | Paused | Finished | pathCleared
+			switch(this.state){
+				case "Playing":
+					this.pause();
+					this.gridEdit();
+					break;
+				case "Paused":
+					this.gridEdit();
+					break;
+				case "Finished":
+					this.gridEdit();
+					break;
+				case "pathCleared":
+					this.gridEdit();
+					break;
+				default:
+					console.warn("Undefined State Behaviour");
+					break;
+			}
+		});
+		this.controlBar.undo.on("click", () => {
+			console.log("undo");
+			// Playing | Paused | Finished
+			switch(this.state){
+				case "Playing":
+					this.pause();
+					break;
+				case "Paused":
+					break;
+				case "Finished":
+					this.pause();
+					break;
+				default:
+					console.warn("Undefined State Behaviour");
+					break;
+			}
+		});
+		this.controlBar.step.on("click", () => {
 			console.log("step");
+			// Playing | Paused
+			switch(this.state){
+				case "Playing":
+					this.pause();
+					break;
+				case "Paused":
+					break;
+				default:
+					console.warn("Undefined State Behaviour");
+					break;
+			}
 		});
 	}
 }

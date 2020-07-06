@@ -14,10 +14,10 @@ class ViewRenderer{
 	}
 	
 	init(){
-		this.renderGrid();
-		pageActionsLogicAttacher.attachControlCenterSwitchLogic();
 		pageActionsLogicAttacher.attachAlgorithmOptionsShowHideLogic();
+		pageActionsLogicAttacher.attachControlCenterSwitchLogic();
 		pageActionsLogicAttacher.attachControlBarDragLogic();
+		this.renderGrid();
 	}
 
 	renderGrid(){

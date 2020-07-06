@@ -11645,6 +11645,134 @@ return jQuery;
 
 /***/ }),
 
+/***/ "./src/PageScripts/Configs/ControlBarOptions.js":
+/*!******************************************************!*\
+  !*** ./src/PageScripts/Configs/ControlBarOptions.js ***!
+  \******************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+var START = 'start',
+    PAUSE = 'pause',
+    STOP = 'stop',
+    RESTART = 'restart',
+    CLEARPATH = 'clearPath',
+    CLEARWALLS = 'clearWalls',
+    UNDO = 'undo',
+    STEP = 'step';
+var allOptions = [START, PAUSE, STOP, RESTART, CLEARPATH, CLEARWALLS, UNDO, STEP];
+var barOptions = {
+  Editing: {
+    allowed: [START, CLEARWALLS]
+  },
+  Computing: {
+    allowed: []
+  },
+  Playing: {
+    allowed: [PAUSE, STOP, RESTART, CLEARPATH, CLEARWALLS, UNDO, STEP]
+  },
+  Paused: {
+    allowed: [START, STOP, RESTART, CLEARPATH, CLEARWALLS, UNDO, STEP]
+  },
+  PathCleared: {
+    allowed: [RESTART, CLEARWALLS]
+  },
+  Finished: {
+    allowed: [RESTART, CLEARPATH, CLEARWALLS, UNDO]
+  }
+};
+Object.keys(barOptions).forEach(function (key) {
+  barOptions[key].notAllowed = allOptions.filter(function (opt) {
+    return !barOptions[key].allowed.includes(opt);
+  });
+});
+/* harmony default export */ __webpack_exports__["default"] = (barOptions);
+
+/***/ }),
+
+/***/ "./src/PageScripts/Configs/ControllerStates.js":
+/*!*****************************************************!*\
+  !*** ./src/PageScripts/Configs/ControllerStates.js ***!
+  \*****************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+// var visualize = require('javascript-state-machine/lib/visualize');
+// var StateMachine = require('javascript-state-machine');
+var stateMachineData = {
+  init: 'steady',
+  transitions: [{
+    name: 'initialize',
+    from: 'steady',
+    to: 'Rendering'
+  }, {
+    name: 'edit',
+    from: 'Rendering',
+    to: 'Editing'
+  }, {
+    name: 'startAddingWalls',
+    from: 'Editing',
+    to: 'AddingWalls'
+  }, {
+    name: 'startShiftingEndPoint',
+    from: 'Editing',
+    to: 'ShiftingEndPoint'
+  }, {
+    name: 'startRemovingWalls',
+    from: 'Editing',
+    to: 'RemovingWalls'
+  }, {
+    name: 'startShiftingStartPoint',
+    from: 'Editing',
+    to: 'ShiftingStartPoint'
+  }, {
+    name: 'goBackToEditing',
+    from: ['AddingWalls', 'RemovingWalls', 'ShiftingStartPoint', 'ShiftingEndPoint'],
+    to: 'Editing'
+  }, {
+    name: 'compute',
+    from: 'Editing',
+    to: 'Computing'
+  }, {
+    name: 'play',
+    from: 'Computing',
+    to: 'Playing'
+  }, {
+    name: 'pause',
+    from: ['Playing', 'Finished'],
+    to: 'Paused'
+  }, {
+    name: 'resume',
+    from: 'Paused',
+    to: 'Playing'
+  }, {
+    name: 'finish',
+    from: ['Paused'],
+    to: 'Finished'
+  }, {
+    name: 'restart',
+    from: ['Finished', 'Paused'],
+    to: 'Playing'
+  }, {
+    name: 'clearPath',
+    from: ['Paused', 'Finished'],
+    to: 'pathCleared'
+  }, {
+    name: 'gridEdit',
+    from: ['Finished', 'Paused', 'pathCleared'],
+    to: 'Editing'
+  }]
+}; // const sm = new StateMachine(stateMachineData);
+// console.log(visualize(sm));
+
+/* harmony default export */ __webpack_exports__["default"] = (stateMachineData);
+
+/***/ }),
+
 /***/ "./src/PageScripts/Controller.js":
 /*!***************************************!*\
   !*** ./src/PageScripts/Controller.js ***!
@@ -11660,7 +11788,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var javascript_state_machine__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(javascript_state_machine__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _PathFinding_index__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../PathFinding/index */ "./src/PathFinding/index.js");
 /* harmony import */ var _PathFinding_index__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_PathFinding_index__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _ControllerStates__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ControllerStates */ "./src/PageScripts/ControllerStates.js");
+/* harmony import */ var _Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Configs/ControllerStates */ "./src/PageScripts/Configs/ControllerStates.js");
+/* harmony import */ var _Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Configs/ControlBarOptions */ "./src/PageScripts/Configs/ControlBarOptions.js");
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -11688,17 +11817,19 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 
 
 
+
 var Controller = /*#__PURE__*/function (_StateMachine) {
   _inherits(Controller, _StateMachine);
 
   var _super = _createSuper(Controller);
 
+  // CONSTRUCTOR
   function Controller(options) {
     var _this;
 
     _classCallCheck(this, Controller);
 
-    _this = _super.call(this, _ControllerStates__WEBPACK_IMPORTED_MODULE_3__["default"]);
+    _this = _super.call(this, _Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_3__["default"]);
     _this.viewRenderer = options.viewRenderer;
     _this.rows = options.rows;
     _this.columns = options.columns;
@@ -11713,7 +11844,8 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
       allowDiagonal: true
     };
     return _this;
-  }
+  } // UTILITIES
+
 
   _createClass(Controller, [{
     key: "makeTransitionFromEventHook",
@@ -11723,18 +11855,90 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
       return setTimeout(function () {
         _this2[transition]();
       }, 0);
-    }
+    } // STATE-MACHINE EVENT-HOOKS
+
   }, {
     key: "onAfterInitialize",
     value: function onAfterInitialize() {
       this.viewRenderer.init();
       this.shiftStartPoint(this.grid.startPoint.x, this.grid.startPoint.y);
       this.shiftEndPoint(this.grid.endPoint.x, this.grid.endPoint.y);
+      this.bindEventListeners();
       this.makeTransitionFromEventHook("edit");
-      this.bindGridEventListeners();
-      this.bindControlCenterEventListeners();
-      this.bindControlBarEventListeners();
     }
+  }, {
+    key: "onEnterEditing",
+    value: function onEnterEditing() {
+      var _this3 = this;
+
+      _Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_4__["default"].Editing.allowed.forEach(function (opt) {
+        _this3.controlBar[opt].show();
+      });
+      _Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_4__["default"].Editing.notAllowed.forEach(function (opt) {
+        _this3.controlBar[opt].hide();
+      });
+    }
+  }, {
+    key: "onEnterComputing",
+    value: function onEnterComputing() {
+      var _this4 = this;
+
+      _Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_4__["default"].Computing.allowed.forEach(function (opt) {
+        _this4.controlBar[opt].show();
+      });
+      _Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_4__["default"].Computing.notAllowed.forEach(function (opt) {
+        _this4.controlBar[opt].hide();
+      });
+    }
+  }, {
+    key: "onEnterPlaying",
+    value: function onEnterPlaying() {
+      var _this5 = this;
+
+      _Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_4__["default"].Playing.allowed.forEach(function (opt) {
+        _this5.controlBar[opt].show();
+      });
+      _Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_4__["default"].Playing.notAllowed.forEach(function (opt) {
+        _this5.controlBar[opt].hide();
+      });
+    }
+  }, {
+    key: "onEnterPaused",
+    value: function onEnterPaused() {
+      var _this6 = this;
+
+      _Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_4__["default"].Paused.allowed.forEach(function (opt) {
+        _this6.controlBar[opt].show();
+      });
+      _Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_4__["default"].Paused.notAllowed.forEach(function (opt) {
+        _this6.controlBar[opt].hide();
+      });
+    }
+  }, {
+    key: "onEnterFinished",
+    value: function onEnterFinished() {
+      var _this7 = this;
+
+      _Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_4__["default"].Finished.allowed.forEach(function (opt) {
+        _this7.controlBar[opt].show();
+      });
+      _Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_4__["default"].Finished.notAllowed.forEach(function (opt) {
+        _this7.controlBar[opt].hide();
+      });
+    }
+  }, {
+    key: "onEnterPathCleared",
+    value: function onEnterPathCleared() {
+      var _this8 = this;
+
+      _Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_4__["default"].PathCleared.allowed.forEach(function (opt) {
+        _this8.controlBar[opt].show();
+      });
+      _Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_4__["default"].PathCleared.notAllowed.forEach(function (opt) {
+        _this8.controlBar[opt].hide();
+      });
+    } // CONTROLLER TO VIEW PROXIES
+
   }, {
     key: "makeWall",
     value: function makeWall(x, y) {
@@ -11772,38 +11976,48 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
         y: y
       };
       this.viewRenderer.shiftEndPoint(x, y);
+    } // EVENT LISTENERS
+
+  }, {
+    key: "bindEventListeners",
+    value: function bindEventListeners() {
+      this.bindGridEventListeners();
+      this.bindControlCenterEventListeners();
+      this.bindControlBarEventListeners();
     }
   }, {
     key: "bindGridEventListeners",
     value: function bindGridEventListeners() {
-      var _this3 = this;
+      var _this9 = this;
 
       this.viewRenderer.tableElement.on('mousedown', function (event) {
         var _$$data = jquery__WEBPACK_IMPORTED_MODULE_0___default()(event.target).data("coords"),
             x = _$$data.x,
             y = _$$data.y;
 
-        if (_this3.is('Editing')) {
-          if (_this3.grid.isXYStartPoint(x, y)) {
-            _this3.startShiftingStartPoint();
+        console.warn("non Editing==Finished State handling is left");
+
+        if (_this9.is('Editing')) {
+          if (_this9.grid.isXYStartPoint(x, y)) {
+            _this9.startShiftingStartPoint();
 
             return;
           }
 
-          if (_this3.grid.isXYEndPoint(x, y)) {
-            _this3.startShiftingEndPoint();
+          if (_this9.grid.isXYEndPoint(x, y)) {
+            _this9.startShiftingEndPoint();
 
             return;
           }
 
-          if (_this3.grid.isXYWallElement(x, y)) {
-            _this3.startRemovingWalls();
+          if (_this9.grid.isXYWallElement(x, y)) {
+            _this9.startRemovingWalls();
 
-            _this3.removeWall(x, y);
+            _this9.removeWall(x, y);
           } else {
-            _this3.startAddingWalls();
+            _this9.startAddingWalls();
 
-            _this3.makeWall(x, y);
+            _this9.makeWall(x, y);
           }
         }
       });
@@ -11814,24 +12028,24 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
             x = _$$data2.x,
             y = _$$data2.y;
 
-        switch (_this3.state) {
+        switch (_this9.state) {
           case 'AddingWalls':
-            _this3.makeWall(x, y);
+            _this9.makeWall(x, y);
 
             break;
 
           case 'RemovingWalls':
-            _this3.removeWall(x, y);
+            _this9.removeWall(x, y);
 
             break;
 
           case 'ShiftingStartPoint':
-            _this3.shiftStartPoint(x, y);
+            _this9.shiftStartPoint(x, y);
 
             break;
 
           case 'ShiftingEndPoint':
-            _this3.shiftEndPoint(x, y);
+            _this9.shiftEndPoint(x, y);
 
             break;
 
@@ -11840,59 +12054,229 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
         }
       });
       this.viewRenderer.tableElement.on('mouseup', function () {
-        if (_this3.can('goBackToEditing')) {
-          _this3.goBackToEditing();
+        if (_this9.can('goBackToEditing')) {
+          _this9.goBackToEditing();
         }
       });
     }
   }, {
     key: "bindControlCenterEventListeners",
     value: function bindControlCenterEventListeners() {
-      var _this4 = this;
+      var _this10 = this;
 
       var controlCenter = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#control-center');
       controlCenter.find("#algorithmSelector").on('change', function (event) {
-        _this4.algorithm = event.target.value;
-        _this4.algorithmOptions = {};
-        var radioOpt = controlCenter.find("#".concat(_this4.algorithm, " .options-radio-section input[type='radio']:checked"));
-        if (radioOpt.length) _this4.algorithmOptions['heuristic'] = radioOpt.val();
-        var checkBoxOpts = controlCenter.find("#".concat(_this4.algorithm, " .options-checkbox-section input[type='checkbox']:checked"));
+        _this10.algorithm = event.target.value;
+        _this10.algorithmOptions = {};
+        var radioOpt = controlCenter.find("#".concat(_this10.algorithm, " .options-radio-section input[type='radio']:checked"));
+        if (radioOpt.length) _this10.algorithmOptions['heuristic'] = radioOpt.val();
+        var checkBoxOpts = controlCenter.find("#".concat(_this10.algorithm, " .options-checkbox-section input[type='checkbox']:checked"));
 
         if (checkBoxOpts.length) {
           checkBoxOpts.each(function (i, elem) {
-            _this4.algorithmOptions[elem.value] = true;
+            _this10.algorithmOptions[elem.value] = true;
           });
         }
       });
       controlCenter.find(".options-radio-section input[type='radio']").each(function (i, elem) {
         jquery__WEBPACK_IMPORTED_MODULE_0___default()(elem).on("click", function (event) {
-          _this4.algorithmOptions.heuristic = event.target.value;
+          _this10.algorithmOptions.heuristic = event.target.value;
         });
       });
       controlCenter.find(".options-checkbox-section input[type='checkbox']").each(function (i, elem) {
         jquery__WEBPACK_IMPORTED_MODULE_0___default()(elem).on("click", function (event) {
-          _this4.algorithmOptions[event.target.value] = _this4.algorithmOptions[event.target.value] ? false : true;
+          _this10.algorithmOptions[event.target.value] = _this10.algorithmOptions[event.target.value] ? false : true;
         });
       });
     }
   }, {
     key: "bindControlBarEventListeners",
     value: function bindControlBarEventListeners() {
-      var controlBar = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#control-bar');
-      controlBar.find('#start').on("click", function () {
-        console.log("start");
+      var _this11 = this;
+
+      var controlBar = jquery__WEBPACK_IMPORTED_MODULE_0___default()("#control-bar");
+      this.controlBar = {
+        start: controlBar.find('#start'),
+        pause: controlBar.find('#pause'),
+        stop: controlBar.find('#stop'),
+        restart: controlBar.find('#restart'),
+        clearPath: controlBar.find('#clearPath'),
+        clearWalls: controlBar.find('#clearWalls'),
+        undo: controlBar.find('#undo'),
+        step: controlBar.find('#step')
+      };
+      this.controlBar.start.on("click", function () {
+        console.log("start"); // Editing | Paused
+
+        switch (_this11.state) {
+          case "Editing":
+            _this11.compute();
+
+            _this11.play();
+
+            break;
+
+          case "Paused":
+            _this11.resume();
+
+            break;
+
+          default:
+            console.warn("Undefined State Behaviour");
+            break;
+        }
       });
-      controlBar.find('#pause').on("click", function () {
+      this.controlBar.pause.on("click", function () {
         console.log("pause");
+
+        _this11.pause(); // Playing
+
       });
-      controlBar.find('#resume').on("click", function () {
-        console.log("resume");
+      this.controlBar.stop.on("click", function () {
+        console.log("stop"); // Playing | Paused
+
+        switch (_this11.state) {
+          case "Playing":
+            _this11.pause();
+
+            _this11.finish();
+
+            break;
+
+          case "Paused":
+            _this11.finish();
+
+            break;
+
+          default:
+            console.warn("Undefined State Behaviour");
+            break;
+        }
       });
-      controlBar.find('#stop').on("click", function () {
-        console.log("stop");
+      this.controlBar.restart.on("click", function () {
+        console.log("restart"); // Playing | Paused | Finished
+
+        switch (_this11.state) {
+          case "Playing":
+            _this11.pause();
+
+            _this11.restart();
+
+            break;
+
+          case "Paused":
+            _this11.restart();
+
+            break;
+
+          case "Finished":
+            _this11.restart();
+
+            break;
+
+          case "pathCleared":
+            break;
+
+          default:
+            console.warn("Undefined State Behaviour");
+            break;
+        }
       });
-      controlBar.find('#step').on("click", function () {
-        console.log("step");
+      this.controlBar.clearPath.on("click", function () {
+        console.log("clearPath"); // Playing | Paused | Finished
+
+        switch (_this11.state) {
+          case "Playing":
+            _this11.pause();
+
+            _this11.clearPath();
+
+            break;
+
+          case "Paused":
+            _this11.clearPath();
+
+            break;
+
+          case "Finished":
+            _this11.clearPath();
+
+            break;
+
+          default:
+            console.warn("Undefined State Behaviour");
+            break;
+        }
+      });
+      this.controlBar.clearWalls.on("click", function () {
+        console.log("clearWalls"); // Playing | Paused | Finished | pathCleared
+
+        switch (_this11.state) {
+          case "Playing":
+            _this11.pause();
+
+            _this11.gridEdit();
+
+            break;
+
+          case "Paused":
+            _this11.gridEdit();
+
+            break;
+
+          case "Finished":
+            _this11.gridEdit();
+
+            break;
+
+          case "pathCleared":
+            _this11.gridEdit();
+
+            break;
+
+          default:
+            console.warn("Undefined State Behaviour");
+            break;
+        }
+      });
+      this.controlBar.undo.on("click", function () {
+        console.log("undo"); // Playing | Paused | Finished
+
+        switch (_this11.state) {
+          case "Playing":
+            _this11.pause();
+
+            break;
+
+          case "Paused":
+            break;
+
+          case "Finished":
+            _this11.pause();
+
+            break;
+
+          default:
+            console.warn("Undefined State Behaviour");
+            break;
+        }
+      });
+      this.controlBar.step.on("click", function () {
+        console.log("step"); // Playing | Paused
+
+        switch (_this11.state) {
+          case "Playing":
+            _this11.pause();
+
+            break;
+
+          case "Paused":
+            break;
+
+          default:
+            console.warn("Undefined State Behaviour");
+            break;
+        }
       });
     }
   }]);
@@ -11901,51 +12285,6 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
 }(javascript_state_machine__WEBPACK_IMPORTED_MODULE_1___default.a);
 
 /* harmony default export */ __webpack_exports__["default"] = (Controller);
-
-/***/ }),
-
-/***/ "./src/PageScripts/ControllerStates.js":
-/*!*********************************************!*\
-  !*** ./src/PageScripts/ControllerStates.js ***!
-  \*********************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-var stateMachineData = {
-  init: 'steady',
-  transitions: [{
-    name: 'initialize',
-    from: 'steady',
-    to: 'Rendering'
-  }, {
-    name: 'edit',
-    from: 'Rendering',
-    to: 'Editing'
-  }, {
-    name: 'startAddingWalls',
-    from: 'Editing',
-    to: 'AddingWalls'
-  }, {
-    name: 'startShiftingEndPoint',
-    from: 'Editing',
-    to: 'ShiftingEndPoint'
-  }, {
-    name: 'startRemovingWalls',
-    from: 'Editing',
-    to: 'RemovingWalls'
-  }, {
-    name: 'startShiftingStartPoint',
-    from: 'Editing',
-    to: 'ShiftingStartPoint'
-  }, {
-    name: 'goBackToEditing',
-    from: ['AddingWalls', 'RemovingWalls', 'ShiftingStartPoint', 'ShiftingEndPoint'],
-    to: 'Editing'
-  }]
-};
-/* harmony default export */ __webpack_exports__["default"] = (stateMachineData);
 
 /***/ }),
 
@@ -12097,10 +12436,10 @@ var ViewRenderer = /*#__PURE__*/function () {
   _createClass(ViewRenderer, [{
     key: "init",
     value: function init() {
-      this.renderGrid();
-      _Logic__WEBPACK_IMPORTED_MODULE_1__["default"].attachControlCenterSwitchLogic();
       _Logic__WEBPACK_IMPORTED_MODULE_1__["default"].attachAlgorithmOptionsShowHideLogic();
+      _Logic__WEBPACK_IMPORTED_MODULE_1__["default"].attachControlCenterSwitchLogic();
       _Logic__WEBPACK_IMPORTED_MODULE_1__["default"].attachControlBarDragLogic();
+      this.renderGrid();
     }
   }, {
     key: "renderGrid",
