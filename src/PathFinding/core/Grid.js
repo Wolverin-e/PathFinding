@@ -36,6 +36,10 @@ class Grid{
 		return ((this.endPoint.x === x )&&(this.endPoint.y === y));
 	}
 
+	getNodeAtXY(x, y){
+		return this[y][x];
+	}
+
 	clone(){
 		let grid = new Grid(this);
 
@@ -63,40 +67,40 @@ class Grid{
 		
 		// a
 		if(!this.isXYWallElement(x, y-1)) {
-			neighbours.push(this[y-1][x]);
+			neighbours.push(this.getNodeAtXY(x, y-1));
 			a = true;
 		}
 		// b
 		if(!this.isXYWallElement(x+1, y)) {
-			neighbours.push(this[y][x+1]);
+			neighbours.push(this.getNodeAtXY(x+1, y));
 			b = true;
 		}
 		// c
 		if(!this.isXYWallElement(x, y+1)) {
-			neighbours.push(this[y+1][x]);
+			neighbours.push(this.getNodeAtXY(x, y+1));
 			c = true;
 		}
 		// d
 		if(!this.isXYWallElement(x-1, y)) {
-			neighbours.push(this[y][x-1]);
+			neighbours.push(this.getNodeAtXY(x-1, y));
 			d = true;
 		}
 
 		//p
 		if( (a || d) & !this.isXYWallElement(x-1, y-1)) {
-			neighbours.push(this[y-1][x-1]);
+			neighbours.push(this.getNodeAtXY(x-1, y-1));
 		}
 		//q
 		if( (a || b) & !this.isXYWallElement(x+1, y-1)) {
-			neighbours.push(this[y-1][x+1]);
+			neighbours.push(this.getNodeAtXY(x+1, y-1));
 		}
 		//r
 		if( (b || c) & !this.isXYWallElement(x+1, y+1)) {
-			neighbours.push(this[y+1][x+1]);
+			neighbours.push(this.getNodeAtXY(x+1, y+1));
 		}
 		//s
 		if( (c || d) & !this.isXYWallElement(x-1, y+1)) {
-			neighbours.push(this[y+1][x-1]);
+			neighbours.push(this.getNodeAtXY(x-1, y+1));
 		}
 		return neighbours;
 	}
