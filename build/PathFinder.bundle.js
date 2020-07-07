@@ -91,10 +91,84 @@ var PathFinder =
 /*!**********************************************************!*\
   !*** ./src/PathFinding/algorithms/BreadthFirstSearch.js ***!
   \**********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return BreadthFirstSearch; });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var BreadthFirstSearch = /*#__PURE__*/function () {
+  function BreadthFirstSearch(opts) {
+    _classCallCheck(this, BreadthFirstSearch);
+
+    console.log(opts);
+  }
+
+  _createClass(BreadthFirstSearch, [{
+    key: "findPath",
+    value: function findPath(grid) {
+      var uLimit = 10;
+      var dLimit = 20;
+      var lLimit = 10;
+      var rLimit = 20;
+
+      for (var y = uLimit; y < dLimit; y++) {
+        for (var x = lLimit; x < rLimit; x++) {
+          grid[y][x].visited = true;
+        }
+      }
+
+      return [{
+        x: 12,
+        y: 12
+      }, {
+        x: 3,
+        y: 3
+      }, {
+        x: 4,
+        y: 4
+      }, {
+        x: 5,
+        y: 5
+      }, {
+        x: 6,
+        y: 6
+      }];
+    }
+  }]);
+
+  return BreadthFirstSearch;
+}();
 
 
+
+/***/ }),
+
+/***/ "./src/PathFinding/core/GraphNode.js":
+/*!*******************************************!*\
+  !*** ./src/PathFinding/core/GraphNode.js ***!
+  \*******************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var GraphNode = function GraphNode(options) {
+  _classCallCheck(this, GraphNode);
+
+  this.x = options.x;
+  this.y = options.y;
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (GraphNode);
 
 /***/ }),
 
@@ -102,18 +176,21 @@ var PathFinder =
 /*!**************************************!*\
   !*** ./src/PathFinding/core/Grid.js ***!
   \**************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _GraphNode__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./GraphNode */ "./src/PathFinding/core/GraphNode.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var Grid = /*#__PURE__*/function () {
-  "use strict";
 
+
+var Grid = /*#__PURE__*/function () {
   function Grid(options) {
     _classCallCheck(this, Grid);
 
@@ -123,14 +200,31 @@ var Grid = /*#__PURE__*/function () {
     this.endPoint = options.endPoint;
 
     for (var y = 0; y < this.rows; y++) {
-      this[y] = new Array(this.columns).fill(0);
+      this[y] = new Array(this.columns);
+
+      for (var x = 0; x < this.columns; x++) {
+        this[y][x] = new _GraphNode__WEBPACK_IMPORTED_MODULE_0__["default"]({
+          x: x,
+          y: y
+        });
+      }
     }
   }
 
   _createClass(Grid, [{
     key: "isXYWallElement",
     value: function isXYWallElement(x, y) {
-      return this[y][x] === 1;
+      return this[y][x].isWall ? true : false;
+    }
+  }, {
+    key: "makeXYWall",
+    value: function makeXYWall(x, y) {
+      this[y][x].isWall = true;
+    }
+  }, {
+    key: "destroyWallAtXY",
+    value: function destroyWallAtXY(x, y) {
+      this[y][x].isWall = false;
     }
   }, {
     key: "isXYStartPoint",
@@ -142,12 +236,31 @@ var Grid = /*#__PURE__*/function () {
     value: function isXYEndPoint(x, y) {
       return this.endPoint.x === x && this.endPoint.y === y;
     }
+  }, {
+    key: "clone",
+    value: function clone() {
+      var grid = new Grid(this);
+
+      for (var y = 0; y < this.rows; y++) {
+        grid[y] = new Array(this.columns);
+
+        for (var x = 0; x < this.columns; x++) {
+          grid[y][x] = new _GraphNode__WEBPACK_IMPORTED_MODULE_0__["default"]({
+            x: x,
+            y: y
+          });
+          if (this.isXYWallElement(x, y)) grid.makeXYWall(x, y);
+        }
+      }
+
+      return grid;
+    }
   }]);
 
   return Grid;
 }();
 
-module.exports = Grid;
+/* harmony default export */ __webpack_exports__["default"] = (Grid);
 
 /***/ }),
 
@@ -155,13 +268,22 @@ module.exports = Grid;
 /*!**********************************!*\
   !*** ./src/PathFinding/index.js ***!
   \**********************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-module.exports = {
-  'Grid': __webpack_require__(/*! ./core/Grid */ "./src/PathFinding/core/Grid.js"),
-  'BreadthFirstSearch': __webpack_require__(/*! ./algorithms/BreadthFirstSearch */ "./src/PathFinding/algorithms/BreadthFirstSearch.js")
-};
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _core_Grid__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/Grid */ "./src/PathFinding/core/Grid.js");
+/* harmony import */ var _core_GraphNode__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./core/GraphNode */ "./src/PathFinding/core/GraphNode.js");
+/* harmony import */ var _algorithms_BreadthFirstSearch__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./algorithms/BreadthFirstSearch */ "./src/PathFinding/algorithms/BreadthFirstSearch.js");
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  Grid: _core_Grid__WEBPACK_IMPORTED_MODULE_0__["default"],
+  GraphNode: _core_GraphNode__WEBPACK_IMPORTED_MODULE_1__["default"],
+  BreadthFirstSearch: _algorithms_BreadthFirstSearch__WEBPACK_IMPORTED_MODULE_2__["default"]
+});
 
 /***/ })
 

@@ -1,3 +1,5 @@
+import GraphNode from './GraphNode';
+
 class Grid{
 	constructor(options){
 		this.rows = options.rows;
@@ -6,12 +8,23 @@ class Grid{
 		this.endPoint = options.endPoint;
 
 		for(let y=0; y<this.rows; y++){
-			this[y] = new Array(this.columns).fill(0);
+			this[y] = new Array(this.columns);
+			for(let x=0; x<this.columns; x++){
+				this[y][x] = new GraphNode({x, y});
+			}
 		}
 	}
 
 	isXYWallElement(x, y){
-		return (this[y][x] === 1);
+		return (this[y][x].isWall?true:false);
+	}
+
+	makeXYWall(x, y){
+		this[y][x].isWall = true;
+	}
+
+	destroyWallAtXY(x, y){
+		this[y][x].isWall = false;
 	}
 
 	isXYStartPoint(x, y){
@@ -21,6 +34,19 @@ class Grid{
 	isXYEndPoint(x, y){
 		return ((this.endPoint.x === x )&&(this.endPoint.y === y));
 	}
+
+	clone(){
+		let grid = new Grid(this);
+
+		for(let y=0; y<this.rows; y++){
+			grid[y] = new Array(this.columns);
+			for(let x=0; x<this.columns; x++){
+				grid[y][x] = new GraphNode({x, y});
+				if(this.isXYWallElement(x, y)) grid.makeXYWall(x, y);
+			}
+		}
+		return grid;
+	}
 }
 
-module.exports = Grid;
+export default Grid;

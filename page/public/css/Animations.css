@@ -16,3 +16,13 @@
         transform: scale(1);
     }
 }
+
+.VISITED{
+    background-color: lightgreen;
+    animation: wallGrowShrink 150ms linear normal;
+}
+
+.PATH{
+    background-color: yellow;
+    animation: wallGrowShrink 150ms linear normal;
+}

@@ -2,7 +2,6 @@ import $ from 'jquery';
 import StateMachine from 'javascript-state-machine';
 import Denque from 'denque';
 
-
 import PathFinding from '../PathFinding/index';
 import stateMachineData from './Configs/ControllerStates';
 import controlBarOptions from './Configs/ControlBarOptions';
@@ -10,6 +9,10 @@ import controlBarOptions from './Configs/ControlBarOptions';
 Denque.prototype.pushArray = function(arr) {
 	arr.forEach(elem => this.push(elem));
 };
+
+var opQueue = new Denque();
+var undoQueue = new Denque();
+var wallList = [];
 
 class Controller extends StateMachine{
 
@@ -31,10 +34,6 @@ class Controller extends StateMachine{
 		this.algorithmOptions = {
 			allowDiagonal: true
 		};
-
-		this.opQueue = new Denque();
-		this.undoQueue = new Denque();
-		this.wallList = [];
 	}
 
 	// UTILITIES
@@ -44,12 +43,24 @@ class Controller extends StateMachine{
 		}, 0);
 	}
 
+	addPathToOps(path){
+		opQueue.pushArray(path.map(coordinate => {
+			return{
+				x: coordinate.x, 
+				y: coordinate.y, 
+				att: "path", 
+				val: true
+			};
+		}));
+	}
+
 	// STATE-MACHINE EVENT-HOOKS
 	onAfterInitialize(){
 		this.viewRenderer.init();
 		this.shiftStartPoint(this.grid.startPoint.x, this.grid.startPoint.y);
 		this.shiftEndPoint(this.grid.endPoint.x, this.grid.endPoint.y);
 		this.bindEventListeners();
+		this.attachOpsEventListeners();
 		this.makeTransitionFromEventHook("edit");
 	}
 
@@ -111,15 +122,15 @@ class Controller extends StateMachine{
 	makeWall(x, y){
 		if(this.grid.isXYStartPoint(x, y)) return;
 		if(this.grid.isXYEndPoint(x, y)) return;
-		this.wallList.push({x, y});
-		this.grid[y][x] = 1;
+		wallList.push({x, y});
+		this.grid.makeXYWall(x, y);
 		this.viewRenderer.makeWall(x, y);
 	}
 
 	removeWall(x, y){
 		if(this.grid.isXYStartPoint(x, y)) return;
 		if(this.grid.isXYEndPoint(x, y)) return;
-		this.grid[y][x] = 0;
+		this.grid.destroyWallAtXY(x, y);
 		this.viewRenderer.removeWall(x, y);
 	}
 
@@ -139,24 +150,9 @@ class Controller extends StateMachine{
 
 	findPath(){
 		// FIND PATH AND FILL THE OPQUEUE
-		this.opQueue.pushArray([
-			{
-				x: 5, 
-				y: 12
-			}, 
-			{
-				x: 6, 
-				y: 12
-			}, 
-			{
-				x: 7, 
-				y: 12
-			}, 
-			{
-				x: 8, 
-				y: 12
-			}, 
-		]);
+		let algorithm = new PathFinding[this.algorithm](this.algorithmOptions);
+		let path = algorithm.findPath(this.grid.clone());
+		this.addPathToOps(path);
 	}
 	startDelayedStepLoop(){
 		// START PLAY LOOP
@@ -178,24 +174,24 @@ class Controller extends StateMachine{
 		});
 	}
 	instantStep(){
-		if(this.opQueue.isEmpty()) {
+		if(opQueue.isEmpty()) {
 			if(this.can("pause")) this.pause();
 			if(this.can("finish")) this.finish();
 			return;
 		}
-		let coords = this.opQueue.shift();
-		this.undoQueue.push(coords);
-		this.makeWall(coords.x, coords.y);
+		let coords = opQueue.shift();
+		undoQueue.push(coords);
+		this.viewRenderer.addOpClassAtXY(coords.x, coords.y, coords.att);
 	}
 	undo(){
 		// ONE STEP UNDO FROM THE <undoQueue>
-		if(this.undoQueue.isEmpty()) return;
-		let coords = this.undoQueue.pop();
-		this.removeWall(coords.x, coords.y);
-		this.opQueue.unshift(coords);
+		if(undoQueue.isEmpty()) return;
+		let coords = undoQueue.pop();
+		this.viewRenderer.popOpClassAtXY(coords.x, coords.y);
+		opQueue.unshift(coords);
 	}
 	startUndoLoop(){
-		while(!this.undoQueue.isEmpty()){
+		while(!undoQueue.isEmpty()){
 			this.undo();
 		}
 	}
@@ -205,15 +201,15 @@ class Controller extends StateMachine{
 	}
 	clearWalls(){
 		// CLEAR WALLS FROM THE <wallList>
-		while(this.wallList.length){
-			let coords = this.wallList.pop();
+		while(wallList.length){
+			let coords = wallList.pop();
 			this.removeWall(coords.x, coords.y);
 		}
 	}
 	clearReasources(){
 		// CLEAR <opQueue> <undoQueue> <wallList>
-		this.opQueue.clear();
-		this.undoQueue.clear();
+		opQueue.clear();
+		undoQueue.clear();
 	}
 
 	// EVENT LISTENERS
@@ -226,7 +222,22 @@ class Controller extends StateMachine{
 	bindGridEventListeners(){
 		this.viewRenderer.tableElement.on('mousedown', (event) => {
 			const {x, y} = $(event.target).data("coords");
-			console.warn("non Editing==Finished|pathCleared State handling is left");
+			if(this.is('Paused')){
+				this.finish(); // STATEMACHINE TRANSITION
+				this.clearPath(); // STATEMACHINE TRANSITION
+				this.clearReasources();
+				this.gridEdit(); // STATEMACHINE TRANSITION
+			}
+			if(this.is('Finished')){
+				this.clearPath(); // STATEMACHINE TRANSITION
+				this.clearReasources();
+				this.gridEdit(); // STATEMACHINE TRANSITION
+			}
+			if(this.is('pathCleared')){
+				this.clearReasources();
+				this.gridEdit(); // STATEMACHINE TRANSITION
+			}
+
 			if(this.is('Editing')){
 				if(this.grid.isXYStartPoint(x, y)){
 					this.startShiftingStartPoint();
@@ -481,6 +492,20 @@ class Controller extends StateMachine{
 					break;
 			}
 		});
+	}
+
+	attachOpsEventListeners(){
+		PathFinding.GraphNode.prototype = {
+			set visited(val){
+				this._visited = val;
+				opQueue.push({
+					x: this.x, 
+					y: this.y, 
+					att: 'visited', 
+					val
+				});
+			}
+		};
 	}
 }
 

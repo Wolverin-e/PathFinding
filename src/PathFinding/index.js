@@ -1,4 +1,9 @@
-module.exports = {
-	'Grid': require('./core/Grid'), 
-	'BreadthFirstSearch': require('./algorithms/BreadthFirstSearch')
+import Grid from './core/Grid';
+import GraphNode from './core/GraphNode';
+import BreadthFirstSearch from './algorithms/BreadthFirstSearch';
+
+export default {
+	Grid, 
+	GraphNode, 
+	BreadthFirstSearch
 };

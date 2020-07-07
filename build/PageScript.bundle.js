@@ -22402,7 +22402,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var denque__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! denque */ "./node_modules/denque/index.js");
 /* harmony import */ var denque__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(denque__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _PathFinding_index__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../PathFinding/index */ "./src/PathFinding/index.js");
-/* harmony import */ var _PathFinding_index__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_PathFinding_index__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var _Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Configs/ControllerStates */ "./src/PageScripts/Configs/ControllerStates.js");
 /* harmony import */ var _Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Configs/ControlBarOptions */ "./src/PageScripts/Configs/ControlBarOptions.js");
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
@@ -22446,6 +22445,10 @@ denque__WEBPACK_IMPORTED_MODULE_2___default.a.prototype.pushArray = function (ar
   });
 };
 
+var opQueue = new denque__WEBPACK_IMPORTED_MODULE_2___default.a();
+var undoQueue = new denque__WEBPACK_IMPORTED_MODULE_2___default.a();
+var wallList = [];
+
 var Controller = /*#__PURE__*/function (_StateMachine) {
   _inherits(Controller, _StateMachine);
 
@@ -22461,7 +22464,7 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
     _this2.viewRenderer = options.viewRenderer;
     _this2.rows = options.rows;
     _this2.columns = options.columns;
-    _this2.grid = new _PathFinding_index__WEBPACK_IMPORTED_MODULE_3___default.a.Grid({
+    _this2.grid = new _PathFinding_index__WEBPACK_IMPORTED_MODULE_3__["default"].Grid({
       rows: _this2.rows,
       columns: _this2.columns,
       startPoint: options.startPoint,
@@ -22471,9 +22474,6 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
     _this2.algorithmOptions = {
       allowDiagonal: true
     };
-    _this2.opQueue = new denque__WEBPACK_IMPORTED_MODULE_2___default.a();
-    _this2.undoQueue = new denque__WEBPACK_IMPORTED_MODULE_2___default.a();
-    _this2.wallList = [];
     return _this2;
   } // UTILITIES
 
@@ -22486,6 +22486,18 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
       return setTimeout(function () {
         _this3[transition]();
       }, 0);
+    }
+  }, {
+    key: "addPathToOps",
+    value: function addPathToOps(path) {
+      opQueue.pushArray(path.map(function (coordinate) {
+        return {
+          x: coordinate.x,
+          y: coordinate.y,
+          att: "path",
+          val: true
+        };
+      }));
     } // STATE-MACHINE EVENT-HOOKS
 
   }, {
@@ -22495,6 +22507,7 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
       this.shiftStartPoint(this.grid.startPoint.x, this.grid.startPoint.y);
       this.shiftEndPoint(this.grid.endPoint.x, this.grid.endPoint.y);
       this.bindEventListeners();
+      this.attachOpsEventListeners();
       this.makeTransitionFromEventHook("edit");
     }
   }, {
@@ -22575,11 +22588,11 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
     value: function makeWall(x, y) {
       if (this.grid.isXYStartPoint(x, y)) return;
       if (this.grid.isXYEndPoint(x, y)) return;
-      this.wallList.push({
+      wallList.push({
         x: x,
         y: y
       });
-      this.grid[y][x] = 1;
+      this.grid.makeXYWall(x, y);
       this.viewRenderer.makeWall(x, y);
     }
   }, {
@@ -22587,7 +22600,7 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
     value: function removeWall(x, y) {
       if (this.grid.isXYStartPoint(x, y)) return;
       if (this.grid.isXYEndPoint(x, y)) return;
-      this.grid[y][x] = 0;
+      this.grid.destroyWallAtXY(x, y);
       this.viewRenderer.removeWall(x, y);
     }
   }, {
@@ -22616,19 +22629,9 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
     key: "findPath",
     value: function findPath() {
       // FIND PATH AND FILL THE OPQUEUE
-      this.opQueue.pushArray([{
-        x: 5,
-        y: 12
-      }, {
-        x: 6,
-        y: 12
-      }, {
-        x: 7,
-        y: 12
-      }, {
-        x: 8,
-        y: 12
-      }]);
+      var algorithm = new _PathFinding_index__WEBPACK_IMPORTED_MODULE_3__["default"][this.algorithm](this.algorithmOptions);
+      var path = algorithm.findPath(this.grid.clone());
+      this.addPathToOps(path);
     }
   }, {
     key: "startDelayedStepLoop",
@@ -22676,7 +22679,7 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
     value: function delayedStep() {
       var _this11 = this;
 
-      var tm = 20; // ONE STEP FORWARD FROM THE <opQueue>
+      var tm = 10; // ONE STEP FORWARD FROM THE <opQueue>
 
       return new Promise(function (resolve) {
         setTimeout(function () {
@@ -22689,29 +22692,29 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
   }, {
     key: "instantStep",
     value: function instantStep() {
-      if (this.opQueue.isEmpty()) {
+      if (opQueue.isEmpty()) {
         if (this.can("pause")) this.pause();
         if (this.can("finish")) this.finish();
         return;
       }
 
-      var coords = this.opQueue.shift();
-      this.undoQueue.push(coords);
-      this.makeWall(coords.x, coords.y);
+      var coords = opQueue.shift();
+      undoQueue.push(coords);
+      this.viewRenderer.addOpClassAtXY(coords.x, coords.y, coords.att);
     }
   }, {
     key: "undo",
     value: function undo() {
       // ONE STEP UNDO FROM THE <undoQueue>
-      if (this.undoQueue.isEmpty()) return;
-      var coords = this.undoQueue.pop();
-      this.removeWall(coords.x, coords.y);
-      this.opQueue.unshift(coords);
+      if (undoQueue.isEmpty()) return;
+      var coords = undoQueue.pop();
+      this.viewRenderer.popOpClassAtXY(coords.x, coords.y);
+      opQueue.unshift(coords);
     }
   }, {
     key: "startUndoLoop",
     value: function startUndoLoop() {
-      while (!this.undoQueue.isEmpty()) {
+      while (!undoQueue.isEmpty()) {
         this.undo();
       }
     }
@@ -22725,8 +22728,8 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
     key: "clearWalls",
     value: function clearWalls() {
       // CLEAR WALLS FROM THE <wallList>
-      while (this.wallList.length) {
-        var coords = this.wallList.pop();
+      while (wallList.length) {
+        var coords = wallList.pop();
         this.removeWall(coords.x, coords.y);
       }
     }
@@ -22734,8 +22737,8 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
     key: "clearReasources",
     value: function clearReasources() {
       // CLEAR <opQueue> <undoQueue> <wallList>
-      this.opQueue.clear();
-      this.undoQueue.clear();
+      opQueue.clear();
+      undoQueue.clear();
     } // EVENT LISTENERS
 
   }, {
@@ -22755,7 +22758,35 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
             x = _$$data.x,
             y = _$$data.y;
 
-        console.warn("non Editing==Finished|pathCleared State handling is left");
+        if (_this12.is('Paused')) {
+          _this12.finish(); // STATEMACHINE TRANSITION
+
+
+          _this12.clearPath(); // STATEMACHINE TRANSITION
+
+
+          _this12.clearReasources();
+
+          _this12.gridEdit(); // STATEMACHINE TRANSITION
+
+        }
+
+        if (_this12.is('Finished')) {
+          _this12.clearPath(); // STATEMACHINE TRANSITION
+
+
+          _this12.clearReasources();
+
+          _this12.gridEdit(); // STATEMACHINE TRANSITION
+
+        }
+
+        if (_this12.is('pathCleared')) {
+          _this12.clearReasources();
+
+          _this12.gridEdit(); // STATEMACHINE TRANSITION
+
+        }
 
         if (_this12.is('Editing')) {
           if (_this12.grid.isXYStartPoint(x, y)) {
@@ -23128,6 +23159,22 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
         }
       });
     }
+  }, {
+    key: "attachOpsEventListeners",
+    value: function attachOpsEventListeners() {
+      _PathFinding_index__WEBPACK_IMPORTED_MODULE_3__["default"].GraphNode.prototype = {
+        set visited(val) {
+          this._visited = val;
+          opQueue.push({
+            x: this.x,
+            y: this.y,
+            att: 'visited',
+            val: val
+          });
+        }
+
+      };
+    }
   }]);
 
   return Controller;
@@ -23301,6 +23348,7 @@ var ViewRenderer = /*#__PURE__*/function () {
           x: x,
           y: y
         });
+        tdElement.data("opStack", []);
         return tdElement;
       };
 
@@ -23324,49 +23372,73 @@ var ViewRenderer = /*#__PURE__*/function () {
       };
     }
   }, {
+    key: "getTDElemAtXY",
+    value: function getTDElemAtXY(x, y) {
+      return jquery__WEBPACK_IMPORTED_MODULE_0___default()(this.tableElement.children()[y].children[x]);
+    }
+  }, {
     key: "makeWall",
     value: function makeWall(x, y) {
-      jquery__WEBPACK_IMPORTED_MODULE_0___default()(this.tableElement.children()[y].children[x]).addClass("wallElem");
+      this.getTDElemAtXY(x, y).addClass("wallElem");
     }
   }, {
     key: "removeWall",
     value: function removeWall(x, y) {
-      jquery__WEBPACK_IMPORTED_MODULE_0___default()(this.tableElement.children()[y].children[x]).removeClass("wallElem");
+      this.getTDElemAtXY(x, y).removeClass("wallElem");
     }
   }, {
     key: "shiftStartPoint",
     value: function shiftStartPoint(x, y) {
       if (this.startPoint) {
-        jquery__WEBPACK_IMPORTED_MODULE_0___default()(this.tableElement.children()[this.startPoint.y].children[this.startPoint.x]).removeClass("startPoint");
+        this.getTDElemAtXY(this.startPoint.x, this.startPoint.y).removeClass("startPoint");
         this.startPoint = {
           x: x,
           y: y
         };
-        jquery__WEBPACK_IMPORTED_MODULE_0___default()(this.tableElement.children()[y].children[x]).addClass("startPoint");
+        this.getTDElemAtXY(x, y).addClass("startPoint");
       } else {
         this.startPoint = {
           x: x,
           y: y
         };
-        jquery__WEBPACK_IMPORTED_MODULE_0___default()(this.tableElement.children()[y].children[x]).addClass("startPoint");
+        this.getTDElemAtXY(x, y).addClass("startPoint");
       }
     }
   }, {
     key: "shiftEndPoint",
     value: function shiftEndPoint(x, y) {
       if (this.endPoint) {
-        jquery__WEBPACK_IMPORTED_MODULE_0___default()(this.tableElement.children()[this.endPoint.y].children[this.endPoint.x]).removeClass("endPoint");
+        this.getTDElemAtXY(this.endPoint.x, this.endPoint.y).removeClass("endPoint");
         this.endPoint = {
           x: x,
           y: y
         };
-        jquery__WEBPACK_IMPORTED_MODULE_0___default()(this.tableElement.children()[y].children[x]).addClass("endPoint");
+        this.getTDElemAtXY(x, y).addClass("endPoint");
       } else {
         this.endPoint = {
           x: x,
           y: y
         };
-        jquery__WEBPACK_IMPORTED_MODULE_0___default()(this.tableElement.children()[y].children[x]).addClass("endPoint");
+        this.getTDElemAtXY(x, y).addClass("endPoint");
+      }
+    }
+  }, {
+    key: "addOpClassAtXY",
+    value: function addOpClassAtXY(x, y, cls) {
+      var elem = this.getTDElemAtXY(x, y);
+      var elemOpStack = elem.data("opStack");
+      elemOpStack.push(cls.toUpperCase());
+      elem.addClass(cls.toUpperCase());
+    }
+  }, {
+    key: "popOpClassAtXY",
+    value: function popOpClassAtXY(x, y) {
+      var elem = this.getTDElemAtXY(x, y);
+      var opStack = elem.data("opStack");
+      var clsToRm = opStack.pop();
+
+      if (clsToRm) {
+        elem.removeClass(clsToRm);
       }
     }
   }]);
@@ -23452,10 +23524,84 @@ function init() {
 /*!**********************************************************!*\
   !*** ./src/PathFinding/algorithms/BreadthFirstSearch.js ***!
   \**********************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return BreadthFirstSearch; });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var BreadthFirstSearch = /*#__PURE__*/function () {
+  function BreadthFirstSearch(opts) {
+    _classCallCheck(this, BreadthFirstSearch);
+
+    console.log(opts);
+  }
+
+  _createClass(BreadthFirstSearch, [{
+    key: "findPath",
+    value: function findPath(grid) {
+      var uLimit = 10;
+      var dLimit = 20;
+      var lLimit = 10;
+      var rLimit = 20;
+
+      for (var y = uLimit; y < dLimit; y++) {
+        for (var x = lLimit; x < rLimit; x++) {
+          grid[y][x].visited = true;
+        }
+      }
+
+      return [{
+        x: 12,
+        y: 12
+      }, {
+        x: 3,
+        y: 3
+      }, {
+        x: 4,
+        y: 4
+      }, {
+        x: 5,
+        y: 5
+      }, {
+        x: 6,
+        y: 6
+      }];
+    }
+  }]);
+
+  return BreadthFirstSearch;
+}();
 
 
+
+/***/ }),
+
+/***/ "./src/PathFinding/core/GraphNode.js":
+/*!*******************************************!*\
+  !*** ./src/PathFinding/core/GraphNode.js ***!
+  \*******************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var GraphNode = function GraphNode(options) {
+  _classCallCheck(this, GraphNode);
+
+  this.x = options.x;
+  this.y = options.y;
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (GraphNode);
 
 /***/ }),
 
@@ -23463,18 +23609,21 @@ function init() {
 /*!**************************************!*\
   !*** ./src/PathFinding/core/Grid.js ***!
   \**************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _GraphNode__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./GraphNode */ "./src/PathFinding/core/GraphNode.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var Grid = /*#__PURE__*/function () {
-  "use strict";
 
+
+var Grid = /*#__PURE__*/function () {
   function Grid(options) {
     _classCallCheck(this, Grid);
 
@@ -23484,14 +23633,31 @@ var Grid = /*#__PURE__*/function () {
     this.endPoint = options.endPoint;
 
     for (var y = 0; y < this.rows; y++) {
-      this[y] = new Array(this.columns).fill(0);
+      this[y] = new Array(this.columns);
+
+      for (var x = 0; x < this.columns; x++) {
+        this[y][x] = new _GraphNode__WEBPACK_IMPORTED_MODULE_0__["default"]({
+          x: x,
+          y: y
+        });
+      }
     }
   }
 
   _createClass(Grid, [{
     key: "isXYWallElement",
     value: function isXYWallElement(x, y) {
-      return this[y][x] === 1;
+      return this[y][x].isWall ? true : false;
+    }
+  }, {
+    key: "makeXYWall",
+    value: function makeXYWall(x, y) {
+      this[y][x].isWall = true;
+    }
+  }, {
+    key: "destroyWallAtXY",
+    value: function destroyWallAtXY(x, y) {
+      this[y][x].isWall = false;
     }
   }, {
     key: "isXYStartPoint",
@@ -23503,12 +23669,31 @@ var Grid = /*#__PURE__*/function () {
     value: function isXYEndPoint(x, y) {
       return this.endPoint.x === x && this.endPoint.y === y;
     }
+  }, {
+    key: "clone",
+    value: function clone() {
+      var grid = new Grid(this);
+
+      for (var y = 0; y < this.rows; y++) {
+        grid[y] = new Array(this.columns);
+
+        for (var x = 0; x < this.columns; x++) {
+          grid[y][x] = new _GraphNode__WEBPACK_IMPORTED_MODULE_0__["default"]({
+            x: x,
+            y: y
+          });
+          if (this.isXYWallElement(x, y)) grid.makeXYWall(x, y);
+        }
+      }
+
+      return grid;
+    }
   }]);
 
   return Grid;
 }();
 
-module.exports = Grid;
+/* harmony default export */ __webpack_exports__["default"] = (Grid);
 
 /***/ }),
 
@@ -23516,13 +23701,22 @@ module.exports = Grid;
 /*!**********************************!*\
   !*** ./src/PathFinding/index.js ***!
   \**********************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-module.exports = {
-  'Grid': __webpack_require__(/*! ./core/Grid */ "./src/PathFinding/core/Grid.js"),
-  'BreadthFirstSearch': __webpack_require__(/*! ./algorithms/BreadthFirstSearch */ "./src/PathFinding/algorithms/BreadthFirstSearch.js")
-};
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _core_Grid__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./core/Grid */ "./src/PathFinding/core/Grid.js");
+/* harmony import */ var _core_GraphNode__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./core/GraphNode */ "./src/PathFinding/core/GraphNode.js");
+/* harmony import */ var _algorithms_BreadthFirstSearch__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./algorithms/BreadthFirstSearch */ "./src/PathFinding/algorithms/BreadthFirstSearch.js");
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  Grid: _core_Grid__WEBPACK_IMPORTED_MODULE_0__["default"],
+  GraphNode: _core_GraphNode__WEBPACK_IMPORTED_MODULE_1__["default"],
+  BreadthFirstSearch: _algorithms_BreadthFirstSearch__WEBPACK_IMPORTED_MODULE_2__["default"]
+});
 
 /***/ })
 

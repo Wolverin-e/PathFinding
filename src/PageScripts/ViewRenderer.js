@@ -31,6 +31,7 @@ class ViewRenderer{
 		const td = (y, x) => {
 			let tdElement = $("<td></td>");
 			tdElement.data("coords", {x, y});
+			tdElement.data("opStack", []);
 			return tdElement;
 		};
 
@@ -51,33 +52,53 @@ class ViewRenderer{
 		};
 	}
 
+	getTDElemAtXY(x, y){
+		return $(this.tableElement.children()[y].children[x]);
+	}
+
 	makeWall(x, y){
-		$(this.tableElement.children()[y].children[x]).addClass("wallElem");
+		this.getTDElemAtXY(x, y).addClass("wallElem");
 	}
 	
 	removeWall(x, y){
-		$(this.tableElement.children()[y].children[x]).removeClass("wallElem");
+		this.getTDElemAtXY(x, y).removeClass("wallElem");
 	}
 
 	shiftStartPoint(x, y){
 		if(this.startPoint){
-			$(this.tableElement.children()[this.startPoint.y].children[this.startPoint.x]).removeClass("startPoint");
+			this.getTDElemAtXY(this.startPoint.x, this.startPoint.y).removeClass("startPoint");
 			this.startPoint = {x, y};
-			$(this.tableElement.children()[y].children[x]).addClass("startPoint");
+			this.getTDElemAtXY(x, y).addClass("startPoint");
 		} else {
 			this.startPoint = {x, y};
-			$(this.tableElement.children()[y].children[x]).addClass("startPoint");
+			this.getTDElemAtXY(x, y).addClass("startPoint");
 		}
 	}
 	
 	shiftEndPoint(x, y){
 		if(this.endPoint){
-			$(this.tableElement.children()[this.endPoint.y].children[this.endPoint.x]).removeClass("endPoint");
+			this.getTDElemAtXY(this.endPoint.x, this.endPoint.y).removeClass("endPoint");
 			this.endPoint = {x, y};
-			$(this.tableElement.children()[y].children[x]).addClass("endPoint");
+			this.getTDElemAtXY(x, y).addClass("endPoint");
 		} else {
 			this.endPoint = {x, y};
-			$(this.tableElement.children()[y].children[x]).addClass("endPoint");
+			this.getTDElemAtXY(x, y).addClass("endPoint");
+		}
+	}
+
+	addOpClassAtXY(x, y, cls){
+		let elem = this.getTDElemAtXY(x, y);
+		let elemOpStack = elem.data("opStack");
+		elemOpStack.push(cls.toUpperCase());
+		elem.addClass(cls.toUpperCase());
+	}
+
+	popOpClassAtXY(x, y){
+		let elem = this.getTDElemAtXY(x, y);
+		let opStack = elem.data("opStack");
+		let clsToRm = opStack.pop();
+		if(clsToRm){
+			elem.removeClass(clsToRm);
 		}
 	}
 }
