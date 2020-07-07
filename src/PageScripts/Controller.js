@@ -504,7 +504,22 @@ class Controller extends StateMachine{
 					att: 'visited', 
 					val
 				});
-			}
+			}, 
+			get visited(){
+				return this._visited;
+			}, 
+			set addedToQueue(val){
+				this._addedToQueue = val;
+				opQueue.push({
+					x: this.x, 
+					y: this.y, 
+					att: 'addedToQueue', 
+					val
+				});
+			}, 
+			get addedToQueue(){
+				return this._addedToQueue;
+			}, 
 		};
 	}
 }

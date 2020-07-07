@@ -17,8 +17,13 @@
     }
 }
 
-.VISITED{
+.ADDEDTOQUEUE{
     background-color: lightgreen;
+    animation: wallGrowShrink 150ms linear normal;
+}
+
+.VISITED{
+    background-color: lightblue;
     animation: wallGrowShrink 150ms linear normal;
 }
 

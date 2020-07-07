@@ -16,6 +16,7 @@ class Grid{
 	}
 
 	isXYWallElement(x, y){
+		if(x<0 || x>=this.columns || y<0 || y>=this.rows) return true;
 		return (this[y][x].isWall?true:false);
 	}
 
@@ -46,6 +47,58 @@ class Grid{
 			}
 		}
 		return grid;
+	}
+
+	/*
+		|_ _|_a_|_ _| |_p_|_ _|_q_| 
+		|_d_|_*_|_b_| |_ _|_*_|_ _|
+		|_ _|_c_|_ _| |_s_|_ _|_r_|
+	 */
+	getNeighbours(node){
+		let neighbours = [];
+		const {x, y} = node;
+		let a, b, c, d;
+
+		// all movable;
+		
+		// a
+		if(!this.isXYWallElement(x, y-1)) {
+			neighbours.push(this[y-1][x]);
+			a = true;
+		}
+		// b
+		if(!this.isXYWallElement(x+1, y)) {
+			neighbours.push(this[y][x+1]);
+			b = true;
+		}
+		// c
+		if(!this.isXYWallElement(x, y+1)) {
+			neighbours.push(this[y+1][x]);
+			c = true;
+		}
+		// d
+		if(!this.isXYWallElement(x-1, y)) {
+			neighbours.push(this[y][x-1]);
+			d = true;
+		}
+
+		//p
+		if( (a || d) & !this.isXYWallElement(x-1, y-1)) {
+			neighbours.push(this[y-1][x-1]);
+		}
+		//q
+		if( (a || b) & !this.isXYWallElement(x+1, y-1)) {
+			neighbours.push(this[y-1][x+1]);
+		}
+		//r
+		if( (b || c) & !this.isXYWallElement(x+1, y+1)) {
+			neighbours.push(this[y+1][x+1]);
+		}
+		//s
+		if( (c || d) & !this.isXYWallElement(x-1, y+1)) {
+			neighbours.push(this[y+1][x-1]);
+		}
+		return neighbours;
 	}
 }
 

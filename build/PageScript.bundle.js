@@ -23171,6 +23171,24 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
             att: 'visited',
             val: val
           });
+        },
+
+        get visited() {
+          return this._visited;
+        },
+
+        set addedToQueue(val) {
+          this._addedToQueue = val;
+          opQueue.push({
+            x: this.x,
+            y: this.y,
+            att: 'addedToQueue',
+            val: val
+          });
+        },
+
+        get addedToQueue() {
+          return this._addedToQueue;
         }
 
       };
@@ -23332,8 +23350,8 @@ var ViewRenderer = /*#__PURE__*/function () {
   _createClass(ViewRenderer, [{
     key: "init",
     value: function init() {
-      _Logic__WEBPACK_IMPORTED_MODULE_1__["default"].attachAlgorithmOptionsShowHideLogic();
       _Logic__WEBPACK_IMPORTED_MODULE_1__["default"].attachControlCenterSwitchLogic();
+      _Logic__WEBPACK_IMPORTED_MODULE_1__["default"].attachAlgorithmOptionsShowHideLogic();
       _Logic__WEBPACK_IMPORTED_MODULE_1__["default"].attachControlBarDragLogic();
       this.renderGrid();
     }
@@ -23530,11 +23548,15 @@ function init() {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return BreadthFirstSearch; });
+/* harmony import */ var denque__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! denque */ "./node_modules/denque/index.js");
+/* harmony import */ var denque__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(denque__WEBPACK_IMPORTED_MODULE_0__);
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
 
 var BreadthFirstSearch = /*#__PURE__*/function () {
   function BreadthFirstSearch(opts) {
@@ -23544,35 +23566,52 @@ var BreadthFirstSearch = /*#__PURE__*/function () {
   }
 
   _createClass(BreadthFirstSearch, [{
-    key: "findPath",
-    value: function findPath(grid) {
-      var uLimit = 10;
-      var dLimit = 20;
-      var lLimit = 10;
-      var rLimit = 20;
+    key: "backTrace",
+    value: function backTrace(node, startNode) {
+      var path = [];
 
-      for (var y = uLimit; y < dLimit; y++) {
-        for (var x = lLimit; x < rLimit; x++) {
-          grid[y][x].visited = true;
-        }
+      while (node !== startNode) {
+        path.push(node);
+        node = node.parent;
       }
 
-      return [{
-        x: 12,
-        y: 12
-      }, {
-        x: 3,
-        y: 3
-      }, {
-        x: 4,
-        y: 4
-      }, {
-        x: 5,
-        y: 5
-      }, {
-        x: 6,
-        y: 6
-      }];
+      console.log(path);
+      return path;
+    }
+  }, {
+    key: "findPath",
+    value: function findPath(grid) {
+      var startPoint = grid.startPoint,
+          endPoint = grid.endPoint,
+          startNode = grid[startPoint.y][startPoint.x],
+          endNode = grid[endPoint.y][endPoint.x];
+      var queue = new denque__WEBPACK_IMPORTED_MODULE_0___default.a([startNode]),
+          neighbours = [],
+          currentProcessingNode;
+      startNode.addedToQueue = true;
+
+      while (!queue.isEmpty()) {
+        currentProcessingNode = queue.shift();
+        currentProcessingNode.visited = true;
+
+        if (currentProcessingNode === endNode) {
+          // console.log(currentProcessingNode, endNode);
+          return this.backTrace(endNode, startNode);
+        }
+
+        neighbours = grid.getNeighbours(currentProcessingNode);
+        neighbours.forEach(function (neighbour) {
+          if (neighbour.visited || neighbour.addedToQueue) {
+            return; // equivalent to CONTINUE in forEach
+          }
+
+          queue.push(neighbour);
+          neighbour.addedToQueue = true;
+          neighbour.parent = currentProcessingNode;
+        });
+      }
+
+      return [];
     }
   }]);
 
@@ -23647,6 +23686,7 @@ var Grid = /*#__PURE__*/function () {
   _createClass(Grid, [{
     key: "isXYWallElement",
     value: function isXYWallElement(x, y) {
+      if (x < 0 || x >= this.columns || y < 0 || y >= this.rows) return true;
       return this[y][x].isWall ? true : false;
     }
   }, {
@@ -23687,6 +23727,66 @@ var Grid = /*#__PURE__*/function () {
       }
 
       return grid;
+    }
+    /*
+    	|_ _|_a_|_ _| |_p_|_ _|_q_| 
+    	|_d_|_*_|_b_| |_ _|_*_|_ _|
+    	|_ _|_c_|_ _| |_s_|_ _|_r_|
+     */
+
+  }, {
+    key: "getNeighbours",
+    value: function getNeighbours(node) {
+      var neighbours = [];
+      var x = node.x,
+          y = node.y;
+      var a, b, c, d; // all movable;
+      // a
+
+      if (!this.isXYWallElement(x, y - 1)) {
+        neighbours.push(this[y - 1][x]);
+        a = true;
+      } // b
+
+
+      if (!this.isXYWallElement(x + 1, y)) {
+        neighbours.push(this[y][x + 1]);
+        b = true;
+      } // c
+
+
+      if (!this.isXYWallElement(x, y + 1)) {
+        neighbours.push(this[y + 1][x]);
+        c = true;
+      } // d
+
+
+      if (!this.isXYWallElement(x - 1, y)) {
+        neighbours.push(this[y][x - 1]);
+        d = true;
+      } //p
+
+
+      if ((a || d) & !this.isXYWallElement(x - 1, y - 1)) {
+        neighbours.push(this[y - 1][x - 1]);
+      } //q
+
+
+      if ((a || b) & !this.isXYWallElement(x + 1, y - 1)) {
+        neighbours.push(this[y - 1][x + 1]);
+      } //r
+
+
+      if ((b || c) & !this.isXYWallElement(x + 1, y + 1)) {
+        neighbours.push(this[y + 1][x + 1]);
+      } //s
+
+
+      if ((c || d) & !this.isXYWallElement(x - 1, y + 1)) {
+        neighbours.push(this[y + 1][x - 1]);
+      }
+
+      return neighbours;
     }
   }]);
 

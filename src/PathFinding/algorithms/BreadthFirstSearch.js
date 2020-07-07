@@ -1,26 +1,52 @@
+import Denque from 'denque';
+
 export default class BreadthFirstSearch{
 	constructor(opts){
 		console.log(opts);
 	}
 
-	findPath(grid){
-		let uLimit = 10;
-		let dLimit = 20;
-		let lLimit = 10;
-		let rLimit = 20;
+	backTrace(node, startNode){
+		let path = [];
+		while(node !== startNode){
+			path.push(node);
+			node = node.parent;
+		}
+		console.log(path);
+		return path;
+	}
 
-		for(let y=uLimit; y<dLimit; y++){
-			for(let x=lLimit; x<rLimit; x++){
-				grid[y][x].visited = true;
+	findPath(grid){
+		let startPoint = grid.startPoint, 
+			endPoint = grid.endPoint, 
+			startNode = grid[startPoint.y][startPoint.x], 
+			endNode = grid[endPoint.y][endPoint.x];
+
+		let queue = new Denque([startNode]), 
+			neighbours = [], 
+			currentProcessingNode;
+		startNode.addedToQueue = true;
+
+		while(!queue.isEmpty()){
+
+			currentProcessingNode = queue.shift();
+			currentProcessingNode.visited = true;
+
+			if(currentProcessingNode === endNode){
+				// console.log(currentProcessingNode, endNode);
+				return this.backTrace(endNode, startNode);
 			}
+
+			neighbours = grid.getNeighbours(currentProcessingNode);
+			neighbours.forEach(neighbour => {
+				if(neighbour.visited || neighbour.addedToQueue){
+					return; // equivalent to CONTINUE in forEach
+				}
+				queue.push(neighbour);
+				neighbour.addedToQueue = true;
+				neighbour.parent = currentProcessingNode;
+			});
 		}
 
-		return [
-			{x: 12, y: 12}, 
-			{x: 3, y: 3}, 
-			{x: 4, y: 4}, 
-			{x: 5, y: 5}, 
-			{x: 6, y: 6}, 
-		];
+		return [];
 	}
 }

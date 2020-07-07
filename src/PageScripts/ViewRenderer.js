@@ -14,8 +14,8 @@ class ViewRenderer{
 	}
 	
 	init(){
-		pageActionsLogicAttacher.attachAlgorithmOptionsShowHideLogic();
 		pageActionsLogicAttacher.attachControlCenterSwitchLogic();
+		pageActionsLogicAttacher.attachAlgorithmOptionsShowHideLogic();
 		pageActionsLogicAttacher.attachControlBarDragLogic();
 		this.renderGrid();
 	}
