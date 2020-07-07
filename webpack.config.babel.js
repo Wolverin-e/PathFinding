@@ -25,7 +25,8 @@ export default {
 								"targets": "defaults"
 							}
 						]
-					]
+					], 
+					"sourceType": "unambiguous"
 				}
 			}]
 		}, {

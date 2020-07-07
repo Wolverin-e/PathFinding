@@ -1,5 +1,6 @@
-const { init } = require('./main');
+import init from './main';
+import '@babel/polyfill';
 
-module.exports = {
+export {
 	init
 };

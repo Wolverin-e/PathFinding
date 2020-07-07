@@ -18,7 +18,7 @@ const rows=50,
 		y: midRowIndex
 	};
 
-export function init(){
+function init(){
 	let viewRenderer = new ViewRenderer({
 		rows,
 		columns, 
@@ -34,3 +34,5 @@ export function init(){
 	});
 	controller.initialize();
 }
+
+export default init;

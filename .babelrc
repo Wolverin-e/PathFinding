@@ -6,5 +6,6 @@
 				"targets": "defaults"
 			}
 		]
-	]
+	], 
+	"sourceType": "unambiguous"
 }

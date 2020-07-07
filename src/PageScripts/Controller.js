@@ -1,10 +1,15 @@
 import $ from 'jquery';
 import StateMachine from 'javascript-state-machine';
+import Denque from 'denque';
+
 
 import PathFinding from '../PathFinding/index';
 import stateMachineData from './Configs/ControllerStates';
 import controlBarOptions from './Configs/ControlBarOptions';
 
+Denque.prototype.pushArray = function(arr) {
+	arr.forEach(elem => this.push(elem));
+};
 
 class Controller extends StateMachine{
 
@@ -26,6 +31,10 @@ class Controller extends StateMachine{
 		this.algorithmOptions = {
 			allowDiagonal: true
 		};
+
+		this.opQueue = new Denque();
+		this.undoQueue = new Denque();
+		this.wallList = [];
 	}
 
 	// UTILITIES
@@ -102,6 +111,7 @@ class Controller extends StateMachine{
 	makeWall(x, y){
 		if(this.grid.isXYStartPoint(x, y)) return;
 		if(this.grid.isXYEndPoint(x, y)) return;
+		this.wallList.push({x, y});
 		this.grid[y][x] = 1;
 		this.viewRenderer.makeWall(x, y);
 	}
@@ -127,6 +137,85 @@ class Controller extends StateMachine{
 		this.viewRenderer.shiftEndPoint(x, y);
 	}
 
+	findPath(){
+		// FIND PATH AND FILL THE OPQUEUE
+		this.opQueue.pushArray([
+			{
+				x: 5, 
+				y: 12
+			}, 
+			{
+				x: 6, 
+				y: 12
+			}, 
+			{
+				x: 7, 
+				y: 12
+			}, 
+			{
+				x: 8, 
+				y: 12
+			}, 
+		]);
+	}
+	startDelayedStepLoop(){
+		// START PLAY LOOP
+		let loop = async () => {
+			if(this.state !== "Playing") return;
+			await this.delayedStep();
+			loop();
+		};
+		loop();
+	}
+	delayedStep(){
+		const tm = 20;
+		// ONE STEP FORWARD FROM THE <opQueue>
+		return new Promise((resolve) => {
+			setTimeout(() => {
+				this.instantStep();
+				resolve();
+			}, tm);
+		});
+	}
+	instantStep(){
+		if(this.opQueue.isEmpty()) {
+			if(this.can("pause")) this.pause();
+			if(this.can("finish")) this.finish();
+			return;
+		}
+		let coords = this.opQueue.shift();
+		this.undoQueue.push(coords);
+		this.makeWall(coords.x, coords.y);
+	}
+	undo(){
+		// ONE STEP UNDO FROM THE <undoQueue>
+		if(this.undoQueue.isEmpty()) return;
+		let coords = this.undoQueue.pop();
+		this.removeWall(coords.x, coords.y);
+		this.opQueue.unshift(coords);
+	}
+	startUndoLoop(){
+		while(!this.undoQueue.isEmpty()){
+			this.undo();
+		}
+	}
+	onClearPath(){
+		// CLEAR PATH FROM THE <undoQueue>
+		this.startUndoLoop();
+	}
+	clearWalls(){
+		// CLEAR WALLS FROM THE <wallList>
+		while(this.wallList.length){
+			let coords = this.wallList.pop();
+			this.removeWall(coords.x, coords.y);
+		}
+	}
+	clearReasources(){
+		// CLEAR <opQueue> <undoQueue> <wallList>
+		this.opQueue.clear();
+		this.undoQueue.clear();
+	}
+
 	// EVENT LISTENERS
 	bindEventListeners(){
 		this.bindGridEventListeners();
@@ -137,7 +226,7 @@ class Controller extends StateMachine{
 	bindGridEventListeners(){
 		this.viewRenderer.tableElement.on('mousedown', (event) => {
 			const {x, y} = $(event.target).data("coords");
-			console.warn("non Editing==Finished State handling is left");
+			console.warn("non Editing==Finished|pathCleared State handling is left");
 			if(this.is('Editing')){
 				if(this.grid.isXYStartPoint(x, y)){
 					this.startShiftingStartPoint();
@@ -237,11 +326,14 @@ class Controller extends StateMachine{
 			// Editing | Paused
 			switch(this.state){
 				case "Editing":
-					this.compute();
-					this.play();
+					this.compute(); // STATEMACHINE TRANSITION
+					this.findPath();
+					this.play(); // STATEMACHINE TRANSITION
+					this.startDelayedStepLoop();
 					break;
 				case "Paused":
-					this.resume();
+					this.resume(); // STATEMACHINE TRANSITION
+					this.startDelayedStepLoop();
 					break;
 				default:
 					console.warn("Undefined State Behaviour");
@@ -250,7 +342,7 @@ class Controller extends StateMachine{
 		});
 		this.controlBar.pause.on("click", () => {
 			console.log("pause");
-			this.pause();
+			this.pause(); // STATEMACHINE TRANSITION
 			// Playing
 		});
 		this.controlBar.stop.on("click", () => {
@@ -258,11 +350,11 @@ class Controller extends StateMachine{
 			// Playing | Paused
 			switch(this.state){
 				case "Playing":
-					this.pause();
-					this.finish();
+					this.pause(); // STATEMACHINE TRANSITION
+					this.clearPath(); // STATEMACHINE TRANSITION
 					break;
 				case "Paused":
-					this.finish();
+					this.clearPath(); // STATEMACHINE TRANSITION
 					break;
 				default:
 					console.warn("Undefined State Behaviour");
@@ -274,16 +366,24 @@ class Controller extends StateMachine{
 			// Playing | Paused | Finished
 			switch(this.state){
 				case "Playing":
-					this.pause();
-					this.restart();
+					this.pause(); // STATEMACHINE TRANSITION
+					this.clearPath(); // STATEMACHINE TRANSITION
+					this.restart(); // STATEMACHINE TRANSITION
+					this.startDelayedStepLoop();
 					break;
 				case "Paused":
-					this.restart();
+					this.clearPath(); // STATEMACHINE TRANSITION
+					this.restart(); // STATEMACHINE TRANSITION
+					this.startDelayedStepLoop();
 					break;
 				case "Finished":
-					this.restart();
+					this.clearPath(); // STATEMACHINE TRANSITION
+					this.restart(); // STATEMACHINE TRANSITION
+					this.startDelayedStepLoop();
 					break;
 				case "pathCleared":
+					this.restart(); // STATEMACHINE TRANSITION
+					this.startDelayedStepLoop();
 					break;
 				default:
 					console.warn("Undefined State Behaviour");
@@ -295,14 +395,14 @@ class Controller extends StateMachine{
 			// Playing | Paused | Finished
 			switch(this.state){
 				case "Playing":
-					this.pause();
-					this.clearPath();
+					this.pause(); // STATEMACHINE TRANSITION
+					this.clearPath(); // STATEMACHINE TRANSITION
 					break;
 				case "Paused":
-					this.clearPath();
+					this.clearPath(); // STATEMACHINE TRANSITION
 					break;
 				case "Finished":
-					this.clearPath();
+					this.clearPath(); // STATEMACHINE TRANSITION
 					break;
 				default:
 					console.warn("Undefined State Behaviour");
@@ -313,18 +413,32 @@ class Controller extends StateMachine{
 			console.log("clearWalls");
 			// Playing | Paused | Finished | pathCleared
 			switch(this.state){
+				case "Editing":
+					this.clearWalls();
+					break;
 				case "Playing":
-					this.pause();
-					this.gridEdit();
+					this.pause(); // STATEMACHINE TRANSITION
+					this.clearWalls();
+					this.clearPath(); // STATEMACHINE TRANSITION
+					this.clearReasources();
+					this.gridEdit(); // STATEMACHINE TRANSITION
 					break;
 				case "Paused":
-					this.gridEdit();
+					this.clearWalls();
+					this.clearPath(); // STATEMACHINE TRANSITION
+					this.clearReasources();
+					this.gridEdit(); // STATEMACHINE TRANSITION
 					break;
 				case "Finished":
-					this.gridEdit();
+					this.clearWalls();
+					this.clearPath(); // STATEMACHINE TRANSITION
+					this.clearReasources();
+					this.gridEdit(); // STATEMACHINE TRANSITION
 					break;
 				case "pathCleared":
-					this.gridEdit();
+					this.clearWalls();
+					this.clearReasources();
+					this.gridEdit();  // STATEMACHINE TRANSITION
 					break;
 				default:
 					console.warn("Undefined State Behaviour");
@@ -336,12 +450,15 @@ class Controller extends StateMachine{
 			// Playing | Paused | Finished
 			switch(this.state){
 				case "Playing":
-					this.pause();
+					this.pause(); // STATEMACHINE TRANSITION
+					this.undo();
 					break;
 				case "Paused":
+					this.undo();
 					break;
 				case "Finished":
-					this.pause();
+					this.undo();
+					this.pause(); // STATEMACHINE TRANSITION
 					break;
 				default:
 					console.warn("Undefined State Behaviour");
@@ -353,9 +470,11 @@ class Controller extends StateMachine{
 			// Playing | Paused
 			switch(this.state){
 				case "Playing":
-					this.pause();
+					this.pause(); // STATEMACHINE-TRANSITION
+					this.instantStep();
 					break;
 				case "Paused":
+					this.instantStep();
 					break;
 				default:
 					console.warn("Undefined State Behaviour");

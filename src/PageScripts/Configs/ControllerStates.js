@@ -66,7 +66,7 @@ const stateMachineData = {
 		}, 
 		{
 			name: 'restart', 
-			from: ['Finished', 'Paused'], 
+			from: ['Finished', 'Paused', 'pathCleared'], 
 			to: 'Playing'
 		}, 
 		{
