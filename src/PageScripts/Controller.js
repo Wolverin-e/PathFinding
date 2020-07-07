@@ -168,7 +168,7 @@ class Controller extends StateMachine{
 		loop();
 	}
 	delayedStep(){
-		const tm = 20;
+		const tm = 10;
 		// ONE STEP FORWARD FROM THE <opQueue>
 		return new Promise((resolve) => {
 			setTimeout(() => {
