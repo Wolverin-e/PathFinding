@@ -28,7 +28,7 @@ export default class BreadthFirstSearch{
 
 		while(!queue.isEmpty()){
 
-			currentProcessingNode = queue.shift();
+			currentProcessingNode = queue.shift(); // Dequeue operation on queue
 			currentProcessingNode.visited = true;
 
 			if(currentProcessingNode === endNode){
