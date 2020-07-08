@@ -2,14 +2,18 @@
 import $ from 'jquery';
 import pageActionsLogicAttacher from './Logic';
 
+// Adding New Function
+Array.prototype.peek = function(){
+	return this.length?this[this.length-1]:undefined;
+};
+
 class ViewRenderer{
 	constructor(options){
 		this.rows = options.rows;
 		this.columns = options.columns;
-		this.tableSelector = options.tableSelector;
 		
 		// PROCESSING
-		this.tableElement = $(this.tableSelector);
+		this.tableElement = $("#grid");
 		this.nodeSize = 100/this.columns; //in vw
 	}
 	
@@ -57,11 +61,13 @@ class ViewRenderer{
 	}
 
 	makeWall(x, y){
-		this.getTDElemAtXY(x, y).addClass("wallElem");
+		// this.getTDElemAtXY(x, y).addClass("wallElem");
+		this.addOpClassAtXY(x, y, "wallElem");
 	}
 	
 	removeWall(x, y){
-		this.getTDElemAtXY(x, y).removeClass("wallElem");
+		// this.getTDElemAtXY(x, y).removeClass("wallElem");
+		this.popOpClassAtXY(x, y, "wallElem");
 	}
 
 	shiftStartPoint(x, y){
@@ -88,17 +94,22 @@ class ViewRenderer{
 
 	addOpClassAtXY(x, y, cls){
 		let elem = this.getTDElemAtXY(x, y);
-		let elemOpStack = elem.data("opStack");
-		elemOpStack.push(cls.toUpperCase());
+		let opStack = elem.data("opStack");
+		if(opStack.peek()){
+			elem.removeClass(opStack.peek());
+		}
+		opStack.push(cls.toUpperCase());
 		elem.addClass(cls.toUpperCase());
 	}
 
 	popOpClassAtXY(x, y){
 		let elem = this.getTDElemAtXY(x, y);
 		let opStack = elem.data("opStack");
-		let clsToRm = opStack.pop();
-		if(clsToRm){
-			elem.removeClass(clsToRm);
+		if(opStack.peek()){
+			elem.removeClass(opStack.pop());
+		}
+		if(opStack.peek()){
+			elem.addClass(opStack.peek());
 		}
 	}
 }

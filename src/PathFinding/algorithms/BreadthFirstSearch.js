@@ -11,7 +11,7 @@ export default class BreadthFirstSearch{
 			path.push(node);
 			node = node.parent;
 		}
-		console.log(path);
+		path.reverse();
 		return path;
 	}
 
@@ -29,13 +29,11 @@ export default class BreadthFirstSearch{
 		while(!queue.isEmpty()){
 
 			currentProcessingNode = queue.shift(); // Dequeue operation on queue
-			currentProcessingNode.visited = true;
-
+			
 			if(currentProcessingNode === endNode){
-				// console.log(currentProcessingNode, endNode);
 				return this.backTrace(endNode, startNode);
 			}
-
+			
 			neighbours = grid.getNeighbours(currentProcessingNode);
 			neighbours.forEach(neighbour => {
 				if(neighbour.visited || neighbour.addedToQueue){
@@ -45,6 +43,7 @@ export default class BreadthFirstSearch{
 				neighbour.addedToQueue = true;
 				neighbour.parent = currentProcessingNode;
 			});
+			currentProcessingNode.visited = true;
 		}
 
 		return [];

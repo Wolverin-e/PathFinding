@@ -64,3 +64,8 @@ hr{
     font-family: 'JuraSemiBold', sans-serif;
     font-size: 13px;
 }
+
+.numInp{
+    width: 100%;
+    backdrop-filter: blur(20px);
+}

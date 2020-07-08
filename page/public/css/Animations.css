@@ -17,10 +17,6 @@
     }
 }
 
-.ADDEDTOQUEUE{
-    background-color: lightgreen;
-    animation: wallGrowShrink 150ms linear normal;
-}
 
 .VISITED{
     background-color: lightblue;
@@ -29,5 +25,10 @@
 
 .PATH{
     background-color: yellow;
+    animation: wallGrowShrink 150ms linear normal;
+}
+
+.ADDEDTOQUEUE{
+    background-color: lightgreen;
     animation: wallGrowShrink 150ms linear normal;
 }

@@ -22,6 +22,11 @@ class Controller extends StateMachine{
 		this.viewRenderer = options.viewRenderer;
 		this.rows = options.rows;
 		this.columns = options.columns;
+		this.defaultStepDelay = options.stepDelay;
+		this.U = options.undoRedoBurstSteps;
+		
+		this.stepDelay = options.stepDelay;
+		this.undoRedoBurstSteps = options.undoRedoBurstSteps;
 		
 		this.grid = new PathFinding.Grid({
 			rows: this.rows, 
@@ -59,63 +64,60 @@ class Controller extends StateMachine{
 		this.viewRenderer.init();
 		this.shiftStartPoint(this.grid.startPoint.x, this.grid.startPoint.y);
 		this.shiftEndPoint(this.grid.endPoint.x, this.grid.endPoint.y);
-		this.bindEventListeners();
+		this.bindDOMEventListeners();
 		this.attachOpsEventListeners();
+		this.attachControllerLifeCycleEventHooks();
 		this.makeTransitionFromEventHook("edit");
 	}
 
-	onEnterEditing(){
-		controlBarOptions.Editing.allowed.forEach(opt => {
-			this.controlBar[opt].show();
-		});
-		controlBarOptions.Editing.notAllowed.forEach(opt => {
-			this.controlBar[opt].hide();
-		});
-	}
+	attachControllerLifeCycleEventHooks(){
+		let states = [
+			"Editing", 
+			"Computing", 
+			"Playing", 
+			"Paused", 
+			"Finished", 
+			"PathCleared"
+		];
 
-	onEnterComputing(){
-		controlBarOptions.Computing.allowed.forEach(opt => {
-			this.controlBar[opt].show();
-		});
-		controlBarOptions.Computing.notAllowed.forEach(opt => {
-			this.controlBar[opt].hide();
-		});
-	}
-
-	onEnterPlaying(){
-		controlBarOptions.Playing.allowed.forEach(opt => {
-			this.controlBar[opt].show();
-		});
-		controlBarOptions.Playing.notAllowed.forEach(opt => {
-			this.controlBar[opt].hide();
+		states.forEach(state => {
+			this["onEnter"+state] = function(){
+				controlBarOptions[state].allowed.forEach(opt => {
+					this.controlBar[opt].show();
+				});
+				controlBarOptions[state].notAllowed.forEach(opt => {
+					this.controlBar[opt].hide();
+				});
+			};
 		});
 	}
-
-	onEnterPaused(){
-		controlBarOptions.Paused.allowed.forEach(opt => {
-			this.controlBar[opt].show();
-		});
-		controlBarOptions.Paused.notAllowed.forEach(opt => {
-			this.controlBar[opt].hide();
-		});
-	}
-
-	onEnterFinished(){
-		controlBarOptions.Finished.allowed.forEach(opt => {
-			this.controlBar[opt].show();
-		});
-		controlBarOptions.Finished.notAllowed.forEach(opt => {
-			this.controlBar[opt].hide();
-		});
-	}
-	
-	onEnterPathCleared(){
-		controlBarOptions.PathCleared.allowed.forEach(opt => {
-			this.controlBar[opt].show();
-		});
-		controlBarOptions.PathCleared.notAllowed.forEach(opt => {
-			this.controlBar[opt].hide();
-		});
+	attachOpsEventListeners(){
+		PathFinding.GraphNode.prototype = {
+			set visited(val){
+				this._visited = val;
+				opQueue.push({
+					x: this.x, 
+					y: this.y, 
+					att: 'visited', 
+					val
+				});
+			}, 
+			get visited(){
+				return this._visited;
+			}, 
+			set addedToQueue(val){
+				this._addedToQueue = val;
+				opQueue.push({
+					x: this.x, 
+					y: this.y, 
+					att: 'addedToQueue', 
+					val
+				});
+			}, 
+			get addedToQueue(){
+				return this._addedToQueue;
+			}, 
+		};
 	}
 
 	// CONTROLLER TO VIEW PROXIES
@@ -154,25 +156,6 @@ class Controller extends StateMachine{
 		let path = algorithm.findPath(this.grid.clone());
 		this.addPathToOps(path);
 	}
-	startDelayedStepLoop(){
-		// START PLAY LOOP
-		let loop = async () => {
-			if(this.state !== "Playing") return;
-			await this.delayedStep();
-			loop();
-		};
-		loop();
-	}
-	delayedStep(){
-		const tm = 10;
-		// ONE STEP FORWARD FROM THE <opQueue>
-		return new Promise((resolve) => {
-			setTimeout(() => {
-				this.instantStep();
-				resolve();
-			}, tm);
-		});
-	}
 	instantStep(){
 		if(opQueue.isEmpty()) {
 			if(this.can("pause")) this.pause();
@@ -183,21 +166,49 @@ class Controller extends StateMachine{
 		undoQueue.push(coords);
 		this.viewRenderer.addOpClassAtXY(coords.x, coords.y, coords.att);
 	}
-	undo(){
+	delayedStep(){
+		// ONE STEP FORWARD FROM THE <opQueue>
+		return new Promise((resolve) => {
+			setTimeout(() => {
+				this.instantStep();
+				resolve();
+			}, this.stepDelay);
+		});
+	}
+	startDelayedStepLoop(){
+		// START PLAY LOOP
+		let loop = async () => {
+			if(this.state !== "Playing") return;
+			await this.delayedStep();
+			loop();
+		};
+		loop();
+	}
+	burstInstantSteps(steps){
+		while(steps--){
+			this.instantStep();
+		}
+	}
+	instantUndo(){
 		// ONE STEP UNDO FROM THE <undoQueue>
 		if(undoQueue.isEmpty()) return;
 		let coords = undoQueue.pop();
 		this.viewRenderer.popOpClassAtXY(coords.x, coords.y);
 		opQueue.unshift(coords);
 	}
-	startUndoLoop(){
+	startInstantUndoLoop(){
 		while(!undoQueue.isEmpty()){
-			this.undo();
+			this.instantUndo();
+		}
+	}
+	burstUndo(steps){
+		while(steps--){
+			this.instantUndo();
 		}
 	}
 	onClearPath(){
 		// CLEAR PATH FROM THE <undoQueue>
-		this.startUndoLoop();
+		this.startInstantUndoLoop();
 	}
 	clearWalls(){
 		// CLEAR WALLS FROM THE <wallList>
@@ -213,7 +224,7 @@ class Controller extends StateMachine{
 	}
 
 	// EVENT LISTENERS
-	bindEventListeners(){
+	bindDOMEventListeners(){
 		this.bindGridEventListeners();
 		this.bindControlCenterEventListeners();
 		this.bindControlBarEventListeners();
@@ -290,6 +301,19 @@ class Controller extends StateMachine{
 
 	bindControlCenterEventListeners(){
 		let controlCenter = $('#control-center');
+
+		let stepsInpField = controlCenter.find("#steps"), 
+			delayInpField = controlCenter.find("#delay");
+		
+		stepsInpField.val(this.undoRedoBurstSteps);
+		stepsInpField.on("input", (event) => {
+			this.undoRedoBurstSteps = event.target.value?event.target.value:this.defaultUndoRedoBurstSteps;
+		});
+		
+		delayInpField.val(this.stepDelay);
+		delayInpField.on("input", (event) => {
+			this.stepDelay = event.target.value?event.target.value:this.defaultStepDelay;
+		});
 
 		controlCenter.find("#algorithmSelector").on('change', (event) => {
 			this.algorithm = event.target.value;
@@ -462,13 +486,13 @@ class Controller extends StateMachine{
 			switch(this.state){
 				case "Playing":
 					this.pause(); // STATEMACHINE TRANSITION
-					this.undo();
+					this.burstUndo(this.undoRedoBurstSteps);
 					break;
 				case "Paused":
-					this.undo();
+					this.burstUndo(this.undoRedoBurstSteps);
 					break;
 				case "Finished":
-					this.undo();
+					this.burstUndo(this.undoRedoBurstSteps);
 					this.pause(); // STATEMACHINE TRANSITION
 					break;
 				default:
@@ -482,45 +506,16 @@ class Controller extends StateMachine{
 			switch(this.state){
 				case "Playing":
 					this.pause(); // STATEMACHINE-TRANSITION
-					this.instantStep();
+					this.burstInstantSteps(this.undoRedoBurstSteps);
 					break;
 				case "Paused":
-					this.instantStep();
+					this.burstInstantSteps(this.undoRedoBurstSteps);
 					break;
 				default:
 					console.warn("Undefined State Behaviour");
 					break;
 			}
 		});
-	}
-
-	attachOpsEventListeners(){
-		PathFinding.GraphNode.prototype = {
-			set visited(val){
-				this._visited = val;
-				opQueue.push({
-					x: this.x, 
-					y: this.y, 
-					att: 'visited', 
-					val
-				});
-			}, 
-			get visited(){
-				return this._visited;
-			}, 
-			set addedToQueue(val){
-				this._addedToQueue = val;
-				opQueue.push({
-					x: this.x, 
-					y: this.y, 
-					att: 'addedToQueue', 
-					val
-				});
-			}, 
-			get addedToQueue(){
-				return this._addedToQueue;
-			}, 
-		};
 	}
 }
 

@@ -39,6 +39,15 @@
                 <hr />
 
                 <!-- ALGORITHM SELECTOR -->
+                <p id="normal-lable">UNDO/REDO STEPS</p>
+                    <input id="steps" class="numInp" type="number" min="1" max="1000">
+                <hr />
+                
+                <p id="normal-lable">STEP DELAY (ms)</p>
+                    <input id="delay" class="numInp" type="number" min="1" max="300">
+                <hr />
+
+                <!-- ALGORITHM SELECTOR -->
                 <p id="normal-lable">ALGORITHM</p>
                 <select name="algorithm" id="algorithmSelector">
                     <!-- <optgroup label="searchparty">searchparty</optgroup> -->
@@ -51,45 +60,45 @@
                 <div id="BreadthFirstSearch" class="algorithm-options-section">
                     OPTIONS
                     <div class="options-checkbox-section">
-                        <input type="checkbox" id="allowDiagonal" value="allowDiagonal" checked>
-                            <label for="allowDiagonal">Allow Diagonal</label>
+                        <input type="checkbox" id="BFSC1" value="allowDiagonal" checked>
+                            <label for="BFSC1">Allow Diagonal</label>
                             <br />
-                        <input type="checkbox" id="biDirectional" value="biDirectional">
-                            <label for="biDirectional">Bi Directional</label>
+                        <input type="checkbox" id="BFSC2" value="biDirectional">
+                            <label for="BFSC2">Bi Directional</label>
                             <br />
-                        <input type="checkbox" id="doNotCrossCorners" value="doNotCrossCorners">
-                            <label for="doNotCrossCorners">Do Not Cross Corners</label>
+                        <input type="checkbox" id="BFSC3" value="doNotCrossCorners">
+                            <label for="BFSC3">Do Not Cross Corners</label>
                             <br />
                     </div>
                 </div>
-                
+
                 <div id="AStar" class="algorithm-options-section">
                     HEURISTIC
                     <div class="options-radio-section">
-                        <input type="radio" id="manhattan" name="heuristic" value="manhattan" checked />
-                            <label for="manhattan">Manhattan</label>
+                        <input type="radio" id="ASO1" name="heuristic" value="manhattan" checked />
+                            <label for="ASO1">Manhattan</label>
                             <br />
-                        <input type="radio" id="euclidean" name="heuristic" value="euclidean" />
-                            <label for="euclidean">Euclidean</label>
+                        <input type="radio" id="ASO2" name="heuristic" value="euclidean" />
+                            <label for="ASO2">Euclidean</label>
                             <br />
-                        <input type="radio" id="octile" name="heuristic" value="octile" />
-                            <label for="octile">Octile</label>
+                        <input type="radio" id="ASO3" name="heuristic" value="octile" />
+                            <label for="ASO3">Octile</label>
                             <br />
-                        <input type="radio" id="chebyshev" name="heuristic" value="chebyshev" />
-                            <label for="chebyshev">Chebyshev</label>
+                        <input type="radio" id="AS04" name="heuristic" value="chebyshev" />
+                            <label for="AS04">Chebyshev</label>
                             <br />
                     </div>
                     <br />
                     OPTIONS
                     <div class="options-checkbox-section">
-                        <input type="checkbox" id="allowDiagonal" value="allowDiagonal" checked>
-                            <label for="allowDiagonal">Allow Diagonal</label>
+                        <input type="checkbox" id="ASC1" value="allowDiagonal" checked>
+                            <label for="ASC1">Allow Diagonal</label>
                             <br />
-                        <input type="checkbox" id="biDirectional" value="biDirectional">
-                            <label for="biDirectional">Bi Directional</label>
+                        <input type="checkbox" id="ASC2" value="biDirectional">
+                            <label for="ASC2">Bi Directional</label>
                             <br />
-                        <input type="checkbox" id="doNotCrossCorners" value="doNotCrossCorners">
-                            <label for="doNotCrossCorners">Do Not Cross Corners</label>
+                        <input type="checkbox" id="ASC3" value="doNotCrossCorners">
+                            <label for="ASC3">Do Not Cross Corners</label>
                             <br />
                     </div>
                 </div>

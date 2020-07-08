@@ -1,19 +1,20 @@
 import Controller from './Controller';
 import ViewRenderer from './ViewRenderer';
 
-const rows=50, 
-	columns=50, 
-	tableSelector="#grid", 
+const rows = 50, 
+	columns = 50, 
+	undoRedoBurstSteps = 2, 
+	stepDelay = 10, 
 	clientHeight = document.documentElement.clientHeight, 
 	clientWidth = document.documentElement.clientWidth, 
 	nodeSize = clientWidth/columns, 
 	midRowIndex = Math.floor((clientHeight/nodeSize)/2), 
 	midColIndex = Math.floor(columns/2-1), 
-	startPoint={
+	startPoint = {
 		x: midColIndex-4, 
 		y: midRowIndex
 	}, 
-	endPoint={
+	endPoint = {
 		x: midColIndex+4+1,
 		y: midRowIndex
 	};
@@ -21,8 +22,7 @@ const rows=50,
 function init(){
 	let viewRenderer = new ViewRenderer({
 		rows,
-		columns, 
-		tableSelector
+		columns
 	});
 
 	let controller = new Controller({
@@ -30,7 +30,9 @@ function init(){
 		columns, 
 		viewRenderer, 
 		startPoint, 
-		endPoint
+		endPoint, 
+		undoRedoBurstSteps, 
+		stepDelay
 	});
 	controller.initialize();
 }
