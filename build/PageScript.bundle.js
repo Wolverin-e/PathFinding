@@ -22464,6 +22464,10 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
     _this2.viewRenderer = options.viewRenderer;
     _this2.rows = options.rows;
     _this2.columns = options.columns;
+    _this2.defaultStepDelay = options.stepDelay;
+    _this2.U = options.undoRedoBurstSteps;
+    _this2.stepDelay = options.stepDelay;
+    _this2.undoRedoBurstSteps = options.undoRedoBurstSteps;
     _this2.grid = new _PathFinding_index__WEBPACK_IMPORTED_MODULE_3__["default"].Grid({
       rows: _this2.rows,
       columns: _this2.columns,
@@ -22506,81 +22510,63 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
       this.viewRenderer.init();
       this.shiftStartPoint(this.grid.startPoint.x, this.grid.startPoint.y);
       this.shiftEndPoint(this.grid.endPoint.x, this.grid.endPoint.y);
-      this.bindEventListeners();
+      this.bindDOMEventListeners();
       this.attachOpsEventListeners();
+      this.attachControllerLifeCycleEventHooks();
       this.makeTransitionFromEventHook("edit");
     }
   }, {
-    key: "onEnterEditing",
-    value: function onEnterEditing() {
+    key: "attachControllerLifeCycleEventHooks",
+    value: function attachControllerLifeCycleEventHooks() {
       var _this4 = this;
 
-      _Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["default"].Editing.allowed.forEach(function (opt) {
-        _this4.controlBar[opt].show();
-      });
-      _Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["default"].Editing.notAllowed.forEach(function (opt) {
-        _this4.controlBar[opt].hide();
+      var states = ["Editing", "Computing", "Playing", "Paused", "Finished", "PathCleared"];
+      states.forEach(function (state) {
+        _this4["onEnter" + state] = function () {
+          var _this5 = this;
+
+          _Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["default"][state].allowed.forEach(function (opt) {
+            _this5.controlBar[opt].show();
+          });
+          _Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["default"][state].notAllowed.forEach(function (opt) {
+            _this5.controlBar[opt].hide();
+          });
+        };
       });
     }
   }, {
-    key: "onEnterComputing",
-    value: function onEnterComputing() {
-      var _this5 = this;
+    key: "attachOpsEventListeners",
+    value: function attachOpsEventListeners() {
+      _PathFinding_index__WEBPACK_IMPORTED_MODULE_3__["default"].GraphNode.prototype = {
+        set visited(val) {
+          this._visited = val;
+          opQueue.push({
+            x: this.x,
+            y: this.y,
+            att: 'visited',
+            val: val
+          });
+        },
 
-      _Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["default"].Computing.allowed.forEach(function (opt) {
-        _this5.controlBar[opt].show();
-      });
-      _Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["default"].Computing.notAllowed.forEach(function (opt) {
-        _this5.controlBar[opt].hide();
-      });
-    }
-  }, {
-    key: "onEnterPlaying",
-    value: function onEnterPlaying() {
-      var _this6 = this;
+        get visited() {
+          return this._visited;
+        },
 
-      _Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["default"].Playing.allowed.forEach(function (opt) {
-        _this6.controlBar[opt].show();
-      });
-      _Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["default"].Playing.notAllowed.forEach(function (opt) {
-        _this6.controlBar[opt].hide();
-      });
-    }
-  }, {
-    key: "onEnterPaused",
-    value: function onEnterPaused() {
-      var _this7 = this;
+        set addedToQueue(val) {
+          this._addedToQueue = val;
+          opQueue.push({
+            x: this.x,
+            y: this.y,
+            att: 'addedToQueue',
+            val: val
+          });
+        },
 
-      _Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["default"].Paused.allowed.forEach(function (opt) {
-        _this7.controlBar[opt].show();
-      });
-      _Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["default"].Paused.notAllowed.forEach(function (opt) {
-        _this7.controlBar[opt].hide();
-      });
-    }
-  }, {
-    key: "onEnterFinished",
-    value: function onEnterFinished() {
-      var _this8 = this;
+        get addedToQueue() {
+          return this._addedToQueue;
+        }
 
-      _Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["default"].Finished.allowed.forEach(function (opt) {
-        _this8.controlBar[opt].show();
-      });
-      _Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["default"].Finished.notAllowed.forEach(function (opt) {
-        _this8.controlBar[opt].hide();
-      });
-    }
-  }, {
-    key: "onEnterPathCleared",
-    value: function onEnterPathCleared() {
-      var _this9 = this;
-
-      _Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["default"].PathCleared.allowed.forEach(function (opt) {
-        _this9.controlBar[opt].show();
-      });
-      _Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["default"].PathCleared.notAllowed.forEach(function (opt) {
-        _this9.controlBar[opt].hide();
-      });
+      };
     } // CONTROLLER TO VIEW PROXIES
 
   }, {
@@ -22634,9 +22620,36 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
       this.addPathToOps(path);
     }
   }, {
+    key: "instantStep",
+    value: function instantStep() {
+      if (opQueue.isEmpty()) {
+        if (this.can("pause")) this.pause();
+        if (this.can("finish")) this.finish();
+        return;
+      }
+
+      var coords = opQueue.shift();
+      undoQueue.push(coords);
+      this.viewRenderer.addOpClassAtXY(coords.x, coords.y, coords.att);
+    }
+  }, {
+    key: "delayedStep",
+    value: function delayedStep() {
+      var _this6 = this;
+
+      // ONE STEP FORWARD FROM THE <opQueue>
+      return new Promise(function (resolve) {
+        setTimeout(function () {
+          _this6.instantStep();
+
+          resolve();
+        }, _this6.stepDelay);
+      });
+    }
+  }, {
     key: "startDelayedStepLoop",
     value: function startDelayedStepLoop() {
-      var _this10 = this;
+      var _this7 = this;
 
       // START PLAY LOOP
       var loop = /*#__PURE__*/function () {
@@ -22645,7 +22658,7 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
             while (1) {
               switch (_context.prev = _context.next) {
                 case 0:
-                  if (!(_this10.state !== "Playing")) {
+                  if (!(_this7.state !== "Playing")) {
                     _context.next = 2;
                     break;
                   }
@@ -22654,7 +22667,7 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
 
                 case 2:
                   _context.next = 4;
-                  return _this10.delayedStep();
+                  return _this7.delayedStep();
 
                 case 4:
                   loop();
@@ -22675,36 +22688,15 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
       loop();
     }
   }, {
-    key: "delayedStep",
-    value: function delayedStep() {
-      var _this11 = this;
-
-      var tm = 10; // ONE STEP FORWARD FROM THE <opQueue>
-
-      return new Promise(function (resolve) {
-        setTimeout(function () {
-          _this11.instantStep();
-
-          resolve();
-        }, tm);
-      });
-    }
-  }, {
-    key: "instantStep",
-    value: function instantStep() {
-      if (opQueue.isEmpty()) {
-        if (this.can("pause")) this.pause();
-        if (this.can("finish")) this.finish();
-        return;
+    key: "burstInstantSteps",
+    value: function burstInstantSteps(steps) {
+      while (steps--) {
+        this.instantStep();
       }
-
-      var coords = opQueue.shift();
-      undoQueue.push(coords);
-      this.viewRenderer.addOpClassAtXY(coords.x, coords.y, coords.att);
     }
   }, {
-    key: "undo",
-    value: function undo() {
+    key: "instantUndo",
+    value: function instantUndo() {
       // ONE STEP UNDO FROM THE <undoQueue>
       if (undoQueue.isEmpty()) return;
       var coords = undoQueue.pop();
@@ -22712,17 +22704,24 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
       opQueue.unshift(coords);
     }
   }, {
-    key: "startUndoLoop",
-    value: function startUndoLoop() {
+    key: "startInstantUndoLoop",
+    value: function startInstantUndoLoop() {
       while (!undoQueue.isEmpty()) {
-        this.undo();
+        this.instantUndo();
+      }
+    }
+  }, {
+    key: "burstUndo",
+    value: function burstUndo(steps) {
+      while (steps--) {
+        this.instantUndo();
       }
     }
   }, {
     key: "onClearPath",
     value: function onClearPath() {
       // CLEAR PATH FROM THE <undoQueue>
-      this.startUndoLoop();
+      this.startInstantUndoLoop();
     }
   }, {
     key: "clearWalls",
@@ -22742,8 +22741,8 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
     } // EVENT LISTENERS
 
   }, {
-    key: "bindEventListeners",
-    value: function bindEventListeners() {
+    key: "bindDOMEventListeners",
+    value: function bindDOMEventListeners() {
       this.bindGridEventListeners();
       this.bindControlCenterEventListeners();
       this.bindControlBarEventListeners();
@@ -22751,64 +22750,64 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
   }, {
     key: "bindGridEventListeners",
     value: function bindGridEventListeners() {
-      var _this12 = this;
+      var _this8 = this;
 
       this.viewRenderer.tableElement.on('mousedown', function (event) {
         var _$$data = jquery__WEBPACK_IMPORTED_MODULE_0___default()(event.target).data("coords"),
             x = _$$data.x,
             y = _$$data.y;
 
-        if (_this12.is('Paused')) {
-          _this12.finish(); // STATEMACHINE TRANSITION
+        if (_this8.is('Paused')) {
+          _this8.finish(); // STATEMACHINE TRANSITION
 
 
-          _this12.clearPath(); // STATEMACHINE TRANSITION
+          _this8.clearPath(); // STATEMACHINE TRANSITION
 
 
-          _this12.clearReasources();
+          _this8.clearReasources();
 
-          _this12.gridEdit(); // STATEMACHINE TRANSITION
-
-        }
-
-        if (_this12.is('Finished')) {
-          _this12.clearPath(); // STATEMACHINE TRANSITION
-
-
-          _this12.clearReasources();
-
-          _this12.gridEdit(); // STATEMACHINE TRANSITION
+          _this8.gridEdit(); // STATEMACHINE TRANSITION
 
         }
 
-        if (_this12.is('pathCleared')) {
-          _this12.clearReasources();
+        if (_this8.is('Finished')) {
+          _this8.clearPath(); // STATEMACHINE TRANSITION
 
-          _this12.gridEdit(); // STATEMACHINE TRANSITION
+
+          _this8.clearReasources();
+
+          _this8.gridEdit(); // STATEMACHINE TRANSITION
 
         }
 
-        if (_this12.is('Editing')) {
-          if (_this12.grid.isXYStartPoint(x, y)) {
-            _this12.startShiftingStartPoint();
+        if (_this8.is('pathCleared')) {
+          _this8.clearReasources();
+
+          _this8.gridEdit(); // STATEMACHINE TRANSITION
+
+        }
+
+        if (_this8.is('Editing')) {
+          if (_this8.grid.isXYStartPoint(x, y)) {
+            _this8.startShiftingStartPoint();
 
             return;
           }
 
-          if (_this12.grid.isXYEndPoint(x, y)) {
-            _this12.startShiftingEndPoint();
+          if (_this8.grid.isXYEndPoint(x, y)) {
+            _this8.startShiftingEndPoint();
 
             return;
           }
 
-          if (_this12.grid.isXYWallElement(x, y)) {
-            _this12.startRemovingWalls();
+          if (_this8.grid.isXYWallElement(x, y)) {
+            _this8.startRemovingWalls();
 
-            _this12.removeWall(x, y);
+            _this8.removeWall(x, y);
           } else {
-            _this12.startAddingWalls();
+            _this8.startAddingWalls();
 
-            _this12.makeWall(x, y);
+            _this8.makeWall(x, y);
           }
         }
       });
@@ -22819,24 +22818,24 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
             x = _$$data2.x,
             y = _$$data2.y;
 
-        switch (_this12.state) {
+        switch (_this8.state) {
           case 'AddingWalls':
-            _this12.makeWall(x, y);
+            _this8.makeWall(x, y);
 
             break;
 
           case 'RemovingWalls':
-            _this12.removeWall(x, y);
+            _this8.removeWall(x, y);
 
             break;
 
           case 'ShiftingStartPoint':
-            _this12.shiftStartPoint(x, y);
+            _this8.shiftStartPoint(x, y);
 
             break;
 
           case 'ShiftingEndPoint':
-            _this12.shiftEndPoint(x, y);
+            _this8.shiftEndPoint(x, y);
 
             break;
 
@@ -22845,45 +22844,55 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
         }
       });
       this.viewRenderer.tableElement.on('mouseup', function () {
-        if (_this12.can('goBackToEditing')) {
-          _this12.goBackToEditing();
+        if (_this8.can('goBackToEditing')) {
+          _this8.goBackToEditing();
         }
       });
     }
   }, {
     key: "bindControlCenterEventListeners",
     value: function bindControlCenterEventListeners() {
-      var _this13 = this;
+      var _this9 = this;
 
       var controlCenter = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#control-center');
+      var stepsInpField = controlCenter.find("#steps"),
+          delayInpField = controlCenter.find("#delay");
+      stepsInpField.val(this.undoRedoBurstSteps);
+      stepsInpField.on("input", function (event) {
+        _this9.undoRedoBurstSteps = event.target.value ? event.target.value : _this9.defaultUndoRedoBurstSteps;
+      });
+      delayInpField.val(this.stepDelay);
+      delayInpField.on("input", function (event) {
+        _this9.stepDelay = event.target.value ? event.target.value : _this9.defaultStepDelay;
+      });
       controlCenter.find("#algorithmSelector").on('change', function (event) {
-        _this13.algorithm = event.target.value;
-        _this13.algorithmOptions = {};
-        var radioOpt = controlCenter.find("#".concat(_this13.algorithm, " .options-radio-section input[type='radio']:checked"));
-        if (radioOpt.length) _this13.algorithmOptions['heuristic'] = radioOpt.val();
-        var checkBoxOpts = controlCenter.find("#".concat(_this13.algorithm, " .options-checkbox-section input[type='checkbox']:checked"));
+        _this9.algorithm = event.target.value;
+        _this9.algorithmOptions = {};
+        var radioOpt = controlCenter.find("#".concat(_this9.algorithm, " .options-radio-section input[type='radio']:checked"));
+        if (radioOpt.length) _this9.algorithmOptions['heuristic'] = radioOpt.val();
+        var checkBoxOpts = controlCenter.find("#".concat(_this9.algorithm, " .options-checkbox-section input[type='checkbox']:checked"));
 
         if (checkBoxOpts.length) {
           checkBoxOpts.each(function (i, elem) {
-            _this13.algorithmOptions[elem.value] = true;
+            _this9.algorithmOptions[elem.value] = true;
           });
         }
       });
       controlCenter.find(".options-radio-section input[type='radio']").each(function (i, elem) {
         jquery__WEBPACK_IMPORTED_MODULE_0___default()(elem).on("click", function (event) {
-          _this13.algorithmOptions.heuristic = event.target.value;
+          _this9.algorithmOptions.heuristic = event.target.value;
         });
       });
       controlCenter.find(".options-checkbox-section input[type='checkbox']").each(function (i, elem) {
         jquery__WEBPACK_IMPORTED_MODULE_0___default()(elem).on("click", function (event) {
-          _this13.algorithmOptions[event.target.value] = _this13.algorithmOptions[event.target.value] ? false : true;
+          _this9.algorithmOptions[event.target.value] = _this9.algorithmOptions[event.target.value] ? false : true;
         });
       });
     }
   }, {
     key: "bindControlBarEventListeners",
     value: function bindControlBarEventListeners() {
-      var _this14 = this;
+      var _this10 = this;
 
       var controlBar = jquery__WEBPACK_IMPORTED_MODULE_0___default()("#control-bar");
       this.controlBar = {
@@ -22899,25 +22908,25 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
       this.controlBar.start.on("click", function () {
         console.log("start"); // Editing | Paused
 
-        switch (_this14.state) {
+        switch (_this10.state) {
           case "Editing":
-            _this14.compute(); // STATEMACHINE TRANSITION
+            _this10.compute(); // STATEMACHINE TRANSITION
 
 
-            _this14.findPath();
+            _this10.findPath();
 
-            _this14.play(); // STATEMACHINE TRANSITION
+            _this10.play(); // STATEMACHINE TRANSITION
 
 
-            _this14.startDelayedStepLoop();
+            _this10.startDelayedStepLoop();
 
             break;
 
           case "Paused":
-            _this14.resume(); // STATEMACHINE TRANSITION
+            _this10.resume(); // STATEMACHINE TRANSITION
 
 
-            _this14.startDelayedStepLoop();
+            _this10.startDelayedStepLoop();
 
             break;
 
@@ -22929,25 +22938,25 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
       this.controlBar.pause.on("click", function () {
         console.log("pause");
 
-        _this14.pause(); // STATEMACHINE TRANSITION
+        _this10.pause(); // STATEMACHINE TRANSITION
         // Playing
 
       });
       this.controlBar.stop.on("click", function () {
         console.log("stop"); // Playing | Paused
 
-        switch (_this14.state) {
+        switch (_this10.state) {
           case "Playing":
-            _this14.pause(); // STATEMACHINE TRANSITION
+            _this10.pause(); // STATEMACHINE TRANSITION
 
 
-            _this14.clearPath(); // STATEMACHINE TRANSITION
+            _this10.clearPath(); // STATEMACHINE TRANSITION
 
 
             break;
 
           case "Paused":
-            _this14.clearPath(); // STATEMACHINE TRANSITION
+            _this10.clearPath(); // STATEMACHINE TRANSITION
 
 
             break;
@@ -22960,48 +22969,48 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
       this.controlBar.restart.on("click", function () {
         console.log("restart"); // Playing | Paused | Finished
 
-        switch (_this14.state) {
+        switch (_this10.state) {
           case "Playing":
-            _this14.pause(); // STATEMACHINE TRANSITION
+            _this10.pause(); // STATEMACHINE TRANSITION
 
 
-            _this14.clearPath(); // STATEMACHINE TRANSITION
+            _this10.clearPath(); // STATEMACHINE TRANSITION
 
 
-            _this14.restart(); // STATEMACHINE TRANSITION
+            _this10.restart(); // STATEMACHINE TRANSITION
 
 
-            _this14.startDelayedStepLoop();
+            _this10.startDelayedStepLoop();
 
             break;
 
           case "Paused":
-            _this14.clearPath(); // STATEMACHINE TRANSITION
+            _this10.clearPath(); // STATEMACHINE TRANSITION
 
 
-            _this14.restart(); // STATEMACHINE TRANSITION
+            _this10.restart(); // STATEMACHINE TRANSITION
 
 
-            _this14.startDelayedStepLoop();
+            _this10.startDelayedStepLoop();
 
             break;
 
           case "Finished":
-            _this14.clearPath(); // STATEMACHINE TRANSITION
+            _this10.clearPath(); // STATEMACHINE TRANSITION
 
 
-            _this14.restart(); // STATEMACHINE TRANSITION
+            _this10.restart(); // STATEMACHINE TRANSITION
 
 
-            _this14.startDelayedStepLoop();
+            _this10.startDelayedStepLoop();
 
             break;
 
           case "pathCleared":
-            _this14.restart(); // STATEMACHINE TRANSITION
+            _this10.restart(); // STATEMACHINE TRANSITION
 
 
-            _this14.startDelayedStepLoop();
+            _this10.startDelayedStepLoop();
 
             break;
 
@@ -23013,24 +23022,24 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
       this.controlBar.clearPath.on("click", function () {
         console.log("clearPath"); // Playing | Paused | Finished
 
-        switch (_this14.state) {
+        switch (_this10.state) {
           case "Playing":
-            _this14.pause(); // STATEMACHINE TRANSITION
+            _this10.pause(); // STATEMACHINE TRANSITION
 
 
-            _this14.clearPath(); // STATEMACHINE TRANSITION
+            _this10.clearPath(); // STATEMACHINE TRANSITION
 
 
             break;
 
           case "Paused":
-            _this14.clearPath(); // STATEMACHINE TRANSITION
+            _this10.clearPath(); // STATEMACHINE TRANSITION
 
 
             break;
 
           case "Finished":
-            _this14.clearPath(); // STATEMACHINE TRANSITION
+            _this10.clearPath(); // STATEMACHINE TRANSITION
 
 
             break;
@@ -23043,60 +23052,60 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
       this.controlBar.clearWalls.on("click", function () {
         console.log("clearWalls"); // Playing | Paused | Finished | pathCleared
 
-        switch (_this14.state) {
+        switch (_this10.state) {
           case "Editing":
-            _this14.clearWalls();
+            _this10.clearWalls();
 
             break;
 
           case "Playing":
-            _this14.pause(); // STATEMACHINE TRANSITION
+            _this10.pause(); // STATEMACHINE TRANSITION
 
 
-            _this14.clearWalls();
+            _this10.clearWalls();
 
-            _this14.clearPath(); // STATEMACHINE TRANSITION
+            _this10.clearPath(); // STATEMACHINE TRANSITION
 
 
-            _this14.clearReasources();
+            _this10.clearReasources();
 
-            _this14.gridEdit(); // STATEMACHINE TRANSITION
+            _this10.gridEdit(); // STATEMACHINE TRANSITION
 
 
             break;
 
           case "Paused":
-            _this14.clearWalls();
+            _this10.clearWalls();
 
-            _this14.clearPath(); // STATEMACHINE TRANSITION
+            _this10.clearPath(); // STATEMACHINE TRANSITION
 
 
-            _this14.clearReasources();
+            _this10.clearReasources();
 
-            _this14.gridEdit(); // STATEMACHINE TRANSITION
+            _this10.gridEdit(); // STATEMACHINE TRANSITION
 
 
             break;
 
           case "Finished":
-            _this14.clearWalls();
+            _this10.clearWalls();
 
-            _this14.clearPath(); // STATEMACHINE TRANSITION
+            _this10.clearPath(); // STATEMACHINE TRANSITION
 
 
-            _this14.clearReasources();
+            _this10.clearReasources();
 
-            _this14.gridEdit(); // STATEMACHINE TRANSITION
+            _this10.gridEdit(); // STATEMACHINE TRANSITION
 
 
             break;
 
           case "pathCleared":
-            _this14.clearWalls();
+            _this10.clearWalls();
 
-            _this14.clearReasources();
+            _this10.clearReasources();
 
-            _this14.gridEdit(); // STATEMACHINE TRANSITION
+            _this10.gridEdit(); // STATEMACHINE TRANSITION
 
 
             break;
@@ -23109,24 +23118,24 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
       this.controlBar.undo.on("click", function () {
         console.log("undo"); // Playing | Paused | Finished
 
-        switch (_this14.state) {
+        switch (_this10.state) {
           case "Playing":
-            _this14.pause(); // STATEMACHINE TRANSITION
+            _this10.pause(); // STATEMACHINE TRANSITION
 
 
-            _this14.undo();
+            _this10.burstUndo(_this10.undoRedoBurstSteps);
 
             break;
 
           case "Paused":
-            _this14.undo();
+            _this10.burstUndo(_this10.undoRedoBurstSteps);
 
             break;
 
           case "Finished":
-            _this14.undo();
+            _this10.burstUndo(_this10.undoRedoBurstSteps);
 
-            _this14.pause(); // STATEMACHINE TRANSITION
+            _this10.pause(); // STATEMACHINE TRANSITION
 
 
             break;
@@ -23139,17 +23148,17 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
       this.controlBar.step.on("click", function () {
         console.log("step"); // Playing | Paused
 
-        switch (_this14.state) {
+        switch (_this10.state) {
           case "Playing":
-            _this14.pause(); // STATEMACHINE-TRANSITION
+            _this10.pause(); // STATEMACHINE-TRANSITION
 
 
-            _this14.instantStep();
+            _this10.burstInstantSteps(_this10.undoRedoBurstSteps);
 
             break;
 
           case "Paused":
-            _this14.instantStep();
+            _this10.burstInstantSteps(_this10.undoRedoBurstSteps);
 
             break;
 
@@ -23158,40 +23167,6 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
             break;
         }
       });
-    }
-  }, {
-    key: "attachOpsEventListeners",
-    value: function attachOpsEventListeners() {
-      _PathFinding_index__WEBPACK_IMPORTED_MODULE_3__["default"].GraphNode.prototype = {
-        set visited(val) {
-          this._visited = val;
-          opQueue.push({
-            x: this.x,
-            y: this.y,
-            att: 'visited',
-            val: val
-          });
-        },
-
-        get visited() {
-          return this._visited;
-        },
-
-        set addedToQueue(val) {
-          this._addedToQueue = val;
-          opQueue.push({
-            x: this.x,
-            y: this.y,
-            att: 'addedToQueue',
-            val: val
-          });
-        },
-
-        get addedToQueue() {
-          return this._addedToQueue;
-        }
-
-      };
     }
   }]);
 
@@ -23333,17 +23308,20 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 // import PathFinding from '../PathFinding/index';
 
+ // Adding New Function
 
+Array.prototype.peek = function () {
+  return this.length ? this[this.length - 1] : undefined;
+};
 
 var ViewRenderer = /*#__PURE__*/function () {
   function ViewRenderer(options) {
     _classCallCheck(this, ViewRenderer);
 
     this.rows = options.rows;
-    this.columns = options.columns;
-    this.tableSelector = options.tableSelector; // PROCESSING
+    this.columns = options.columns; // PROCESSING
 
-    this.tableElement = jquery__WEBPACK_IMPORTED_MODULE_0___default()(this.tableSelector);
+    this.tableElement = jquery__WEBPACK_IMPORTED_MODULE_0___default()("#grid");
     this.nodeSize = 100 / this.columns; //in vw
   }
 
@@ -23397,12 +23375,14 @@ var ViewRenderer = /*#__PURE__*/function () {
   }, {
     key: "makeWall",
     value: function makeWall(x, y) {
-      this.getTDElemAtXY(x, y).addClass("wallElem");
+      // this.getTDElemAtXY(x, y).addClass("wallElem");
+      this.addOpClassAtXY(x, y, "wallElem");
     }
   }, {
     key: "removeWall",
     value: function removeWall(x, y) {
-      this.getTDElemAtXY(x, y).removeClass("wallElem");
+      // this.getTDElemAtXY(x, y).removeClass("wallElem");
+      this.popOpClassAtXY(x, y, "wallElem");
     }
   }, {
     key: "shiftStartPoint",
@@ -23444,8 +23424,13 @@ var ViewRenderer = /*#__PURE__*/function () {
     key: "addOpClassAtXY",
     value: function addOpClassAtXY(x, y, cls) {
       var elem = this.getTDElemAtXY(x, y);
-      var elemOpStack = elem.data("opStack");
-      elemOpStack.push(cls.toUpperCase());
+      var opStack = elem.data("opStack");
+
+      if (opStack.peek()) {
+        elem.removeClass(opStack.peek());
+      }
+
+      opStack.push(cls.toUpperCase());
       elem.addClass(cls.toUpperCase());
     }
   }, {
@@ -23453,10 +23438,13 @@ var ViewRenderer = /*#__PURE__*/function () {
     value: function popOpClassAtXY(x, y) {
       var elem = this.getTDElemAtXY(x, y);
       var opStack = elem.data("opStack");
-      var clsToRm = opStack.pop();
 
-      if (clsToRm) {
-        elem.removeClass(clsToRm);
+      if (opStack.peek()) {
+        elem.removeClass(opStack.pop());
+      }
+
+      if (opStack.peek()) {
+        elem.addClass(opStack.peek());
       }
     }
   }]);
@@ -23503,7 +23491,8 @@ __webpack_require__.r(__webpack_exports__);
 
 var rows = 50,
     columns = 50,
-    tableSelector = "#grid",
+    undoRedoBurstSteps = 2,
+    stepDelay = 10,
     clientHeight = document.documentElement.clientHeight,
     clientWidth = document.documentElement.clientWidth,
     nodeSize = clientWidth / columns,
@@ -23521,15 +23510,16 @@ var rows = 50,
 function init() {
   var viewRenderer = new _ViewRenderer__WEBPACK_IMPORTED_MODULE_1__["default"]({
     rows: rows,
-    columns: columns,
-    tableSelector: tableSelector
+    columns: columns
   });
   var controller = new _Controller__WEBPACK_IMPORTED_MODULE_0__["default"]({
     rows: rows,
     columns: columns,
     viewRenderer: viewRenderer,
     startPoint: startPoint,
-    endPoint: endPoint
+    endPoint: endPoint,
+    undoRedoBurstSteps: undoRedoBurstSteps,
+    stepDelay: stepDelay
   });
   controller.initialize();
 }
@@ -23575,7 +23565,7 @@ var BreadthFirstSearch = /*#__PURE__*/function () {
         node = node.parent;
       }
 
-      console.log(path);
+      path.reverse();
       return path;
     }
   }, {
@@ -23591,11 +23581,9 @@ var BreadthFirstSearch = /*#__PURE__*/function () {
       startNode.addedToQueue = true;
 
       while (!queue.isEmpty()) {
-        currentProcessingNode = queue.shift();
-        currentProcessingNode.visited = true;
+        currentProcessingNode = queue.shift(); // Dequeue operation on queue
 
         if (currentProcessingNode === endNode) {
-          // console.log(currentProcessingNode, endNode);
           return this.backTrace(endNode, startNode);
         }
 
@@ -23609,6 +23597,7 @@ var BreadthFirstSearch = /*#__PURE__*/function () {
           neighbour.addedToQueue = true;
           neighbour.parent = currentProcessingNode;
         });
+        currentProcessingNode.visited = true;
       }
 
       return [];
@@ -23710,6 +23699,11 @@ var Grid = /*#__PURE__*/function () {
       return this.endPoint.x === x && this.endPoint.y === y;
     }
   }, {
+    key: "getNodeAtXY",
+    value: function getNodeAtXY(x, y) {
+      return this[y][x];
+    }
+  }, {
     key: "clone",
     value: function clone() {
       var grid = new Grid(this);
@@ -23744,46 +23738,46 @@ var Grid = /*#__PURE__*/function () {
       // a
 
       if (!this.isXYWallElement(x, y - 1)) {
-        neighbours.push(this[y - 1][x]);
+        neighbours.push(this.getNodeAtXY(x, y - 1));
         a = true;
       } // b
 
 
       if (!this.isXYWallElement(x + 1, y)) {
-        neighbours.push(this[y][x + 1]);
+        neighbours.push(this.getNodeAtXY(x + 1, y));
         b = true;
       } // c
 
 
       if (!this.isXYWallElement(x, y + 1)) {
-        neighbours.push(this[y + 1][x]);
+        neighbours.push(this.getNodeAtXY(x, y + 1));
         c = true;
       } // d
 
 
       if (!this.isXYWallElement(x - 1, y)) {
-        neighbours.push(this[y][x - 1]);
+        neighbours.push(this.getNodeAtXY(x - 1, y));
         d = true;
       } //p
 
 
       if ((a || d) & !this.isXYWallElement(x - 1, y - 1)) {
-        neighbours.push(this[y - 1][x - 1]);
+        neighbours.push(this.getNodeAtXY(x - 1, y - 1));
       } //q
 
 
       if ((a || b) & !this.isXYWallElement(x + 1, y - 1)) {
-        neighbours.push(this[y - 1][x + 1]);
+        neighbours.push(this.getNodeAtXY(x + 1, y - 1));
       } //r
 
 
       if ((b || c) & !this.isXYWallElement(x + 1, y + 1)) {
-        neighbours.push(this[y + 1][x + 1]);
+        neighbours.push(this.getNodeAtXY(x + 1, y + 1));
       } //s
 
 
       if ((c || d) & !this.isXYWallElement(x - 1, y + 1)) {
-        neighbours.push(this[y + 1][x - 1]);
+        neighbours.push(this.getNodeAtXY(x - 1, y + 1));
       }
 
       return neighbours;

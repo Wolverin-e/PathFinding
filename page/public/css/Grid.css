@@ -19,11 +19,27 @@ td {
     border: solid 1px rgba(0, 0, 0, 0.2);
 }
 
+.VISITED{
+    background-color: lightblue;
+    animation: wallGrowShrink 150ms linear normal;
+}
+
+.PATH{
+    background-color: yellow;
+    animation: wallGrowShrink 150ms linear normal;
+}
+
 .wallElem {
     background-color: grey;
     animation: wallGrowShrink 150ms linear normal;
 }
 
+.ADDEDTOQUEUE{
+    background-color: lightgreen;
+    animation: wallGrowShrink 150ms linear normal;
+}
+
+/* !!!!!! DO NOT ADD RULES BELOW THIS LINE !!!!!! */
 .startPoint {
     background-color: greenyellow;
 }

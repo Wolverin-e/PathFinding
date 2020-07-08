@@ -573,7 +573,7 @@ var BreadthFirstSearch = /*#__PURE__*/function () {
         node = node.parent;
       }
 
-      console.log(path);
+      path.reverse();
       return path;
     }
   }, {
@@ -589,11 +589,9 @@ var BreadthFirstSearch = /*#__PURE__*/function () {
       startNode.addedToQueue = true;
 
       while (!queue.isEmpty()) {
-        currentProcessingNode = queue.shift();
-        currentProcessingNode.visited = true;
+        currentProcessingNode = queue.shift(); // Dequeue operation on queue
 
         if (currentProcessingNode === endNode) {
-          // console.log(currentProcessingNode, endNode);
           return this.backTrace(endNode, startNode);
         }
 
@@ -607,6 +605,7 @@ var BreadthFirstSearch = /*#__PURE__*/function () {
           neighbour.addedToQueue = true;
           neighbour.parent = currentProcessingNode;
         });
+        currentProcessingNode.visited = true;
       }
 
       return [];
@@ -708,6 +707,11 @@ var Grid = /*#__PURE__*/function () {
       return this.endPoint.x === x && this.endPoint.y === y;
     }
   }, {
+    key: "getNodeAtXY",
+    value: function getNodeAtXY(x, y) {
+      return this[y][x];
+    }
+  }, {
     key: "clone",
     value: function clone() {
       var grid = new Grid(this);
@@ -742,46 +746,46 @@ var Grid = /*#__PURE__*/function () {
       // a
 
       if (!this.isXYWallElement(x, y - 1)) {
-        neighbours.push(this[y - 1][x]);
+        neighbours.push(this.getNodeAtXY(x, y - 1));
         a = true;
       } // b
 
 
       if (!this.isXYWallElement(x + 1, y)) {
-        neighbours.push(this[y][x + 1]);
+        neighbours.push(this.getNodeAtXY(x + 1, y));
         b = true;
       } // c
 
 
       if (!this.isXYWallElement(x, y + 1)) {
-        neighbours.push(this[y + 1][x]);
+        neighbours.push(this.getNodeAtXY(x, y + 1));
         c = true;
       } // d
 
 
       if (!this.isXYWallElement(x - 1, y)) {
-        neighbours.push(this[y][x - 1]);
+        neighbours.push(this.getNodeAtXY(x - 1, y));
         d = true;
       } //p
 
 
       if ((a || d) & !this.isXYWallElement(x - 1, y - 1)) {
-        neighbours.push(this[y - 1][x - 1]);
+        neighbours.push(this.getNodeAtXY(x - 1, y - 1));
       } //q
 
 
       if ((a || b) & !this.isXYWallElement(x + 1, y - 1)) {
-        neighbours.push(this[y - 1][x + 1]);
+        neighbours.push(this.getNodeAtXY(x + 1, y - 1));
       } //r
 
 
       if ((b || c) & !this.isXYWallElement(x + 1, y + 1)) {
-        neighbours.push(this[y + 1][x + 1]);
+        neighbours.push(this.getNodeAtXY(x + 1, y + 1));
       } //s
 
 
       if ((c || d) & !this.isXYWallElement(x - 1, y + 1)) {
-        neighbours.push(this[y + 1][x - 1]);
+        neighbours.push(this.getNodeAtXY(x - 1, y + 1));
       }
 
       return neighbours;
