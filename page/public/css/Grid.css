@@ -39,6 +39,16 @@ td {
     animation: wallGrowShrink 150ms linear normal;
 }
 
+.ADDEDTOHEAP{
+    background-color: blanchedalmond;
+    animation: wallGrowShrink 150ms linear normal;
+}
+
+.CURRENTNODE{
+    background-color: black;
+    animation: wallGrowShrink 150ms linear normal;
+}
+
 /* !!!!!! DO NOT ADD RULES BELOW THIS LINE !!!!!! */
 .startPoint {
     background-color: greenyellow;

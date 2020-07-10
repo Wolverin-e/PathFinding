@@ -20,6 +20,7 @@ export default class BreadthFirstSearch{
 		while(!queue.isEmpty()){
 
 			currentProcessingNode = queue.shift(); // Dequeue operation on queue
+			currentProcessingNode.currentNode = true;
 			
 			if(currentProcessingNode === endNode){
 				return backTrace.backTrace(endNode, startNode);

@@ -117,6 +117,30 @@ class Controller extends StateMachine{
 			get addedToQueue(){
 				return this._addedToQueue;
 			}, 
+			set addedToHeap(val){
+				this._addedToHeap = val;
+				opQueue.push({
+					x: this.x, 
+					y: this.y, 
+					att: 'addedToHeap', 
+					val
+				});
+			}, 
+			get addedToHeap(){
+				return this._addedToHeap;
+			}, 
+			set currentNode(val){
+				this._currentNode = val;
+				opQueue.push({
+					x: this.x, 
+					y: this.y, 
+					att: 'currentNode', 
+					val
+				});
+			}, 
+			get currentNode(){
+				return this._currentNode;
+			}
 		};
 	}
 
