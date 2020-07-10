@@ -1,18 +1,9 @@
 import Denque from 'denque';
+import backTrace from '../utils/BackTrace';
 
 export default class BreadthFirstSearch{
 	constructor(opts){
 		console.log(opts);
-	}
-
-	backTrace(node, startNode){
-		let path = [];
-		while(node !== startNode){
-			path.push(node);
-			node = node.parent;
-		}
-		path.reverse();
-		return path;
 	}
 
 	findPath(grid){
@@ -31,7 +22,7 @@ export default class BreadthFirstSearch{
 			currentProcessingNode = queue.shift(); // Dequeue operation on queue
 			
 			if(currentProcessingNode === endNode){
-				return this.backTrace(endNode, startNode);
+				return backTrace.backTrace(endNode, startNode);
 			}
 			
 			neighbours = grid.getNeighbours(currentProcessingNode);
