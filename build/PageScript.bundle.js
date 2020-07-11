@@ -24213,12 +24213,13 @@ var BreadthFirstSearch = /*#__PURE__*/function () {
         currentProcessingNode = queue.shift(); // Dequeue operation on queue
 
         if (this.markCurrentProcessingNode) currentProcessingNode.currentNode = true;
+        currentProcessingNode.visited = true;
 
         if (currentProcessingNode === endNode) {
           return _utils_BackTrace__WEBPACK_IMPORTED_MODULE_1__["default"].backTrace(endNode, startNode);
         }
 
-        neighbours = grid.getNeighbours(currentProcessingNode, this.allowDiagonal, this.doNotCrossCornersBetweenObstacles);
+        neighbours = grid.getNeighbours(currentProcessingNode, this.allowDiagonal, this.doNotCrossCorners);
         neighbours.forEach(function (neighbour) {
           if (neighbour.visited || neighbour.addedToQueue) {
             return; // equivalent to CONTINUE in forEach
@@ -24228,7 +24229,6 @@ var BreadthFirstSearch = /*#__PURE__*/function () {
           neighbour.addedToQueue = true;
           neighbour.parent = currentProcessingNode;
         });
-        currentProcessingNode.visited = true;
       }
 
       return [];
@@ -24236,7 +24236,74 @@ var BreadthFirstSearch = /*#__PURE__*/function () {
   }, {
     key: "findBiPath",
     value: function findBiPath(grid) {
-      console.log(grid);
+      var startNode = grid.getNodeAtXY(grid.startPoint.x, grid.startPoint.y),
+          endNode = grid.getNodeAtXY(grid.endPoint.x, grid.endPoint.y),
+          neighbour,
+          currentProcessingNode,
+          neighboursStart = [],
+          neighboursEnd = [];
+      var startqueue = new denque__WEBPACK_IMPORTED_MODULE_0___default.a([startNode]),
+          endqueue = new denque__WEBPACK_IMPORTED_MODULE_0___default.a([endNode]);
+      startNode.addedToQueue = true;
+      endNode.addedToQueue = true;
+      startNode.by = 'start';
+      endNode.by = 'end';
+
+      while (!startqueue.isEmpty() && !endqueue.isEmpty()) {
+        currentProcessingNode = startqueue.shift();
+        if (this.markCurrentProcessingNode) currentProcessingNode.currentNode = true;
+        currentProcessingNode.visited = true;
+        neighboursStart = grid.getNeighbours(currentProcessingNode, this.allowDiagonal, this.doNotCrossCornersBetweenObstacles);
+
+        while (neighboursStart.length) {
+          neighbour = neighboursStart.shift();
+
+          if (neighbour.visited) {
+            continue;
+          }
+
+          if (neighbour.addedToQueue) {
+            if (neighbour.by === 'end') {
+              return _utils_BackTrace__WEBPACK_IMPORTED_MODULE_1__["default"].biBackTrace(currentProcessingNode, startNode, neighbour, endNode);
+            }
+
+            continue;
+          }
+
+          startqueue.push(neighbour);
+          neighbour.parent = currentProcessingNode;
+          neighbour.by = 'start';
+          neighbour.addedToQueue = true;
+        }
+
+        currentProcessingNode = endqueue.shift();
+        if (this.markCurrentProcessingNode) currentProcessingNode.currentNode = true;
+        currentProcessingNode.visited = true;
+        neighboursEnd = grid.getNeighbours(currentProcessingNode, this.allowDiagonal, this.doNotCrossCornersBetweenObstacles);
+
+        while (neighboursEnd.length) {
+          neighbour = neighboursEnd.shift();
+
+          if (neighbour.visited) {
+            continue;
+          }
+
+          if (neighbour.addedToQueue) {
+            if (neighbour.by === 'start') {
+              return _utils_BackTrace__WEBPACK_IMPORTED_MODULE_1__["default"].biBackTrace(neighbour, startNode, currentProcessingNode, endNode);
+            }
+
+            continue;
+          }
+
+          endqueue.push(neighbour);
+          neighbour.addedToQueue = true;
+          neighbour.parent = currentProcessingNode;
+          neighbour.by = 'end';
+        }
+      }
+
+      return [];
     }
   }]);
 
@@ -24570,6 +24637,15 @@ var BackTrace = /*#__PURE__*/function () {
       }
 
       path.reverse();
+      return path;
+    }
+  }, {
+    key: "biBackTrace",
+    value: function biBackTrace(node1, startNode, node2, endNode) {
+      var path1 = this.backTrace(node1, startNode),
+          path2 = this.backTrace(node2, endNode);
+      path2 = path2.reverse();
+      var path = path1.concat(path2);
       return path;
     }
   }]);
