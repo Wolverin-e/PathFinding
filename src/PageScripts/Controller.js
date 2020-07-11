@@ -34,11 +34,6 @@ class Controller extends StateMachine{
 			startPoint: options.startPoint, 
 			endPoint: options.endPoint
 		});
-
-		this.algorithm = "BreadthFirstSearch";
-		this.algorithmOptions = {
-			allowDiagonal: true
-		};
 	}
 
 	// UTILITIES
@@ -327,7 +322,8 @@ class Controller extends StateMachine{
 		let controlCenter = $('#control-center');
 
 		let stepsInpField = controlCenter.find("#steps"), 
-			delayInpField = controlCenter.find("#delay");
+			delayInpField = controlCenter.find("#delay"), 
+			algorithmSelector = controlCenter.find("#algorithmSelector");
 		
 		stepsInpField.val(this.undoRedoBurstSteps);
 		stepsInpField.on("input", (event) => {
@@ -339,7 +335,18 @@ class Controller extends StateMachine{
 			this.stepDelay = event.target.value?event.target.value:this.defaultStepDelay;
 		});
 
-		controlCenter.find("#algorithmSelector").on('change', (event) => {
+		this.algorithm = algorithmSelector.val();
+		this.algorithmOptions = {};
+		
+		let radioOpt = controlCenter.find(`#${this.algorithm} .options-radio-section input[type='radio']:checked`);
+		if(radioOpt.length) this.algorithmOptions['heuristic'] = radioOpt.val();
+		
+		let checkBoxOpts = controlCenter.find(`#${this.algorithm} .options-checkbox-section input[type='checkbox']:checked`);
+		checkBoxOpts.each((i, elem) => {
+			this.algorithmOptions[elem.value] = true;
+		});
+
+		algorithmSelector.on('change', (event) => {
 			this.algorithm = event.target.value;
 			this.algorithmOptions = {};
 
@@ -347,11 +354,9 @@ class Controller extends StateMachine{
 			if(radioOpt.length) this.algorithmOptions['heuristic'] = radioOpt.val();
 			
 			let checkBoxOpts = controlCenter.find(`#${this.algorithm} .options-checkbox-section input[type='checkbox']:checked`);
-			if(checkBoxOpts.length){
-				checkBoxOpts.each((i, elem) => {
-					this.algorithmOptions[elem.value] = true;
-				});
-			}
+			checkBoxOpts.each((i, elem) => {
+				this.algorithmOptions[elem.value] = true;
+			});
 		});
 
 		controlCenter.find(`.options-radio-section input[type='radio']`).each((i, elem) => {

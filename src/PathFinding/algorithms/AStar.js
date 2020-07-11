@@ -6,6 +6,9 @@ export default class AStar{
 	constructor(options){
 		console.log(options);
 		this.heuristic = options.heuristic;
+		this.allowDiagonal = options.allowDiagonal;
+		this.biDirectional = options.biDirectional;
+		this.doNotCrossCornersBetweenObstacles = options.doNotCrossCornersBetweenObstacles;
 	}
 
 	getDistanceFromCurrentProcessignNode(currentProcessingNode, neighbour){
@@ -37,7 +40,7 @@ export default class AStar{
 				return backTrace.backTrace(currentProcessingNode, startNode);
 			}
 
-			neighbours = grid.getNeighbours(currentProcessingNode);
+			neighbours = grid.getNeighbours(currentProcessingNode, this.allowDiagonal, this.doNotCrossCornersBetweenObstacles);
 
 			neighbours.forEach(neighbour => {
 				if(neighbour.visited) return; //equivalent to continue in forEach
@@ -65,5 +68,7 @@ export default class AStar{
 
 			currentProcessingNode.visited = true;
 		}
+
+		return [];
 	}
 }

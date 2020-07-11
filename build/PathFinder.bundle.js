@@ -963,6 +963,9 @@ var AStar = /*#__PURE__*/function () {
 
     console.log(options);
     this.heuristic = options.heuristic;
+    this.allowDiagonal = options.allowDiagonal;
+    this.biDirectional = options.biDirectional;
+    this.doNotCrossCornersBetweenObstacles = options.doNotCrossCornersBetweenObstacles;
   }
 
   _createClass(AStar, [{
@@ -1000,7 +1003,7 @@ var AStar = /*#__PURE__*/function () {
           return _utils_BackTrace__WEBPACK_IMPORTED_MODULE_1__["default"].backTrace(currentProcessingNode, startNode);
         }
 
-        neighbours = grid.getNeighbours(currentProcessingNode);
+        neighbours = grid.getNeighbours(currentProcessingNode, this.allowDiagonal, this.doNotCrossCornersBetweenObstacles);
         neighbours.forEach(function (neighbour) {
           if (neighbour.visited) return; //equivalent to continue in forEach
 
@@ -1023,6 +1026,8 @@ var AStar = /*#__PURE__*/function () {
         });
         currentProcessingNode.visited = true;
       }
+
+      return [];
     }
   }]);
 
@@ -1056,10 +1061,13 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
 var BreadthFirstSearch = /*#__PURE__*/function () {
-  function BreadthFirstSearch(opts) {
+  function BreadthFirstSearch(options) {
     _classCallCheck(this, BreadthFirstSearch);
 
-    console.log(opts);
+    console.log(options);
+    this.allowDiagonal = options.allowDiagonal;
+    this.biDirectional = options.biDirectional;
+    this.doNotCrossCornersBetweenObstacles = options.doNotCrossCornersBetweenObstacles;
   }
 
   _createClass(BreadthFirstSearch, [{
@@ -1083,7 +1091,7 @@ var BreadthFirstSearch = /*#__PURE__*/function () {
           return _utils_BackTrace__WEBPACK_IMPORTED_MODULE_1__["default"].backTrace(endNode, startNode);
         }
 
-        neighbours = grid.getNeighbours(currentProcessingNode);
+        neighbours = grid.getNeighbours(currentProcessingNode, this.allowDiagonal, this.doNotCrossCornersBetweenObstacles);
         neighbours.forEach(function (neighbour) {
           if (neighbour.visited || neighbour.addedToQueue) {
             return; // equivalent to CONTINUE in forEach
@@ -1226,12 +1234,11 @@ var Grid = /*#__PURE__*/function () {
 
   }, {
     key: "getNeighbours",
-    value: function getNeighbours(node) {
+    value: function getNeighbours(node, allowDiagonal, doNotCrossCornersBetweenObstacles) {
       var neighbours = [];
       var x = node.x,
           y = node.y;
-      var a, b, c, d; // all movable;
-      // a
+      var a, b, c, d; // a
 
       if (!this.isXYWallElement(x, y - 1)) {
         neighbours.push(this.getNodeAtXY(x, y - 1));
@@ -1254,26 +1261,50 @@ var Grid = /*#__PURE__*/function () {
       if (!this.isXYWallElement(x - 1, y)) {
         neighbours.push(this.getNodeAtXY(x - 1, y));
         d = true;
-      } //p
+      }
+
+      if (allowDiagonal) {
+        if (doNotCrossCornersBetweenObstacles) {
+          //p
+          if ((a || d) & !this.isXYWallElement(x - 1, y - 1)) {
+            neighbours.push(this.getNodeAtXY(x - 1, y - 1));
+          } //q
 
 
-      if ((a || d) & !this.isXYWallElement(x - 1, y - 1)) {
-        neighbours.push(this.getNodeAtXY(x - 1, y - 1));
-      } //q
+          if ((a || b) & !this.isXYWallElement(x + 1, y - 1)) {
+            neighbours.push(this.getNodeAtXY(x + 1, y - 1));
+          } //r
 
 
-      if ((a || b) & !this.isXYWallElement(x + 1, y - 1)) {
-        neighbours.push(this.getNodeAtXY(x + 1, y - 1));
-      } //r
+          if ((b || c) & !this.isXYWallElement(x + 1, y + 1)) {
+            neighbours.push(this.getNodeAtXY(x + 1, y + 1));
+          } //s
 
 
-      if ((b || c) & !this.isXYWallElement(x + 1, y + 1)) {
-        neighbours.push(this.getNodeAtXY(x + 1, y + 1));
-      } //s
+          if ((c || d) & !this.isXYWallElement(x - 1, y + 1)) {
+            neighbours.push(this.getNodeAtXY(x - 1, y + 1));
+          }
+        } else {
+          //p
+          if (!this.isXYWallElement(x - 1, y - 1)) {
+            neighbours.push(this.getNodeAtXY(x - 1, y - 1));
+          } //q
 
 
-      if ((c || d) & !this.isXYWallElement(x - 1, y + 1)) {
-        neighbours.push(this.getNodeAtXY(x - 1, y + 1));
+          if (!this.isXYWallElement(x + 1, y - 1)) {
+            neighbours.push(this.getNodeAtXY(x + 1, y - 1));
+          } //r
+
+
+          if (!this.isXYWallElement(x + 1, y + 1)) {
+            neighbours.push(this.getNodeAtXY(x + 1, y + 1));
+          } //s
+
+
+          if (!this.isXYWallElement(x - 1, y + 1)) {
+            neighbours.push(this.getNodeAtXY(x - 1, y + 1));
+          }
+        }
       }
 
       return neighbours;

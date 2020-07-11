@@ -50,9 +50,10 @@
                 <!-- ALGORITHM SELECTOR -->
                 <p id="normal-lable">ALGORITHM</p>
                 <select name="algorithm" id="algorithmSelector">
-                    <!-- <optgroup label="searchparty">searchparty</optgroup> -->
-                    <option value="BreadthFirstSearch">BreadthFirstSearch</option>
+                    <optgroup label="GREEDY">GREEDY</optgroup>
                     <option value="AStar">AStar</option>
+                    <optgroup label="CLASSIC">CLASSIC</optgroup>
+                    <option value="BreadthFirstSearch">BreadthFirstSearch</option>
                 </select>
                 <hr />
 
@@ -66,8 +67,8 @@
                         <input type="checkbox" id="BFSC2" value="biDirectional">
                             <label for="BFSC2">Bi Directional</label>
                             <br />
-                        <input type="checkbox" id="BFSC3" value="doNotCrossCorners">
-                            <label for="BFSC3">Do Not Cross Corners</label>
+                        <input type="checkbox" id="BFSC3" value="doNotCrossCornersBetweenObstacles" checked>
+                            <label for="BFSC3">Do Not Cross Corners Between Obstacles</label>
                             <br />
                     </div>
                 </div>
@@ -97,8 +98,8 @@
                         <input type="checkbox" id="ASC2" value="biDirectional">
                             <label for="ASC2">Bi Directional</label>
                             <br />
-                        <input type="checkbox" id="ASC3" value="doNotCrossCorners">
-                            <label for="ASC3">Do Not Cross Corners</label>
+                        <input type="checkbox" id="ASC3" value="doNotCrossCornersBetweenObstacles" checked>
+                            <label for="ASC3">Do Not Cross Corners Between Obstacles</label>
                             <br />
                     </div>
                 </div>

@@ -2,8 +2,11 @@ import Denque from 'denque';
 import backTrace from '../utils/BackTrace';
 
 export default class BreadthFirstSearch{
-	constructor(opts){
-		console.log(opts);
+	constructor(options){
+		console.log(options);
+		this.allowDiagonal = options.allowDiagonal;
+		this.biDirectional = options.biDirectional;
+		this.doNotCrossCornersBetweenObstacles = options.doNotCrossCornersBetweenObstacles;
 	}
 
 	findPath(grid){
@@ -26,7 +29,7 @@ export default class BreadthFirstSearch{
 				return backTrace.backTrace(endNode, startNode);
 			}
 			
-			neighbours = grid.getNeighbours(currentProcessingNode);
+			neighbours = grid.getNeighbours(currentProcessingNode, this.allowDiagonal, this.doNotCrossCornersBetweenObstacles);
 			neighbours.forEach(neighbour => {
 				if(neighbour.visited || neighbour.addedToQueue){
 					return; // equivalent to CONTINUE in forEach

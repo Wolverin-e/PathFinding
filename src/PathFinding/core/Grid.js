@@ -58,12 +58,10 @@ class Grid{
 		|_d_|_*_|_b_| |_ _|_*_|_ _|
 		|_ _|_c_|_ _| |_s_|_ _|_r_|
 	 */
-	getNeighbours(node){
+	getNeighbours(node, allowDiagonal, doNotCrossCornersBetweenObstacles){
 		let neighbours = [];
 		const {x, y} = node;
 		let a, b, c, d;
-
-		// all movable;
 		
 		// a
 		if(!this.isXYWallElement(x, y-1)) {
@@ -86,21 +84,42 @@ class Grid{
 			d = true;
 		}
 
-		//p
-		if( (a || d) & !this.isXYWallElement(x-1, y-1)) {
-			neighbours.push(this.getNodeAtXY(x-1, y-1));
-		}
-		//q
-		if( (a || b) & !this.isXYWallElement(x+1, y-1)) {
-			neighbours.push(this.getNodeAtXY(x+1, y-1));
-		}
-		//r
-		if( (b || c) & !this.isXYWallElement(x+1, y+1)) {
-			neighbours.push(this.getNodeAtXY(x+1, y+1));
-		}
-		//s
-		if( (c || d) & !this.isXYWallElement(x-1, y+1)) {
-			neighbours.push(this.getNodeAtXY(x-1, y+1));
+		if(allowDiagonal){
+			if(doNotCrossCornersBetweenObstacles){
+				//p
+				if( (a || d) & !this.isXYWallElement(x-1, y-1)) {
+					neighbours.push(this.getNodeAtXY(x-1, y-1));
+				}
+				//q
+				if( (a || b) & !this.isXYWallElement(x+1, y-1)) {
+					neighbours.push(this.getNodeAtXY(x+1, y-1));
+				}
+				//r
+				if( (b || c) & !this.isXYWallElement(x+1, y+1)) {
+					neighbours.push(this.getNodeAtXY(x+1, y+1));
+				}
+				//s
+				if( (c || d) & !this.isXYWallElement(x-1, y+1)) {
+					neighbours.push(this.getNodeAtXY(x-1, y+1));
+				}
+			} else {
+				//p
+				if(!this.isXYWallElement(x-1, y-1)) {
+					neighbours.push(this.getNodeAtXY(x-1, y-1));
+				}
+				//q
+				if(!this.isXYWallElement(x+1, y-1)) {
+					neighbours.push(this.getNodeAtXY(x+1, y-1));
+				}
+				//r
+				if(!this.isXYWallElement(x+1, y+1)) {
+					neighbours.push(this.getNodeAtXY(x+1, y+1));
+				}
+				//s
+				if(!this.isXYWallElement(x-1, y+1)) {
+					neighbours.push(this.getNodeAtXY(x-1, y+1));
+				}
+			}
 		}
 		return neighbours;
 	}
