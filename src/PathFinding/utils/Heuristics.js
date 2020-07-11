@@ -5,32 +5,28 @@ let abs = Math.abs,
 
 class Heuristic{
 
-	constructor(){
-		this.weight = 1;
-	}
-
-	manhattan(nodeA, nodeB){
+	manhattan(nodeA, nodeB, weight=1){
 		let dx = abs(nodeA.x-nodeB.x);
 		let dy = abs(nodeA.y-nodeB.y);
-		return this.weight*(dx+dy);
+		return weight*(dx+dy);
 	}
 
-	euclidean(nodeA, nodeB){
+	euclidean(nodeA, nodeB, weight=1){
 		let dx = abs(nodeA.x-nodeB.x);
 		let dy = abs(nodeA.y-nodeB.y);
-		return this.weight*sqrt(dx*dx + dy*dy);
+		return weight*sqrt(dx*dx + dy*dy);
 	}
 
-	octile(nodeA, nodeB){
+	octile(nodeA, nodeB, weight=1){
 		let dx = abs(nodeA.x-nodeB.x);
 		let dy = abs(nodeA.y-nodeB.y);
-		return max(dx, dy)+(sqrt(2)-1)*min(dx, dy);
+		return weight*(max(dx, dy)+(sqrt(2)-1)*min(dx, dy));
 	}
 
-	chebyshev(nodeA, nodeB){
+	chebyshev(nodeA, nodeB, weight=1){
 		let dx = abs(nodeA.x-nodeB.x);
 		let dy = abs(nodeA.y-nodeB.y);
-		return max(dx, dy);
+		return weight*(max(dx, dy));
 	}
 }
 

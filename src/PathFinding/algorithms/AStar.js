@@ -5,10 +5,10 @@ import heuristics from '../utils/Heuristics';
 export default class AStar{
 	constructor(options){
 		console.log(options);
-		this.heuristic = options.heuristic;
 		this.allowDiagonal = options.allowDiagonal;
 		this.biDirectional = options.biDirectional;
 		this.doNotCrossCornersBetweenObstacles = options.doNotCrossCornersBetweenObstacles;
+		this.heuristic = heuristics[options.heuristic];
 	}
 
 	getDistanceFromCurrentProcessignNode(currentProcessingNode, neighbour){
@@ -49,7 +49,7 @@ export default class AStar{
 
 				if(!neighbour.addedToHeap){
 					neighbour.g = neighbourGValFromCurrentProcessingNode;
-					neighbour.h = heuristics[this.heuristic](endNode, neighbour);
+					neighbour.h = this.heuristic(endNode, neighbour);
 					neighbour.f = neighbour.g+neighbour.h;
 
 					minHeap.insert(neighbour);
@@ -58,7 +58,7 @@ export default class AStar{
 
 				} else if(neighbour.g > neighbourGValFromCurrentProcessingNode){
 					neighbour.g = neighbourGValFromCurrentProcessingNode;
-					neighbour.h = heuristics[this.heuristic](endNode, neighbour);
+					neighbour.h = this.heuristic(endNode, neighbour);
 					neighbour.f = neighbour.g+neighbour.h;
 
 					minHeap.updateItem(neighbour);

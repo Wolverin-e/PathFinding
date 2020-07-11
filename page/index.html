@@ -52,8 +52,10 @@
                 <select name="algorithm" id="algorithmSelector">
                     <optgroup label="GREEDY">GREEDY</optgroup>
                     <option value="AStar">AStar</option>
+                    <option value="BestFirstSearch">BestFirstSearch</option>
                     <optgroup label="CLASSIC">CLASSIC</optgroup>
                     <option value="BreadthFirstSearch">BreadthFirstSearch</option>
+                    <option value="Dijkshtra">Dijkshtra</option>
                 </select>
                 <hr />
 
@@ -68,7 +70,7 @@
                             <label for="BFSC2">Bi Directional</label>
                             <br />
                         <input type="checkbox" id="BFSC3" value="doNotCrossCornersBetweenObstacles" checked>
-                            <label for="BFSC3">Do Not Cross Corners Between Obstacles</label>
+                            <label for="BFSC3">Do Not Cross Wall</label>
                             <br />
                     </div>
                 </div>
@@ -76,17 +78,17 @@
                 <div id="AStar" class="algorithm-options-section">
                     HEURISTIC
                     <div class="options-radio-section">
-                        <input type="radio" id="ASO1" name="heuristic" value="manhattan" checked />
+                        <input type="radio" id="ASO1" name="AS" value="manhattan" checked />
                             <label for="ASO1">Manhattan</label>
                             <br />
-                        <input type="radio" id="ASO2" name="heuristic" value="euclidean" />
+                        <input type="radio" id="ASO2" name="AS" value="euclidean" />
                             <label for="ASO2">Euclidean</label>
                             <br />
-                        <input type="radio" id="ASO3" name="heuristic" value="octile" />
+                        <input type="radio" id="ASO3" name="AS" value="octile" />
                             <label for="ASO3">Octile</label>
                             <br />
-                        <input type="radio" id="AS04" name="heuristic" value="chebyshev" />
-                            <label for="AS04">Chebyshev</label>
+                        <input type="radio" id="ASO4" name="AS" value="chebyshev" />
+                            <label for="ASO4">Chebyshev</label>
                             <br />
                     </div>
                     <br />
@@ -99,7 +101,53 @@
                             <label for="ASC2">Bi Directional</label>
                             <br />
                         <input type="checkbox" id="ASC3" value="doNotCrossCornersBetweenObstacles" checked>
-                            <label for="ASC3">Do Not Cross Corners Between Obstacles</label>
+                            <label for="ASC3">Do Not Cross Wall</label>
+                            <br />
+                    </div>
+                </div>
+
+                <div id="Dijkshtra" class="algorithm-options-section">
+                    OPTIONS
+                    <div class="options-checkbox-section">
+                        <input type="checkbox" id="DJC1" value="allowDiagonal" checked>
+                            <label for="DJC1">Allow Diagonal</label>
+                            <br />
+                        <input type="checkbox" id="DJC2" value="biDirectional">
+                            <label for="DJC2">Bi Directional</label>
+                            <br />
+                        <input type="checkbox" id="DJC3" value="doNotCrossCornersBetweenObstacles" checked>
+                            <label for="DJC3">Do Not Cross Wall</label>
+                            <br />
+                    </div>
+                </div>
+
+                <div id="BestFirstSearch" class="algorithm-options-section">
+                    HEURISTIC
+                    <div class="options-radio-section">
+                        <input type="radio" id="BeFSO1" name="BEFS" value="manhattan" checked />
+                            <label for="BeFSO1">Manhattan</label>
+                            <br />
+                        <input type="radio" id="BeFSO2" name="BEFS" value="euclidean" />
+                            <label for="BeFSO2">Euclidean</label>
+                            <br />
+                        <input type="radio" id="BeFSO3" name="BEFS" value="octile" />
+                            <label for="BeFSO3">Octile</label>
+                            <br />
+                        <input type="radio" id="BeFSO4" name="BEFS" value="chebyshev" />
+                            <label for="BeFSO4">Chebyshev</label>
+                            <br />
+                    </div>
+                    <br />
+                    OPTIONS
+                    <div class="options-checkbox-section">
+                        <input type="checkbox" id="BeFSC1" value="allowDiagonal" checked>
+                            <label for="BeFSC1">Allow Diagonal</label>
+                            <br />
+                        <input type="checkbox" id="BeFSC2" value="biDirectional">
+                            <label for="BeFSC2">Bi Directional</label>
+                            <br />
+                        <input type="checkbox" id="BeFSC3" value="doNotCrossCornersBetweenObstacles" checked>
+                            <label for="BeFSC3">Do Not Cross Wall</label>
                             <br />
                     </div>
                 </div>
