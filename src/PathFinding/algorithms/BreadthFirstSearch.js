@@ -12,6 +12,7 @@ export default class BreadthFirstSearch{
 			this.findPath = this.findBiPath;
 		}
 	}
+	
 	findPath(grid){
 		let startPoint = grid.startPoint, 
 			endPoint = grid.endPoint, 
@@ -111,7 +112,7 @@ export default class BreadthFirstSearch{
 
 			currentProcessingNode.visited = true;
 		}
-		return [];		
+		return [];
 	}
 }	
 	
