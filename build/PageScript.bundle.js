@@ -24213,7 +24213,6 @@ var BreadthFirstSearch = /*#__PURE__*/function () {
         currentProcessingNode = queue.shift(); // Dequeue operation on queue
 
         if (this.markCurrentProcessingNode) currentProcessingNode.currentNode = true;
-        currentProcessingNode.visited = true;
 
         if (currentProcessingNode === endNode) {
           return _utils_BackTrace__WEBPACK_IMPORTED_MODULE_1__["default"].backTrace(endNode, startNode);
@@ -24229,6 +24228,7 @@ var BreadthFirstSearch = /*#__PURE__*/function () {
           neighbour.addedToQueue = true;
           neighbour.parent = currentProcessingNode;
         });
+        currentProcessingNode.visited = true;
       }
 
       return [];
@@ -24240,23 +24240,22 @@ var BreadthFirstSearch = /*#__PURE__*/function () {
           endNode = grid.getNodeAtXY(grid.endPoint.x, grid.endPoint.y),
           neighbour,
           currentProcessingNode,
-          neighboursStart = [],
-          neighboursEnd = [];
-      var startqueue = new denque__WEBPACK_IMPORTED_MODULE_0___default.a([startNode]),
-          endqueue = new denque__WEBPACK_IMPORTED_MODULE_0___default.a([endNode]);
+          startNeighbours = [],
+          endNeighbours = [];
+      var startQueue = new denque__WEBPACK_IMPORTED_MODULE_0___default.a([startNode]),
+          endQueue = new denque__WEBPACK_IMPORTED_MODULE_0___default.a([endNode]);
       startNode.addedToQueue = true;
       endNode.addedToQueue = true;
       startNode.by = 'start';
       endNode.by = 'end';
 
-      while (!startqueue.isEmpty() && !endqueue.isEmpty()) {
-        currentProcessingNode = startqueue.shift();
+      while (!startQueue.isEmpty() && !endQueue.isEmpty()) {
+        currentProcessingNode = startQueue.shift();
         if (this.markCurrentProcessingNode) currentProcessingNode.currentNode = true;
-        currentProcessingNode.visited = true;
-        neighboursStart = grid.getNeighbours(currentProcessingNode, this.allowDiagonal, this.doNotCrossCornersBetweenObstacles);
+        startNeighbours = grid.getNeighbours(currentProcessingNode, this.allowDiagonal, this.doNotCrossCornersBetweenObstacles);
 
-        while (neighboursStart.length) {
-          neighbour = neighboursStart.shift();
+        while (startNeighbours.length) {
+          neighbour = startNeighbours.shift();
 
           if (neighbour.visited) {
             continue;
@@ -24270,19 +24269,19 @@ var BreadthFirstSearch = /*#__PURE__*/function () {
             continue;
           }
 
-          startqueue.push(neighbour);
+          startQueue.push(neighbour);
           neighbour.parent = currentProcessingNode;
           neighbour.by = 'start';
           neighbour.addedToQueue = true;
         }
 
-        currentProcessingNode = endqueue.shift();
-        if (this.markCurrentProcessingNode) currentProcessingNode.currentNode = true;
         currentProcessingNode.visited = true;
-        neighboursEnd = grid.getNeighbours(currentProcessingNode, this.allowDiagonal, this.doNotCrossCornersBetweenObstacles);
+        currentProcessingNode = endQueue.shift();
+        if (this.markCurrentProcessingNode) currentProcessingNode.currentNode = true;
+        endNeighbours = grid.getNeighbours(currentProcessingNode, this.allowDiagonal, this.doNotCrossCornersBetweenObstacles);
 
-        while (neighboursEnd.length) {
-          neighbour = neighboursEnd.shift();
+        while (endNeighbours.length) {
+          neighbour = endNeighbours.shift();
 
           if (neighbour.visited) {
             continue;
@@ -24296,11 +24295,13 @@ var BreadthFirstSearch = /*#__PURE__*/function () {
             continue;
           }
 
-          endqueue.push(neighbour);
+          endQueue.push(neighbour);
           neighbour.addedToQueue = true;
           neighbour.parent = currentProcessingNode;
           neighbour.by = 'end';
         }
+
+        currentProcessingNode.visited = true;
       }
 
       return [];

@@ -21,14 +21,17 @@ export default class BreadthFirstSearch{
 		let queue = new Denque([startNode]), 
 			neighbours = [], 
 			currentProcessingNode;
+		
 		startNode.addedToQueue = true;
+
 		while(!queue.isEmpty()){
 			currentProcessingNode = queue.shift(); // Dequeue operation on queue
 			if(this.markCurrentProcessingNode) currentProcessingNode.currentNode = true;
-			currentProcessingNode.visited = true;
 
 			if(currentProcessingNode === endNode){
-				return backTrace.backTrace(endNode, startNode);}
+				return backTrace.backTrace(endNode, startNode);
+			}
+
 			neighbours = grid.getNeighbours(currentProcessingNode,this.allowDiagonal,this.doNotCrossCorners);
 			neighbours.forEach(neighbour => {
 				if(neighbour.visited || neighbour.addedToQueue){
@@ -38,6 +41,8 @@ export default class BreadthFirstSearch{
 				neighbour.addedToQueue = true;
 				neighbour.parent = currentProcessingNode;
 			});
+
+			currentProcessingNode.visited = true;
 		}
 			
 		return [];
@@ -48,25 +53,24 @@ export default class BreadthFirstSearch{
 			endNode = grid.getNodeAtXY(grid.endPoint.x, grid.endPoint.y), 
 			neighbour,
 			currentProcessingNode,
-			neighboursStart = [],
-			neighboursEnd = [];
+			startNeighbours = [],
+			endNeighbours = [];
 
-		let startqueue = new Denque([startNode]),
-			endqueue = new Denque([endNode]);
+		let startQueue = new Denque([startNode]),
+			endQueue = new Denque([endNode]);
 			
 		startNode.addedToQueue = true;
 		endNode.addedToQueue = true;
 		startNode.by = 'start';
 		endNode.by = 'end';
 
-		while(!startqueue.isEmpty() && !endqueue.isEmpty()){
-			currentProcessingNode = startqueue.shift();
+		while(!startQueue.isEmpty() && !endQueue.isEmpty()){
+			currentProcessingNode = startQueue.shift();
 			if(this.markCurrentProcessingNode) currentProcessingNode.currentNode = true;
-			currentProcessingNode.visited = true;
-			neighboursStart = grid.getNeighbours(currentProcessingNode, this.allowDiagonal, this.doNotCrossCornersBetweenObstacles);
+			startNeighbours = grid.getNeighbours(currentProcessingNode, this.allowDiagonal, this.doNotCrossCornersBetweenObstacles);
 		
-			while(neighboursStart.length){
-				neighbour = neighboursStart.shift();
+			while(startNeighbours.length){
+				neighbour = startNeighbours.shift();
 				if(neighbour.visited){
 					continue;
 				}
@@ -76,19 +80,20 @@ export default class BreadthFirstSearch{
 					}
 					continue;
 				}
-				startqueue.push(neighbour);
+				startQueue.push(neighbour);
 				neighbour.parent = currentProcessingNode;
 				neighbour.by = 'start';
 				neighbour.addedToQueue = true;
 			}
-			
-			currentProcessingNode = endqueue.shift();
-			if(this.markCurrentProcessingNode) currentProcessingNode.currentNode = true;
-			currentProcessingNode.visited = true;
-			neighboursEnd = grid.getNeighbours(currentProcessingNode, this.allowDiagonal, this.doNotCrossCornersBetweenObstacles);
 
-			while(neighboursEnd.length){
-				neighbour = neighboursEnd.shift();
+			currentProcessingNode.visited = true;
+			
+			currentProcessingNode = endQueue.shift();
+			if(this.markCurrentProcessingNode) currentProcessingNode.currentNode = true;
+			endNeighbours = grid.getNeighbours(currentProcessingNode, this.allowDiagonal, this.doNotCrossCornersBetweenObstacles);
+
+			while(endNeighbours.length){
+				neighbour = endNeighbours.shift();
 				if(neighbour.visited){
 					continue;
 				}
@@ -98,12 +103,13 @@ export default class BreadthFirstSearch{
 					}
 					continue;
 				}
-				endqueue.push(neighbour);
+				endQueue.push(neighbour);
 				neighbour.addedToQueue = true;
 				neighbour.parent=currentProcessingNode;
 				neighbour.by='end';
-
 			}
+
+			currentProcessingNode.visited = true;
 		}
 		return [];		
 	}
