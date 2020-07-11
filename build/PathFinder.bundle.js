@@ -962,10 +962,10 @@ var AStar = /*#__PURE__*/function () {
     _classCallCheck(this, AStar);
 
     console.log(options);
-    this.heuristic = options.heuristic;
     this.allowDiagonal = options.allowDiagonal;
     this.biDirectional = options.biDirectional;
     this.doNotCrossCornersBetweenObstacles = options.doNotCrossCornersBetweenObstacles;
+    this.heuristic = _utils_Heuristics__WEBPACK_IMPORTED_MODULE_2__["default"][options.heuristic];
   }
 
   _createClass(AStar, [{
@@ -1011,14 +1011,14 @@ var AStar = /*#__PURE__*/function () {
 
           if (!neighbour.addedToHeap) {
             neighbour.g = neighbourGValFromCurrentProcessingNode;
-            neighbour.h = _utils_Heuristics__WEBPACK_IMPORTED_MODULE_2__["default"][_this.heuristic](endNode, neighbour);
+            neighbour.h = _this.heuristic(endNode, neighbour);
             neighbour.f = neighbour.g + neighbour.h;
             minHeap.insert(neighbour);
             neighbour.addedToHeap = true;
             neighbour.parent = currentProcessingNode;
           } else if (neighbour.g > neighbourGValFromCurrentProcessingNode) {
             neighbour.g = neighbourGValFromCurrentProcessingNode;
-            neighbour.h = _utils_Heuristics__WEBPACK_IMPORTED_MODULE_2__["default"][_this.heuristic](endNode, neighbour);
+            neighbour.h = _this.heuristic(endNode, neighbour);
             neighbour.f = neighbour.g + neighbour.h;
             minHeap.updateItem(neighbour);
             neighbour.parent = currentProcessingNode;
@@ -1033,6 +1033,64 @@ var AStar = /*#__PURE__*/function () {
 
   return AStar;
 }();
+
+
+
+/***/ }),
+
+/***/ "./src/PathFinding/algorithms/BestFirstSearch.js":
+/*!*******************************************************!*\
+  !*** ./src/PathFinding/algorithms/BestFirstSearch.js ***!
+  \*******************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return BestFirstSearch; });
+/* harmony import */ var _AStar__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AStar */ "./src/PathFinding/algorithms/AStar.js");
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+
+
+var BestFirstSearch = /*#__PURE__*/function (_AStar) {
+  _inherits(BestFirstSearch, _AStar);
+
+  var _super = _createSuper(BestFirstSearch);
+
+  function BestFirstSearch(options) {
+    var _this;
+
+    _classCallCheck(this, BestFirstSearch);
+
+    _this = _super.call(this, options);
+    var heuristicToOverride = _this.heuristic;
+
+    _this.heuristic = function (node1, node2) {
+      return heuristicToOverride(node1, node2, 500000);
+    };
+
+    return _this;
+  }
+
+  return BestFirstSearch;
+}(_AStar__WEBPACK_IMPORTED_MODULE_0__["default"]);
 
 
 
@@ -1110,6 +1168,63 @@ var BreadthFirstSearch = /*#__PURE__*/function () {
 
   return BreadthFirstSearch;
 }();
+
+
+
+/***/ }),
+
+/***/ "./src/PathFinding/algorithms/Dijkshtra.js":
+/*!*************************************************!*\
+  !*** ./src/PathFinding/algorithms/Dijkshtra.js ***!
+  \*************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Dijkshtra; });
+/* harmony import */ var _AStar__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AStar */ "./src/PathFinding/algorithms/AStar.js");
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+
+
+var Dijkshtra = /*#__PURE__*/function (_AStar) {
+  _inherits(Dijkshtra, _AStar);
+
+  var _super = _createSuper(Dijkshtra);
+
+  function Dijkshtra(options) {
+    var _this;
+
+    _classCallCheck(this, Dijkshtra);
+
+    _this = _super.call(this, options);
+
+    _this.heuristic = function () {
+      return 0;
+    };
+
+    return _this;
+  }
+
+  return Dijkshtra;
+}(_AStar__WEBPACK_IMPORTED_MODULE_0__["default"]);
 
 
 
@@ -1331,6 +1446,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _core_GraphNode__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./core/GraphNode */ "./src/PathFinding/core/GraphNode.js");
 /* harmony import */ var _algorithms_BreadthFirstSearch__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./algorithms/BreadthFirstSearch */ "./src/PathFinding/algorithms/BreadthFirstSearch.js");
 /* harmony import */ var _algorithms_AStar__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./algorithms/AStar */ "./src/PathFinding/algorithms/AStar.js");
+/* harmony import */ var _algorithms_Dijkshtra__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./algorithms/Dijkshtra */ "./src/PathFinding/algorithms/Dijkshtra.js");
+/* harmony import */ var _algorithms_BestFirstSearch__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./algorithms/BestFirstSearch */ "./src/PathFinding/algorithms/BestFirstSearch.js");
+
+
 
 
 
@@ -1339,7 +1458,9 @@ __webpack_require__.r(__webpack_exports__);
   Grid: _core_Grid__WEBPACK_IMPORTED_MODULE_0__["default"],
   GraphNode: _core_GraphNode__WEBPACK_IMPORTED_MODULE_1__["default"],
   BreadthFirstSearch: _algorithms_BreadthFirstSearch__WEBPACK_IMPORTED_MODULE_2__["default"],
-  AStar: _algorithms_AStar__WEBPACK_IMPORTED_MODULE_3__["default"]
+  AStar: _algorithms_AStar__WEBPACK_IMPORTED_MODULE_3__["default"],
+  Dijkshtra: _algorithms_Dijkshtra__WEBPACK_IMPORTED_MODULE_4__["default"],
+  BestFirstSearch: _algorithms_BestFirstSearch__WEBPACK_IMPORTED_MODULE_5__["default"]
 });
 
 /***/ }),
@@ -1409,37 +1530,39 @@ var abs = Math.abs,
 var Heuristic = /*#__PURE__*/function () {
   function Heuristic() {
     _classCallCheck(this, Heuristic);
-
-    this.weight = 1;
   }
 
   _createClass(Heuristic, [{
     key: "manhattan",
     value: function manhattan(nodeA, nodeB) {
+      var weight = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1;
       var dx = abs(nodeA.x - nodeB.x);
       var dy = abs(nodeA.y - nodeB.y);
-      return this.weight * (dx + dy);
+      return weight * (dx + dy);
     }
   }, {
     key: "euclidean",
     value: function euclidean(nodeA, nodeB) {
+      var weight = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1;
       var dx = abs(nodeA.x - nodeB.x);
       var dy = abs(nodeA.y - nodeB.y);
-      return this.weight * sqrt(dx * dx + dy * dy);
+      return weight * sqrt(dx * dx + dy * dy);
     }
   }, {
     key: "octile",
     value: function octile(nodeA, nodeB) {
+      var weight = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1;
       var dx = abs(nodeA.x - nodeB.x);
       var dy = abs(nodeA.y - nodeB.y);
-      return max(dx, dy) + (sqrt(2) - 1) * min(dx, dy);
+      return weight * (max(dx, dy) + (sqrt(2) - 1) * min(dx, dy));
     }
   }, {
     key: "chebyshev",
     value: function chebyshev(nodeA, nodeB) {
+      var weight = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1;
       var dx = abs(nodeA.x - nodeB.x);
       var dy = abs(nodeA.y - nodeB.y);
-      return max(dx, dy);
+      return weight * max(dx, dy);
     }
   }]);
 
