@@ -24178,7 +24178,7 @@ var AStar = /*#__PURE__*/function () {
             neighbour.by = 'end';
           } else {
             if (neighbour.by === 'start') {
-              return _utils_BackTrace__WEBPACK_IMPORTED_MODULE_1__["default"].biBackTrace(currentProcessingNode, startNode, neighbour, endNode);
+              return _utils_BackTrace__WEBPACK_IMPORTED_MODULE_1__["default"].biBackTrace(neighbour, startNode, currentProcessingNode, endNode);
             }
 
             if (neighbour.g > neighbourGValFromCurrentProcessingNode) {

@@ -162,7 +162,7 @@ export default class AStar{
 
 				}else {
 					if(neighbour.by === 'start'){
-						return backTrace.biBackTrace(currentProcessingNode,startNode,neighbour,endNode);
+						return backTrace.biBackTrace(neighbour,startNode,currentProcessingNode,endNode);
 					}
 					if(neighbour.g > neighbourGValFromCurrentProcessingNode){
 						neighbour.g = neighbourGValFromCurrentProcessingNode;
