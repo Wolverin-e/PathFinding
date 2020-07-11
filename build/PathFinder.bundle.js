@@ -997,6 +997,8 @@ var AStar = /*#__PURE__*/function () {
           neighbourGValFromCurrentProcessingNode;
       startNode.f = 0;
       startNode.g = 0;
+      endNode.f = 0;
+      endNode.g = 0;
       minHeap.insert(startNode);
       startNode.addedToHeap = true;
 
@@ -1037,7 +1039,107 @@ var AStar = /*#__PURE__*/function () {
   }, {
     key: "findBiPath",
     value: function findBiPath(grid) {
-      console.log(grid);
+      var minHeapFromStart = new heap__WEBPACK_IMPORTED_MODULE_0___default.a(function (node1, node2) {
+        return node1.f - node2.f;
+      }),
+          minHeapFromEnd = new heap__WEBPACK_IMPORTED_MODULE_0___default.a(function (node1, node2) {
+        return node1.f - node2.f;
+      }),
+          startNode = grid.getNodeAtXY(grid.startPoint.x, grid.startPoint.y),
+          endNode = grid.getNodeAtXY(grid.endPoint.x, grid.endPoint.y),
+          currentProcessingNode,
+          neighbours,
+          neighbour,
+          neighbourGValFromCurrentProcessingNode;
+      startNode.f = 0;
+      startNode.g = 0;
+      endNode.f = 0;
+      endNode.g = 0;
+      minHeapFromStart.insert(startNode);
+      startNode.addedToHeap = true;
+      startNode.by = 'start';
+      minHeapFromEnd.insert(endNode);
+      endNode.addedToHeap = true;
+      endNode.by = 'end';
+
+      while (!minHeapFromStart.empty() && !minHeapFromEnd.empty()) {
+        currentProcessingNode = minHeapFromStart.pop();
+        if (this.markCurrentProcessingNode) currentProcessingNode.currentNode = true;
+        neighbours = grid.getNeighbours(currentProcessingNode, this.allowDiagonal, this.doNotCrossCornersBetweenObstacles);
+
+        while (neighbours.length) {
+          neighbour = neighbours.shift();
+
+          if (neighbour.visited) {
+            continue;
+          }
+
+          neighbourGValFromCurrentProcessingNode = currentProcessingNode.g + this.getDistanceFromCurrentProcessignNode(currentProcessingNode, neighbour);
+
+          if (!neighbour.addedToHeap) {
+            neighbour.g = neighbourGValFromCurrentProcessingNode;
+            neighbour.h = this.heuristic(endNode, neighbour);
+            neighbour.f = neighbour.g + neighbour.h;
+            minHeapFromStart.insert(neighbour);
+            neighbour.addedToHeap = true;
+            neighbour.parent = currentProcessingNode;
+            neighbour.by = 'start';
+          } else {
+            if (neighbour.by === 'end') {
+              return _utils_BackTrace__WEBPACK_IMPORTED_MODULE_1__["default"].biBackTrace(currentProcessingNode, startNode, neighbour, endNode);
+            }
+
+            if (neighbour.g > neighbourGValFromCurrentProcessingNode) {
+              neighbour.g = neighbourGValFromCurrentProcessingNode;
+              neighbour.h = this.heuristic(endNode, neighbour);
+              neighbour.f = neighbour.g + neighbour.h;
+              minHeapFromStart.updateItem(neighbour);
+              neighbour.parent = currentProcessingNode;
+              neighbour.by = 'start';
+            }
+          }
+        }
+
+        currentProcessingNode.visited = true;
+        currentProcessingNode = minHeapFromEnd.pop();
+        if (this.markCurrentProcessingNode) currentProcessingNode.currentNode = true;
+        neighbours = grid.getNeighbours(currentProcessingNode, this.allowDiagonal, this.doNotCrossCornersBetweenObstacles);
+
+        while (neighbours.length) {
+          neighbour = neighbours.shift();
+
+          if (neighbour.visited) {
+            continue;
+          }
+
+          neighbourGValFromCurrentProcessingNode = currentProcessingNode.g + this.getDistanceFromCurrentProcessignNode(currentProcessingNode, neighbour);
+
+          if (!neighbour.addedToHeap) {
+            neighbour.g = neighbourGValFromCurrentProcessingNode;
+            neighbour.h = this.heuristic(startNode, neighbour);
+            neighbour.f = neighbour.g + neighbour.h;
+            minHeapFromEnd.insert(neighbour);
+            neighbour.addedToHeap = true;
+            neighbour.parent = currentProcessingNode;
+            neighbour.by = 'end';
+          } else {
+            if (neighbour.by === 'start') {
+              return _utils_BackTrace__WEBPACK_IMPORTED_MODULE_1__["default"].biBackTrace(currentProcessingNode, startNode, neighbour, endNode);
+            }
+
+            if (neighbour.g > neighbourGValFromCurrentProcessingNode) {
+              neighbour.g = neighbourGValFromCurrentProcessingNode;
+              neighbour.h = this.heuristic(startNode, neighbour);
+              neighbour.f = neighbour.g + neighbour.h;
+              minHeapFromEnd.updateItem(neighbour);
+              neighbour.parent = currentProcessingNode;
+              neighbour.by = 'end';
+            }
+          }
+        }
+
+        currentProcessingNode.visited = true;
+      }
     }
   }]);
 
