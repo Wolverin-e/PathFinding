@@ -54,6 +54,25 @@ class Controller extends StateMachine{
 		}));
 	}
 
+	accomodateControlCenterAlgorithmEntityChange(){
+		if(this.is("Playing")) this.pause();
+		if(this.is('Paused')){
+			this.finish(); // STATEMACHINE TRANSITION
+			this.clearPath(); // STATEMACHINE TRANSITION
+			this.clearReasources();
+			this.gridEdit(); // STATEMACHINE TRANSITION
+		}
+		if(this.is('Finished')){
+			this.clearPath(); // STATEMACHINE TRANSITION
+			this.clearReasources();
+			this.gridEdit(); // STATEMACHINE TRANSITION
+		}
+		if(this.is('pathCleared')){
+			this.clearReasources();
+			this.gridEdit(); // STATEMACHINE TRANSITION
+		}
+	}
+
 	// STATE-MACHINE EVENT-HOOKS
 	onAfterInitialize(){
 		this.viewRenderer.init();
@@ -347,6 +366,7 @@ class Controller extends StateMachine{
 		});
 
 		algorithmSelector.on('change', (event) => {
+			this.accomodateControlCenterAlgorithmEntityChange();
 			this.algorithm = event.target.value;
 			this.algorithmOptions = {};
 
@@ -361,12 +381,14 @@ class Controller extends StateMachine{
 
 		controlCenter.find(`.options-radio-section input[type='radio']`).each((i, elem) => {
 			$(elem).on("click", (event) => {
+				this.accomodateControlCenterAlgorithmEntityChange();
 				this.algorithmOptions.heuristic = event.target.value;
 			});
 		});
 		
 		controlCenter.find(`.options-checkbox-section input[type='checkbox']`).each((i, elem) => {
 			$(elem).on("click", (event) => {
+				this.accomodateControlCenterAlgorithmEntityChange();
 				this.algorithmOptions[event.target.value] = this.algorithmOptions[event.target.value]?false:true;
 			});
 		});
