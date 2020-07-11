@@ -8,7 +8,12 @@ export default class AStar{
 		this.allowDiagonal = options.allowDiagonal;
 		this.biDirectional = options.biDirectional;
 		this.doNotCrossCornersBetweenObstacles = options.doNotCrossCornersBetweenObstacles;
+		this.markCurrentProcessingNode = options.markCurrentProcessingNode;
+
 		this.heuristic = heuristics[options.heuristic];
+		if(this.biDirectional){
+			this.findPath = this.findBiPath;
+		}
 	}
 
 	getDistanceFromCurrentProcessignNode(currentProcessingNode, neighbour){
@@ -34,7 +39,7 @@ export default class AStar{
 
 		while(!minHeap.empty()){
 			currentProcessingNode = minHeap.pop();
-			currentProcessingNode.currentNode = true;
+			if(this.markCurrentProcessingNode) currentProcessingNode.currentNode = true;
 
 			if(currentProcessingNode === endNode){
 				return backTrace.backTrace(currentProcessingNode, startNode);
@@ -70,5 +75,9 @@ export default class AStar{
 		}
 
 		return [];
+	}
+
+	findBiPath(grid){
+		console.log(grid);
 	}
 }

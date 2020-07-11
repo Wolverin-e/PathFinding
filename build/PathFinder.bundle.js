@@ -965,7 +965,12 @@ var AStar = /*#__PURE__*/function () {
     this.allowDiagonal = options.allowDiagonal;
     this.biDirectional = options.biDirectional;
     this.doNotCrossCornersBetweenObstacles = options.doNotCrossCornersBetweenObstacles;
+    this.markCurrentProcessingNode = options.markCurrentProcessingNode;
     this.heuristic = _utils_Heuristics__WEBPACK_IMPORTED_MODULE_2__["default"][options.heuristic];
+
+    if (this.biDirectional) {
+      this.findPath = this.findBiPath;
+    }
   }
 
   _createClass(AStar, [{
@@ -997,7 +1002,7 @@ var AStar = /*#__PURE__*/function () {
 
       while (!minHeap.empty()) {
         currentProcessingNode = minHeap.pop();
-        currentProcessingNode.currentNode = true;
+        if (this.markCurrentProcessingNode) currentProcessingNode.currentNode = true;
 
         if (currentProcessingNode === endNode) {
           return _utils_BackTrace__WEBPACK_IMPORTED_MODULE_1__["default"].backTrace(currentProcessingNode, startNode);
@@ -1028,6 +1033,11 @@ var AStar = /*#__PURE__*/function () {
       }
 
       return [];
+    }
+  }, {
+    key: "findBiPath",
+    value: function findBiPath(grid) {
+      console.log(grid);
     }
   }]);
 
@@ -1126,6 +1136,11 @@ var BreadthFirstSearch = /*#__PURE__*/function () {
     this.allowDiagonal = options.allowDiagonal;
     this.biDirectional = options.biDirectional;
     this.doNotCrossCornersBetweenObstacles = options.doNotCrossCornersBetweenObstacles;
+    this.markCurrentProcessingNode = options.markCurrentProcessingNode;
+
+    if (this.biDirectional) {
+      this.findPath = this.findBiPath;
+    }
   }
 
   _createClass(BreadthFirstSearch, [{
@@ -1143,7 +1158,7 @@ var BreadthFirstSearch = /*#__PURE__*/function () {
       while (!queue.isEmpty()) {
         currentProcessingNode = queue.shift(); // Dequeue operation on queue
 
-        currentProcessingNode.currentNode = true;
+        if (this.markCurrentProcessingNode) currentProcessingNode.currentNode = true;
 
         if (currentProcessingNode === endNode) {
           return _utils_BackTrace__WEBPACK_IMPORTED_MODULE_1__["default"].backTrace(endNode, startNode);
@@ -1163,6 +1178,11 @@ var BreadthFirstSearch = /*#__PURE__*/function () {
       }
 
       return [];
+    }
+  }, {
+    key: "findBiPath",
+    value: function findBiPath(grid) {
+      console.log(grid);
     }
   }]);
 

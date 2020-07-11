@@ -7,6 +7,11 @@ export default class BreadthFirstSearch{
 		this.allowDiagonal = options.allowDiagonal;
 		this.biDirectional = options.biDirectional;
 		this.doNotCrossCornersBetweenObstacles = options.doNotCrossCornersBetweenObstacles;
+		this.markCurrentProcessingNode = options.markCurrentProcessingNode;
+
+		if(this.biDirectional){
+			this.findPath = this.findBiPath;
+		}
 	}
 
 	findPath(grid){
@@ -23,7 +28,7 @@ export default class BreadthFirstSearch{
 		while(!queue.isEmpty()){
 
 			currentProcessingNode = queue.shift(); // Dequeue operation on queue
-			currentProcessingNode.currentNode = true;
+			if(this.markCurrentProcessingNode) currentProcessingNode.currentNode = true;
 			
 			if(currentProcessingNode === endNode){
 				return backTrace.backTrace(endNode, startNode);
@@ -42,5 +47,9 @@ export default class BreadthFirstSearch{
 		}
 
 		return [];
+	}
+
+	findBiPath(grid){
+		console.log(grid);
 	}
 }
