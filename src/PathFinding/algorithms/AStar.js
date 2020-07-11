@@ -123,9 +123,9 @@ export default class AStar{
 					neighbour.parent = currentProcessingNode;
 					neighbour.by = 'start';
 
-				}else {
+				} else {
 					if(neighbour.by === 'end'){
-						return backTrace.biBackTrace(currentProcessingNode,startNode,neighbour,endNode);
+						return backTrace.biBackTrace(currentProcessingNode, startNode, neighbour, endNode);
 					}
 					if(neighbour.g > neighbourGValFromCurrentProcessingNode){
 						neighbour.g = neighbourGValFromCurrentProcessingNode;
@@ -160,9 +160,9 @@ export default class AStar{
 					neighbour.parent = currentProcessingNode;
 					neighbour.by = 'end';
 
-				}else {
+				} else {
 					if(neighbour.by === 'start'){
-						return backTrace.biBackTrace(neighbour,startNode,currentProcessingNode,endNode);
+						return backTrace.biBackTrace(neighbour, startNode, currentProcessingNode, endNode);
 					}
 					if(neighbour.g > neighbourGValFromCurrentProcessingNode){
 						neighbour.g = neighbourGValFromCurrentProcessingNode;

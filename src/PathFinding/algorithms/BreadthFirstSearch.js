@@ -33,7 +33,7 @@ export default class BreadthFirstSearch{
 				return backTrace.backTrace(endNode, startNode);
 			}
 
-			neighbours = grid.getNeighbours(currentProcessingNode,this.allowDiagonal,this.doNotCrossCorners);
+			neighbours = grid.getNeighbours(currentProcessingNode, this.allowDiagonal, this.doNotCrossCorners);
 			neighbours.forEach(neighbour => {
 				if(neighbour.visited || neighbour.addedToQueue){
 					return; // equivalent to CONTINUE in forEach
@@ -77,7 +77,7 @@ export default class BreadthFirstSearch{
 				}
 				if(neighbour.addedToQueue){
 					if(neighbour.by === 'end'){
-						return backTrace.biBackTrace(currentProcessingNode,startNode,neighbour,endNode);
+						return backTrace.biBackTrace(currentProcessingNode, startNode, neighbour, endNode);
 					}
 					continue;
 				}
@@ -100,7 +100,7 @@ export default class BreadthFirstSearch{
 				}
 				if(neighbour.addedToQueue){
 					if(neighbour.by === 'start'){
-						return backTrace.biBackTrace(neighbour,startNode,currentProcessingNode,endNode);
+						return backTrace.biBackTrace(neighbour, startNode, currentProcessingNode, endNode);
 					}
 					continue;
 				}

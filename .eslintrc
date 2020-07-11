@@ -30,6 +30,17 @@
                 "allow": ["log", "warn", "error"]
             }
 		], 
-		"eol-last": 2
+		"eol-last": 2, 
+		"comma-spacing": [
+			"warn", 
+			{
+				"before": false, 
+				"after": true
+			}
+		], 
+		"brace-style": [
+			"warn", 
+			"1tbs"
+		]
 	}
 }
