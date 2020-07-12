@@ -8,10 +8,11 @@ class BackTrace{
 		path.reverse();
 		return path;
 	}
+	
 	biBackTrace(node1, startNode, node2, endNode){
 		let path1 = this.backTrace(node1, startNode),
 			path2 = this.backTrace(node2, endNode);
-		path2 = path2.reverse();
+		path2.reverse();
 		let path = path1.concat(path2);
 		return path;
 	}

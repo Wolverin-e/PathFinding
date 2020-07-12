@@ -112,7 +112,7 @@ class Controller extends StateMachine{
 				opQueue.push({
 					x: this.x, 
 					y: this.y, 
-					att: 'visited', 
+					att: val?'visited':'unVisited', 
 					val
 				});
 			}, 

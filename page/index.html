@@ -50,6 +50,9 @@
                 <!-- ALGORITHM SELECTOR -->
                 <p id="normal-lable">ALGORITHM</p>
                 <select name="algorithm" id="algorithmSelector">
+                    <optgroup label="ITERATIVE DEEPENING">ITERATIVE DEEPENING</optgroup>
+                    <option value="IDDFS">IDDFS</option>
+                    <option value="IDAStar">IDAStar</option>
                     <optgroup label="GREEDY">GREEDY</optgroup>
                     <option value="AStar">AStar</option>
                     <option value="BestFirstSearch">BestFirstSearch</option>
@@ -108,6 +111,68 @@
                             <br />
                         <input type="checkbox" id="ASC4" value="markCurrentProcessingNode" checked>
                             <label for="ASC4">Show Cursor</label>
+                            <br />
+                    </div>
+                </div>
+
+                <div id="IDAStar" class="algorithm-options-section">
+                    HEURISTIC
+                    <div class="options-radio-section">
+                        <input type="radio" id="IDASO1" name="IDAS" value="manhattan" />
+                            <label for="IDASO1">Manhattan</label>
+                            <br />
+                        <input type="radio" id="IDASO2" name="IDAS" value="euclidean" />
+                            <label for="IDASO2">Euclidean</label>
+                            <br />
+                        <input type="radio" id="IDASO3" name="IDAS" value="octile" checked/>
+                            <label for="IDASO3">Octile</label>
+                            <br />
+                        <input type="radio" id="IDASO4" name="IDAS" value="chebyshev" />
+                            <label for="IDASO4">Chebyshev</label>
+                            <br />
+                    </div>
+                    <br />
+                    OPTIONS
+                    <div class="options-checkbox-section">
+                        <input type="checkbox" id="IDASC1" value="allowDiagonal" checked>
+                            <label for="IDASC1">Allow Diagonal</label>
+                            <br />
+                        <input type="checkbox" id="IDASC2" value="doNotCrossCornersBetweenObstacles" checked>
+                            <label for="IDASC3">Do Not Cross Wall</label>
+                            <br />
+                        <input type="checkbox" id="IDASC3" value="markCurrentProcessingNode" checked>
+                            <label for="IDASC4">Show Cursor</label>
+                            <br />
+                    </div>
+                </div>
+                
+                <div id="IDDFS" class="algorithm-options-section">
+                    HEURISTIC
+                    <div class="options-radio-section">
+                        <input type="radio" id="IDDFSO1" name="IDDFS" value="manhattan" />
+                            <label for="IDDFSO1">Manhattan</label>
+                            <br />
+                        <input type="radio" id="IDDFSO2" name="IDDFS" value="euclidean" />
+                            <label for="IDDFSO2">Euclidean</label>
+                            <br />
+                        <input type="radio" id="IDDFSO3" name="IDDFS" value="octile" checked/>
+                            <label for="IDDFSO3">Octile</label>
+                            <br />
+                        <input type="radio" id="IDDFSO4" name="IDDFS" value="chebyshev" />
+                            <label for="IDDFSO4">Chebyshev</label>
+                            <br />
+                    </div>
+                    <br />
+                    OPTIONS
+                    <div class="options-checkbox-section">
+                        <input type="checkbox" id="IDDFSC1" value="allowDiagonal" checked>
+                            <label for="IDDFSC1">Allow Diagonal</label>
+                            <br />
+                        <input type="checkbox" id="IDDFSC2" value="doNotCrossCornersBetweenObstacles" checked>
+                            <label for="IDDFSC3">Do Not Cross Wall</label>
+                            <br />
+                        <input type="checkbox" id="IDDFSC3" value="markCurrentProcessingNode" checked>
+                            <label for="IDDFSC4">Show Cursor</label>
                             <br />
                     </div>
                 </div>

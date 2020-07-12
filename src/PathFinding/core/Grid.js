@@ -63,11 +63,6 @@ class Grid{
 		const {x, y} = node;
 		let a, b, c, d;
 		
-		// a
-		if(!this.isXYWallElement(x, y-1)) {
-			neighbours.push(this.getNodeAtXY(x, y-1));
-			a = true;
-		}
 		// b
 		if(!this.isXYWallElement(x+1, y)) {
 			neighbours.push(this.getNodeAtXY(x+1, y));
@@ -82,6 +77,11 @@ class Grid{
 		if(!this.isXYWallElement(x-1, y)) {
 			neighbours.push(this.getNodeAtXY(x-1, y));
 			d = true;
+		}
+		// a
+		if(!this.isXYWallElement(x, y-1)) {
+			neighbours.push(this.getNodeAtXY(x, y-1));
+			a = true;
 		}
 
 		if(allowDiagonal){

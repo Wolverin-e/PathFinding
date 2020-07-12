@@ -46,7 +46,10 @@ td {
 
 .CURRENTNODE{
     background-color: black;
-    animation: wallGrowShrink 150ms linear normal;
+}
+
+.UNVISITED{
+    background-color: white;
 }
 
 /* !!!!!! DO NOT ADD RULES BELOW THIS LINE !!!!!! */

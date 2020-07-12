@@ -1420,6 +1420,197 @@ var Dijkshtra = /*#__PURE__*/function (_AStar) {
 
 /***/ }),
 
+/***/ "./src/PathFinding/algorithms/IDAStar.js":
+/*!***********************************************!*\
+  !*** ./src/PathFinding/algorithms/IDAStar.js ***!
+  \***********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return IDAStar; });
+/* harmony import */ var _utils_Heuristics__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/Heuristics */ "./src/PathFinding/utils/Heuristics.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
+
+Array.prototype.peekTop = function () {
+  return this.length ? this[this.length - 1] : undefined;
+};
+
+var IDAStar = /*#__PURE__*/function () {
+  function IDAStar(options) {
+    _classCallCheck(this, IDAStar);
+
+    this.allowDiagonal = options.allowDiagonal;
+    this.biDirectional = options.biDirectional;
+    this.doNotCrossCornersBetweenObstacles = options.doNotCrossCornersBetweenObstacles;
+    this.markCurrentProcessingNode = options.markCurrentProcessingNode;
+    this.heuristic = _utils_Heuristics__WEBPACK_IMPORTED_MODULE_0__["default"][options.heuristic]; // this.heuristic = heuristics["euclidean"];
+
+    this.timeLimit = 100;
+  }
+
+  _createClass(IDAStar, [{
+    key: "getDistanceFromRootNode",
+    value: function getDistanceFromRootNode(rootNode, neighbour) {
+      if (Math.abs(rootNode.x - neighbour.x) + Math.abs(rootNode.y - neighbour.y) === 1) {
+        return 1;
+      }
+
+      return Math.SQRT2;
+    }
+  }, {
+    key: "timeUp",
+    value: function timeUp() {
+      return Math.abs(this.startTime - new Date()) > this.timeLimit;
+    }
+  }, {
+    key: "findPath",
+    value: function findPath(grid) {
+      this.grid = grid;
+      var uppperBound = this.heuristic(grid.startPoint, grid.endPoint),
+          returnedInstance;
+      grid.startNode = grid.getNodeAtXY(grid.startPoint.x, grid.startPoint.y);
+      grid.endNode = grid.getNodeAtXY(grid.endPoint.x, grid.endPoint.y);
+      this.startTime = new Date();
+      var path = [grid.startNode];
+
+      while (true) {
+        returnedInstance = this.search(path, 0, uppperBound);
+
+        if (typeof returnedInstance === "number") {
+          console.info("bound Increased to", returnedInstance);
+          uppperBound = returnedInstance;
+        } else if (returnedInstance === "FOUND") {
+          return path;
+        } else {
+          return returnedInstance;
+        }
+      }
+    }
+  }, {
+    key: "search",
+    value: function search(path, rootGVal, upperBound) {
+      var rootNode = path.peekTop();
+
+      if (this.timeUp()) {
+        console.info("time exceeded");
+        return [];
+      }
+
+      if (rootNode === this.grid.endNode) {
+        console.info("found");
+        return "FOUND";
+      }
+
+      var fVal = rootGVal + this.heuristic(rootNode, this.grid.endNode);
+
+      if (fVal > upperBound) {
+        rootNode.addedToHeap = true;
+        return fVal;
+      }
+
+      if (this.markCurrentProcessingNode) rootNode.currentNode = true;
+      rootNode.visited = true;
+      var min = Infinity,
+          neighbourGVal,
+          returnedInstance,
+          neighbour,
+          neighbours = this.grid.getNeighbours(rootNode, this.allowDiagonal, this.doNotCrossCornersBetweenObstacles);
+
+      while (neighbours.length) {
+        neighbour = neighbours.shift();
+
+        if (!path.includes(neighbour)) {
+          path.push(neighbour);
+          neighbourGVal = rootGVal + this.getDistanceFromRootNode(rootNode, neighbour);
+          returnedInstance = this.search(path, neighbourGVal, upperBound);
+
+          if (typeof returnedInstance === "number" && returnedInstance < min) {
+            min = returnedInstance;
+          } else if (returnedInstance === "FOUND") {
+            return returnedInstance;
+          }
+
+          path.pop(neighbour);
+        }
+      }
+
+      rootNode.visited = false;
+      return min;
+    }
+  }]);
+
+  return IDAStar;
+}();
+
+
+
+/***/ }),
+
+/***/ "./src/PathFinding/algorithms/IDDFS.js":
+/*!*********************************************!*\
+  !*** ./src/PathFinding/algorithms/IDDFS.js ***!
+  \*********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return IDDFS; });
+/* harmony import */ var _IDAStar__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./IDAStar */ "./src/PathFinding/algorithms/IDAStar.js");
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+
+
+var IDDFS = /*#__PURE__*/function (_IDAStar) {
+  _inherits(IDDFS, _IDAStar);
+
+  var _super = _createSuper(IDDFS);
+
+  function IDDFS(options) {
+    var _this;
+
+    _classCallCheck(this, IDDFS);
+
+    _this = _super.call(this, options);
+
+    _this.heuristic = function () {
+      return 0;
+    };
+
+    return _this;
+  }
+
+  return IDDFS;
+}(_IDAStar__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+
+
+/***/ }),
+
 /***/ "./src/PathFinding/core/GraphNode.js":
 /*!*******************************************!*\
   !*** ./src/PathFinding/core/GraphNode.js ***!
@@ -1543,13 +1734,7 @@ var Grid = /*#__PURE__*/function () {
       var neighbours = [];
       var x = node.x,
           y = node.y;
-      var a, b, c, d; // a
-
-      if (!this.isXYWallElement(x, y - 1)) {
-        neighbours.push(this.getNodeAtXY(x, y - 1));
-        a = true;
-      } // b
-
+      var a, b, c, d; // b
 
       if (!this.isXYWallElement(x + 1, y)) {
         neighbours.push(this.getNodeAtXY(x + 1, y));
@@ -1566,6 +1751,12 @@ var Grid = /*#__PURE__*/function () {
       if (!this.isXYWallElement(x - 1, y)) {
         neighbours.push(this.getNodeAtXY(x - 1, y));
         d = true;
+      } // a
+
+
+      if (!this.isXYWallElement(x, y - 1)) {
+        neighbours.push(this.getNodeAtXY(x, y - 1));
+        a = true;
       }
 
       if (allowDiagonal) {
@@ -1638,6 +1829,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _algorithms_AStar__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./algorithms/AStar */ "./src/PathFinding/algorithms/AStar.js");
 /* harmony import */ var _algorithms_Dijkshtra__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./algorithms/Dijkshtra */ "./src/PathFinding/algorithms/Dijkshtra.js");
 /* harmony import */ var _algorithms_BestFirstSearch__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./algorithms/BestFirstSearch */ "./src/PathFinding/algorithms/BestFirstSearch.js");
+/* harmony import */ var _algorithms_IDAStar__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./algorithms/IDAStar */ "./src/PathFinding/algorithms/IDAStar.js");
+/* harmony import */ var _algorithms_IDDFS__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./algorithms/IDDFS */ "./src/PathFinding/algorithms/IDDFS.js");
+
+
 
 
 
@@ -1650,7 +1845,9 @@ __webpack_require__.r(__webpack_exports__);
   BreadthFirstSearch: _algorithms_BreadthFirstSearch__WEBPACK_IMPORTED_MODULE_2__["default"],
   AStar: _algorithms_AStar__WEBPACK_IMPORTED_MODULE_3__["default"],
   Dijkshtra: _algorithms_Dijkshtra__WEBPACK_IMPORTED_MODULE_4__["default"],
-  BestFirstSearch: _algorithms_BestFirstSearch__WEBPACK_IMPORTED_MODULE_5__["default"]
+  BestFirstSearch: _algorithms_BestFirstSearch__WEBPACK_IMPORTED_MODULE_5__["default"],
+  IDAStar: _algorithms_IDAStar__WEBPACK_IMPORTED_MODULE_6__["default"],
+  IDDFS: _algorithms_IDDFS__WEBPACK_IMPORTED_MODULE_7__["default"]
 });
 
 /***/ }),
@@ -1693,7 +1890,7 @@ var BackTrace = /*#__PURE__*/function () {
     value: function biBackTrace(node1, startNode, node2, endNode) {
       var path1 = this.backTrace(node1, startNode),
           path2 = this.backTrace(node2, endNode);
-      path2 = path2.reverse();
+      path2.reverse();
       var path = path1.concat(path2);
       return path;
     }

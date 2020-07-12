@@ -4,6 +4,8 @@ import BreadthFirstSearch from './algorithms/BreadthFirstSearch';
 import AStar from './algorithms/AStar';
 import Dijkshtra from './algorithms/Dijkshtra';
 import BestFirstSearch from './algorithms/BestFirstSearch';
+import IDAStar from './algorithms/IDAStar';
+import IDDFS from './algorithms/IDDFS';
 
 export default {
 	Grid, 
@@ -11,5 +13,7 @@ export default {
 	BreadthFirstSearch, 
 	AStar, 
 	Dijkshtra, 
-	BestFirstSearch
+	BestFirstSearch, 
+	IDAStar, 
+	IDDFS
 };
