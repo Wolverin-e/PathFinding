@@ -12,17 +12,17 @@ export default class BreadthFirstSearch{
 			this.findPath = this.findBiPath;
 		}
 	}
-	
+
 	findPath(grid){
-		let startPoint = grid.startPoint, 
-			endPoint = grid.endPoint, 
-			startNode = grid[startPoint.y][startPoint.x], 
+		let startPoint = grid.startPoint,
+			endPoint = grid.endPoint,
+			startNode = grid[startPoint.y][startPoint.x],
 			endNode = grid[endPoint.y][endPoint.x];
 
-		let queue = new Denque([startNode]), 
-			neighbours = [], 
+		let queue = new Denque([startNode]),
+			neighbours = [],
 			currentProcessingNode;
-		
+
 		startNode.addedToQueue = true;
 
 		while(!queue.isEmpty()){
@@ -45,13 +45,13 @@ export default class BreadthFirstSearch{
 
 			currentProcessingNode.visited = true;
 		}
-			
+
 		return [];
 	}
 
 	findBiPath(grid){
-		let startNode = grid.getNodeAtXY(grid.startPoint.x, grid.startPoint.y), 
-			endNode = grid.getNodeAtXY(grid.endPoint.x, grid.endPoint.y), 
+		let startNode = grid.getNodeAtXY(grid.startPoint.x, grid.startPoint.y),
+			endNode = grid.getNodeAtXY(grid.endPoint.x, grid.endPoint.y),
 			neighbour,
 			currentProcessingNode,
 			startNeighbours = [],
@@ -59,7 +59,7 @@ export default class BreadthFirstSearch{
 
 		let startQueue = new Denque([startNode]),
 			endQueue = new Denque([endNode]);
-			
+
 		startNode.addedToQueue = true;
 		endNode.addedToQueue = true;
 		startNode.by = 'start';
@@ -69,7 +69,7 @@ export default class BreadthFirstSearch{
 			currentProcessingNode = startQueue.shift();
 			if(this.markCurrentProcessingNode) currentProcessingNode.currentNode = true;
 			startNeighbours = grid.getNeighbours(currentProcessingNode, this.allowDiagonal, this.doNotCrossCornersBetweenObstacles);
-		
+
 			while(startNeighbours.length){
 				neighbour = startNeighbours.shift();
 				if(neighbour.visited){
@@ -88,7 +88,7 @@ export default class BreadthFirstSearch{
 			}
 
 			currentProcessingNode.visited = true;
-			
+
 			currentProcessingNode = endQueue.shift();
 			if(this.markCurrentProcessingNode) currentProcessingNode.currentNode = true;
 			endNeighbours = grid.getNeighbours(currentProcessingNode, this.allowDiagonal, this.doNotCrossCornersBetweenObstacles);
@@ -114,5 +114,5 @@ export default class BreadthFirstSearch{
 		}
 		return [];
 	}
-}	
-	
+}
+

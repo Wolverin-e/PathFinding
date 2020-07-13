@@ -8,7 +8,7 @@ class BackTrace{
 		path.reverse();
 		return path;
 	}
-	
+
 	biBackTrace(node1, startNode, node2, endNode){
 		let path1 = this.backTrace(node1, startNode),
 			path2 = this.backTrace(node2, endNode);
@@ -17,7 +17,7 @@ class BackTrace{
 		return path;
 	}
 
-	interpolation(grid, firstNode, secondNode){
+	getInterpolation(grid, firstNode, secondNode){
 		let x1 = firstNode.x,
 			y1 = firstNode.y,
 			x2 = secondNode.x,
@@ -28,7 +28,7 @@ class BackTrace{
 			yDirection = (y2>y1) ? 1 : -1,
 			interpolatedValues = [],
 			intermidateDistance;
-			
+
 		intermidateDistance = xDifference - yDifference;
 
 		while((x1 !== x2) || (y1 !== y2)){
@@ -36,7 +36,7 @@ class BackTrace{
 			if (2 *intermidateDistance > -yDifference){
 				intermidateDistance = intermidateDistance - yDifference;
 				x1 = x1 +xDirection;
-			}else if (2*intermidateDistance < xDifference){
+			} else if (2*intermidateDistance < xDifference){
 				intermidateDistance = intermidateDistance +xDifference;
 				y1 = y1 +yDirection;
 			}
@@ -54,16 +54,17 @@ class BackTrace{
 		firstNode = startNode;
 		while(path.length){
 			secondNode = path.shift();
-			interpolatedValues = this.interpolation(grid, firstNode, secondNode);
+			interpolatedValues = this.getInterpolation(grid, firstNode, secondNode);
 			while(interpolatedValues.length){
 				expandedPath.push(interpolatedValues.shift());
 			}
 			firstNode = secondNode;
-		}	
-		
+		}
+
 		expandedPath.push(secondNode);
 		expandedPath.shift();
 		return expandedPath;
 	}
 }
+
 export default new BackTrace();

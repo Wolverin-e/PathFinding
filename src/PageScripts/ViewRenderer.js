@@ -11,12 +11,12 @@ class ViewRenderer{
 	constructor(options){
 		this.rows = options.rows;
 		this.columns = options.columns;
-		
+
 		// PROCESSING
 		this.tableElement = $("#grid");
 		this.nodeSize = 100/this.columns; //in vw
 	}
-	
+
 	init(){
 		pageActionsLogicAttacher.attachControlCenterSwitchLogic();
 		pageActionsLogicAttacher.attachAlgorithmOptionsShowHideLogic();
@@ -64,7 +64,7 @@ class ViewRenderer{
 		// this.getTDElemAtXY(x, y).addClass("wallElem");
 		this.addOpClassAtXY(x, y, "wallElem");
 	}
-	
+
 	removeWall(x, y){
 		// this.getTDElemAtXY(x, y).removeClass("wallElem");
 		this.popOpClassAtXY(x, y, "wallElem");
@@ -80,7 +80,7 @@ class ViewRenderer{
 			this.getTDElemAtXY(x, y).addClass("startPoint");
 		}
 	}
-	
+
 	shiftEndPoint(x, y){
 		if(this.endPoint){
 			this.getTDElemAtXY(this.endPoint.x, this.endPoint.y).removeClass("endPoint");

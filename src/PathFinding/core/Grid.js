@@ -62,7 +62,7 @@ class Grid{
 		let neighbours = [];
 		const {x, y} = node;
 		let a, b, c, d;
-		
+
 		// b
 		if(!this.isXYWallElement(x+1, y)) {
 			neighbours.push(this.getNodeAtXY(x+1, y));

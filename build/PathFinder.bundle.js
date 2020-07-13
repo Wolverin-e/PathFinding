@@ -1611,6 +1611,211 @@ var IDDFS = /*#__PURE__*/function (_IDAStar) {
 
 /***/ }),
 
+/***/ "./src/PathFinding/algorithms/JumpPointSearch.js":
+/*!*******************************************************!*\
+  !*** ./src/PathFinding/algorithms/JumpPointSearch.js ***!
+  \*******************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return JumpPointSearch; });
+/* harmony import */ var heap__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! heap */ "./node_modules/heap/index.js");
+/* harmony import */ var heap__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(heap__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _utils_BackTrace__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/BackTrace */ "./src/PathFinding/utils/BackTrace.js");
+/* harmony import */ var _utils_Heuristics__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/Heuristics */ "./src/PathFinding/utils/Heuristics.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
+
+
+
+var JumpPointSearch = /*#__PURE__*/function () {
+  function JumpPointSearch(options) {
+    _classCallCheck(this, JumpPointSearch);
+
+    console.log(options);
+    this.markCurrentProcessingNode = options.markCurrentProcessingNode;
+    this.heuristic = _utils_Heuristics__WEBPACK_IMPORTED_MODULE_2__["default"][options.heuristic];
+  }
+
+  _createClass(JumpPointSearch, [{
+    key: "getNeighboursBasedOnOptions",
+    value: function getNeighboursBasedOnOptions(currentProcessingNode) {
+      var parent = currentProcessingNode.parent,
+          abs = Math.abs,
+          max = Math.max,
+          parentX,
+          parentY,
+          xNormalizeDirection,
+          yNormalizeDirection,
+          x = currentProcessingNode.x,
+          y = currentProcessingNode.y,
+          neighbours = [];
+
+      if (parent) {
+        parentX = parent.x;
+        parentY = parent.y;
+        xNormalizeDirection = (x - parentX) / max(abs(x - parentX), 1);
+        yNormalizeDirection = (y - parentY) / max(abs(y - parent.y), 1);
+
+        if (xNormalizeDirection !== 0) {
+          if (!this.grid.isXYWallElement(x, y - 1)) {
+            neighbours.push(this.grid.getNodeAtXY(x, y - 1));
+          }
+
+          if (!this.grid.isXYWallElement(x, y + 1)) {
+            neighbours.push(this.grid.getNodeAtXY(x, y + 1));
+          }
+
+          if (!this.grid.isXYWallElement(x + xNormalizeDirection, y)) {
+            neighbours.push(this.grid.getNodeAtXY(x + xNormalizeDirection, y));
+          }
+        }
+
+        if (yNormalizeDirection !== 0) {
+          if (!this.grid.isXYWallElement(x - 1, y)) {
+            neighbours.push(this.grid.getNodeAtXY(x - 1, y));
+          }
+
+          if (!this.grid.isXYWallElement(x + 1, y)) {
+            neighbours.push(this.grid.getNodeAtXY(x + 1, y));
+          }
+
+          if (!this.grid.isXYWallElement(x, y + yNormalizeDirection)) {
+            neighbours.push(this.grid.getNodeAtXY(x, y + yNormalizeDirection));
+          }
+        }
+      } else {
+        neighbours = this.grid.getNeighbours(currentProcessingNode, this.allowDiagonal, this.doNotCrossCornersBetweenObstacles);
+      }
+
+      return neighbours;
+    }
+  }, {
+    key: "getJumpPoints",
+    value: function getJumpPoints(currentProcessingNode, parent) {
+      var x = currentProcessingNode.x,
+          y = currentProcessingNode.y,
+          parentX = parent.x,
+          parentY = parent.y,
+          xDifference = currentProcessingNode.x - parent.x,
+          yDifference = currentProcessingNode.y - parent.y;
+      console.log(currentProcessingNode);
+
+      if (this.grid.isXYWallElement(x, y)) {
+        return null;
+      }
+
+      if (this.markCurrentProcessingNode) currentProcessingNode.processed = true;
+
+      if (currentProcessingNode === this.grid.endNode) {
+        return currentProcessingNode;
+      }
+
+      if (xDifference !== 0) {
+        if (!this.grid.isXYWallElement(x, y - 1) && this.grid.isXYWallElement(parentX, y - 1) || !this.grid.isXYWallElement(x, y + 1) && this.grid.isXYWallElement(parentX, y + 1)) {
+          return currentProcessingNode;
+        }
+      } else if (yDifference !== 0) {
+        if (!this.grid.isXYWallElement(x - 1, y) && this.grid.isXYWallElement(x - 1, parentY) || !this.grid.isXYWallElement(x + 1, y) && this.grid.isXYWallElement(x + 1, parentY)) {
+          return currentProcessingNode;
+        }
+
+        if (this.getJumpPoints(this.grid.getNodeAtXY(x + 1, y), currentProcessingNode) || this.getJumpPoints(this.grid.getNodeAtXY(x - 1, y), currentProcessingNode)) {
+          return currentProcessingNode;
+        }
+      } else {
+        console.log('only vertical and horizontal movements allowed');
+      }
+
+      if (x + xDifference >= 0 && x + xDifference < this.grid.columns && y + yDifference >= 0 && y + yDifference < this.grid.rows) {
+        return this.getJumpPoints(this.grid.getNodeAtXY(x + xDifference, y + yDifference), currentProcessingNode);
+      }
+    }
+  }, {
+    key: "successor",
+    value: function successor(currentProcessingNode) {
+      var neighbours = [],
+          jumpPointNode,
+          neighbour,
+          jumpPointDistanceFromStart;
+      neighbours = this.getNeighboursBasedOnOptions(currentProcessingNode);
+
+      while (neighbours.length) {
+        neighbour = neighbours.shift();
+        jumpPointNode = this.getJumpPoints(neighbour, currentProcessingNode);
+
+        if (jumpPointNode) {
+          if (jumpPointNode.visited) {
+            continue;
+          }
+
+          jumpPointDistanceFromStart = currentProcessingNode.g + _utils_Heuristics__WEBPACK_IMPORTED_MODULE_2__["default"]['octile'](jumpPointNode, currentProcessingNode);
+
+          if (!jumpPointNode.addedToHeap || jumpPointDistanceFromStart < jumpPointNode.g) {
+            jumpPointNode.g = jumpPointDistanceFromStart;
+            jumpPointNode.h = this.heuristic(this.grid.endNode, jumpPointNode);
+            jumpPointNode.f = jumpPointNode.g + jumpPointNode.h;
+            jumpPointNode.parent = currentProcessingNode;
+
+            if (!jumpPointNode.addedToHeap) {
+              this.minHeap.insert(jumpPointNode);
+              jumpPointNode.addedToHeap = true;
+            }
+          } else {
+            this.minHeap.updateItem(jumpPointNode);
+          }
+        }
+      }
+    }
+  }, {
+    key: "findPath",
+    value: function findPath(grid) {
+      this.grid = grid;
+      var minHeap = new heap__WEBPACK_IMPORTED_MODULE_0___default.a(function (node1, node2) {
+        return node1.f - node2.f;
+      }),
+          currentProcessingNode;
+      this.minHeap = minHeap;
+      this.grid.startNode = this.grid.getNodeAtXY(this.grid.startPoint.x, this.grid.startPoint.y);
+      this.grid.endNode = this.grid.getNodeAtXY(this.grid.endPoint.x, this.grid.endPoint.y);
+      this.grid.startNode.g = 0;
+      this.grid.startNode.f = 0;
+      this.minHeap.insert(this.grid.startNode);
+      this.grid.startNode.addedToHeap = true;
+
+      while (!this.minHeap.empty()) {
+        currentProcessingNode = this.minHeap.pop();
+        if (this.markCurrentProcessingNode) currentProcessingNode.processed = true;
+        currentProcessingNode.visited = true;
+
+        if (currentProcessingNode === this.grid.endNode) {
+          var jumpPoints = _utils_BackTrace__WEBPACK_IMPORTED_MODULE_1__["default"].backTrace(this.grid.endNode, this.grid.startNode);
+          var path = _utils_BackTrace__WEBPACK_IMPORTED_MODULE_1__["default"].expandPath(this.grid, jumpPoints, this.grid.startNode);
+          console.log(path);
+          return path;
+        }
+
+        this.successor(currentProcessingNode);
+      }
+
+      return [];
+    }
+  }]);
+
+  return JumpPointSearch;
+}();
+
+
+
+/***/ }),
+
 /***/ "./src/PathFinding/core/GraphNode.js":
 /*!*******************************************!*\
   !*** ./src/PathFinding/core/GraphNode.js ***!
@@ -1831,6 +2036,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _algorithms_BestFirstSearch__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./algorithms/BestFirstSearch */ "./src/PathFinding/algorithms/BestFirstSearch.js");
 /* harmony import */ var _algorithms_IDAStar__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./algorithms/IDAStar */ "./src/PathFinding/algorithms/IDAStar.js");
 /* harmony import */ var _algorithms_IDDFS__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./algorithms/IDDFS */ "./src/PathFinding/algorithms/IDDFS.js");
+/* harmony import */ var _algorithms_JumpPointSearch__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./algorithms/JumpPointSearch */ "./src/PathFinding/algorithms/JumpPointSearch.js");
+
 
 
 
@@ -1847,7 +2054,8 @@ __webpack_require__.r(__webpack_exports__);
   Dijkshtra: _algorithms_Dijkshtra__WEBPACK_IMPORTED_MODULE_4__["default"],
   BestFirstSearch: _algorithms_BestFirstSearch__WEBPACK_IMPORTED_MODULE_5__["default"],
   IDAStar: _algorithms_IDAStar__WEBPACK_IMPORTED_MODULE_6__["default"],
-  IDDFS: _algorithms_IDDFS__WEBPACK_IMPORTED_MODULE_7__["default"]
+  IDDFS: _algorithms_IDDFS__WEBPACK_IMPORTED_MODULE_7__["default"],
+  JumpPointSearch: _algorithms_JumpPointSearch__WEBPACK_IMPORTED_MODULE_8__["default"]
 });
 
 /***/ }),
@@ -1893,6 +2101,61 @@ var BackTrace = /*#__PURE__*/function () {
       path2.reverse();
       var path = path1.concat(path2);
       return path;
+    }
+  }, {
+    key: "getInterpolation",
+    value: function getInterpolation(grid, firstNode, secondNode) {
+      var x1 = firstNode.x,
+          y1 = firstNode.y,
+          x2 = secondNode.x,
+          y2 = secondNode.y,
+          xDifference = Math.abs(x2 - x1),
+          yDifference = Math.abs(y2 - y1),
+          xDirection = x2 > x1 ? 1 : -1,
+          yDirection = y2 > y1 ? 1 : -1,
+          interpolatedValues = [],
+          intermidateDistance;
+      intermidateDistance = xDifference - yDifference;
+
+      while (x1 !== x2 || y1 !== y2) {
+        interpolatedValues.push(firstNode);
+
+        if (2 * intermidateDistance > -yDifference) {
+          intermidateDistance = intermidateDistance - yDifference;
+          x1 = x1 + xDirection;
+        } else if (2 * intermidateDistance < xDifference) {
+          intermidateDistance = intermidateDistance + xDifference;
+          y1 = y1 + yDirection;
+        }
+
+        firstNode = grid.getNodeAtXY(x1, y1);
+      }
+
+      return interpolatedValues;
+    }
+  }, {
+    key: "expandPath",
+    value: function expandPath(grid, path, startNode) {
+      var expandedPath = [],
+          firstNode,
+          secondNode,
+          interpolatedValues = [];
+      firstNode = startNode;
+
+      while (path.length) {
+        secondNode = path.shift();
+        interpolatedValues = this.getInterpolation(grid, firstNode, secondNode);
+
+        while (interpolatedValues.length) {
+          expandedPath.push(interpolatedValues.shift());
+        }
+
+        firstNode = secondNode;
+      }
+
+      expandedPath.push(secondNode);
+      expandedPath.shift();
+      return expandedPath;
     }
   }]);
 

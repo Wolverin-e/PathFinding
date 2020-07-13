@@ -47,7 +47,8 @@ td {
 .CURRENTNODE{
     background-color: black;
 }
-.RECURSION{
+
+.PROCESSED{
     background-color: lightgray;
 }
 

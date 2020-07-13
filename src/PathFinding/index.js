@@ -9,13 +9,13 @@ import IDDFS from './algorithms/IDDFS';
 import JumpPointSearch from './algorithms/JumpPointSearch';
 
 export default {
-	Grid, 
-	GraphNode, 
-	BreadthFirstSearch, 
-	AStar, 
-	Dijkshtra, 
-	BestFirstSearch, 
-	IDAStar, 
+	Grid,
+	GraphNode,
+	BreadthFirstSearch,
+	AStar,
+	Dijkshtra,
+	BestFirstSearch,
+	IDAStar,
 	IDDFS,
 	JumpPointSearch
 };

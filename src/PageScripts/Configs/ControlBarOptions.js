@@ -1,66 +1,66 @@
-const START = 'start', 
-	PAUSE = 'pause', 
-	STOP = 'stop', 
-	RESTART = 'restart', 
-	CLEARPATH = 'clearPath', 
-	CLEARWALLS = 'clearWalls', 
-	UNDO = 'undo', 
+const START = 'start',
+	PAUSE = 'pause',
+	STOP = 'stop',
+	RESTART = 'restart',
+	CLEARPATH = 'clearPath',
+	CLEARWALLS = 'clearWalls',
+	UNDO = 'undo',
 	STEP = 'step';
 
 const allOptions = [
-	START, 
-	PAUSE, 
-	STOP, 
-	RESTART, 
-	CLEARPATH, 
-	CLEARWALLS, 
-	UNDO, 
+	START,
+	PAUSE,
+	STOP,
+	RESTART,
+	CLEARPATH,
+	CLEARWALLS,
+	UNDO,
 	STEP
 ];
 
 const barOptions = {
 	Editing: {
 		allowed: [
-			START, 
+			START,
 			CLEARWALLS
 		]
-	}, 
+	},
 	Computing: {
 		allowed: []
-	}, 
+	},
 	Playing: {
 		allowed: [
-			PAUSE, 
-			STOP, 
-			RESTART, 
-			CLEARPATH, 
-			CLEARWALLS, 
-			UNDO, 
+			PAUSE,
+			STOP,
+			RESTART,
+			CLEARPATH,
+			CLEARWALLS,
+			UNDO,
 			STEP
 		]
-	}, 
+	},
 	Paused: {
 		allowed: [
-			START, 
-			STOP, 
-			RESTART, 
-			CLEARPATH, 
-			CLEARWALLS, 
-			UNDO, 
+			START,
+			STOP,
+			RESTART,
+			CLEARPATH,
+			CLEARWALLS,
+			UNDO,
 			STEP
 		]
-	}, 
+	},
 	PathCleared: {
 		allowed: [
-			RESTART, 
+			RESTART,
 			CLEARWALLS
 		]
-	}, 
+	},
 	Finished: {
 		allowed: [
-			RESTART, 
-			CLEARPATH, 
-			CLEARWALLS, 
+			RESTART,
+			CLEARPATH,
+			CLEARWALLS,
 			UNDO
 		]
 	}

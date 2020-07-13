@@ -8,7 +8,7 @@ export default class JumpPointSearch{
 		this.markCurrentProcessingNode = options.markCurrentProcessingNode;
 		this.heuristic = heuristics[options.heuristic];
 	}
-    
+
 	getNeighboursBasedOnOptions(currentProcessingNode){
 		let parent = currentProcessingNode.parent,
 			abs = Math.abs,
@@ -48,7 +48,7 @@ export default class JumpPointSearch{
 					neighbours.push(this.grid.getNodeAtXY(x, y+yNormalizeDirection));
 				}
 			}
-		}else{
+		} else {
 			neighbours = this.grid.getNeighbours(currentProcessingNode, this.allowDiagonal, this.doNotCrossCornersBetweenObstacles);
 		}
 		return neighbours;
@@ -65,31 +65,32 @@ export default class JumpPointSearch{
 		if (this.grid.isXYWallElement(x, y)){
 			return null;
 		}
-		if(this.markCurrentProcessingNode) currentProcessingNode.recursion = true;
-        
+		if(this.markCurrentProcessingNode) currentProcessingNode.processed = true;
+
 		if (currentProcessingNode === this.grid.endNode){
 			return currentProcessingNode;
 		}
-    
+
 		if (xDifference !== 0){
 			if ((!this.grid.isXYWallElement(x, y-1) && this.grid.isXYWallElement(parentX, y-1)) || (!this.grid.isXYWallElement(x, y+1) && this.grid.isXYWallElement(parentX, y+1))){
 				return currentProcessingNode;
 			}
-		}else if (yDifference !== 0){
+		} else if (yDifference !== 0){
 			if ((!this.grid.isXYWallElement(x-1, y) && this.grid.isXYWallElement(x-1, parentY)) || (!this.grid.isXYWallElement(x+1, y) && this.grid.isXYWallElement(x+1, parentY))){
-				return currentProcessingNode; 
+				return currentProcessingNode;
 			}
 			if (this.getJumpPoints(this.grid.getNodeAtXY(x+1, y), currentProcessingNode) || this.getJumpPoints(this.grid.getNodeAtXY(x-1, y), currentProcessingNode)){
 				return currentProcessingNode;
 			}
-		}else {
+		} else {
 			console.log('only vertical and horizontal movements allowed');
 		}
+
 		if (x+xDifference>=0 && x+xDifference<this.grid.columns && y+yDifference>=0 && y+yDifference<this.grid.rows){
 			return this.getJumpPoints(this.grid.getNodeAtXY(x+xDifference, y+yDifference), currentProcessingNode);
 		}
-	}        
-    
+	}
+
 	successor(currentProcessingNode){
 
 		let neighbours = [],
@@ -97,7 +98,7 @@ export default class JumpPointSearch{
 			neighbour,
 			jumpPointDistanceFromStart;
 		neighbours = this.getNeighboursBasedOnOptions(currentProcessingNode);
-    
+
 		while(neighbours.length){
 			neighbour = neighbours.shift();
 			jumpPointNode = this.getJumpPoints(neighbour, currentProcessingNode);
@@ -126,21 +127,21 @@ export default class JumpPointSearch{
 
 	findPath(grid){
 		this.grid = grid;
-		let minHeap = new Heap((node1, node2) => node1.f-node2.f), 
+		let minHeap = new Heap((node1, node2) => node1.f-node2.f),
 			currentProcessingNode;
 		this.minHeap = minHeap;
-        
-		this.grid.startNode = this.grid.getNodeAtXY(this.grid.startPoint.x, this.grid.startPoint.y);  
+
+		this.grid.startNode = this.grid.getNodeAtXY(this.grid.startPoint.x, this.grid.startPoint.y);
 		this.grid.endNode = this.grid.getNodeAtXY(this.grid.endPoint.x, this.grid.endPoint.y);
 		this.grid.startNode.g = 0;
 		this.grid.startNode.f = 0;
 		this.minHeap.insert(this.grid.startNode);
 		this.grid.startNode.addedToHeap = true;
-        
+
 		while(!this.minHeap.empty()){
 
 			currentProcessingNode = this.minHeap.pop();
-			if(this.markCurrentProcessingNode) currentProcessingNode.recursion = true;
+			if(this.markCurrentProcessingNode) currentProcessingNode.processed = true;
 			currentProcessingNode.visited = true;
 
 			if (currentProcessingNode === this.grid.endNode){

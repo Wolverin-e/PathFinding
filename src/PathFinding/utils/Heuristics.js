@@ -1,6 +1,6 @@
-let abs = Math.abs, 
-	sqrt = Math.sqrt, 
-	max = Math.max, 
+let abs = Math.abs,
+	sqrt = Math.sqrt,
+	max = Math.max,
 	min = Math.min;
 
 class Heuristic{

@@ -24,13 +24,13 @@ export default class AStar{
 	}
 
 	findPath(grid){
-		let minHeap = new Heap((node1, node2) => node1.f-node2.f), 
-			startNode = grid.getNodeAtXY(grid.startPoint.x, grid.startPoint.y), 
-			endNode = grid.getNodeAtXY(grid.endPoint.x, grid.endPoint.y), 
-			currentProcessingNode, 
-			neighbours, 
+		let minHeap = new Heap((node1, node2) => node1.f-node2.f),
+			startNode = grid.getNodeAtXY(grid.startPoint.x, grid.startPoint.y),
+			endNode = grid.getNodeAtXY(grid.endPoint.x, grid.endPoint.y),
+			currentProcessingNode,
+			neighbours,
 			neighbourGValFromCurrentProcessingNode;
-		
+
 		startNode.f = 0;
 		startNode.g = 0;
 		endNode.f = 0;
@@ -51,7 +51,7 @@ export default class AStar{
 
 			neighbours.forEach(neighbour => {
 				if(neighbour.visited) return; //equivalent to continue in forEach
-				
+
 				neighbourGValFromCurrentProcessingNode = currentProcessingNode.g+this.getDistanceFromCurrentProcessignNode(currentProcessingNode, neighbour);
 
 				if(!neighbour.addedToHeap){
@@ -80,15 +80,15 @@ export default class AStar{
 	}
 
 	findBiPath(grid){
-		let minHeapFromStart = new Heap((node1, node2) => node1.f-node2.f), 
-			minHeapFromEnd = new Heap((node1, node2) => node1.f-node2.f), 
-			startNode = grid.getNodeAtXY(grid.startPoint.x, grid.startPoint.y), 
-			endNode = grid.getNodeAtXY(grid.endPoint.x, grid.endPoint.y), 
-			currentProcessingNode, 
-			neighbours, 
+		let minHeapFromStart = new Heap((node1, node2) => node1.f-node2.f),
+			minHeapFromEnd = new Heap((node1, node2) => node1.f-node2.f),
+			startNode = grid.getNodeAtXY(grid.startPoint.x, grid.startPoint.y),
+			endNode = grid.getNodeAtXY(grid.endPoint.x, grid.endPoint.y),
+			currentProcessingNode,
+			neighbours,
 			neighbour,
 			neighbourGValFromCurrentProcessingNode;
-		
+
 		startNode.f = 0;
 		startNode.g = 0;
 		endNode.f = 0;
@@ -143,7 +143,7 @@ export default class AStar{
 			currentProcessingNode = minHeapFromEnd.pop();
 			if(this.markCurrentProcessingNode) currentProcessingNode.currentNode = true;
 			neighbours = grid.getNeighbours(currentProcessingNode, this.allowDiagonal, this.doNotCrossCornersBetweenObstacles);
-			
+
 			while(neighbours.length){
 				neighbour = neighbours.shift();
 				if(neighbour.visited){

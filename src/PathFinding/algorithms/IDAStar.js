@@ -29,9 +29,9 @@ export default class IDAStar{
 
 	findPath(grid){
 		this.grid = grid;
-		let uppperBound = this.heuristic(grid.startPoint, grid.endPoint), 
+		let uppperBound = this.heuristic(grid.startPoint, grid.endPoint),
 			returnedInstance;
-		
+
 		grid.startNode = grid.getNodeAtXY(grid.startPoint.x, grid.startPoint.y);
 		grid.endNode = grid.getNodeAtXY(grid.endPoint.x, grid.endPoint.y);
 
@@ -40,7 +40,7 @@ export default class IDAStar{
 
 		while(true){
 			returnedInstance = this.search(path, 0, uppperBound);
-			
+
 			if(typeof(returnedInstance) === "number"){
 				console.info("bound Increased to", returnedInstance);
 				uppperBound = returnedInstance;
@@ -58,12 +58,12 @@ export default class IDAStar{
 			console.info("time exceeded");
 			return [];
 		}
-		
+
 		if(rootNode === this.grid.endNode){
 			console.info("found");
 			return "FOUND";
 		}
-		
+
 		let fVal = rootGVal + this.heuristic(rootNode, this.grid.endNode);
 		if(fVal > upperBound) {
 			rootNode.addedToHeap = true;
@@ -72,11 +72,11 @@ export default class IDAStar{
 
 		if(this.markCurrentProcessingNode) rootNode.currentNode = true;
 		rootNode.visited = true;
-		
-		let min = Infinity, 
-			neighbourGVal, 
-			returnedInstance, 
-			neighbour, 
+
+		let min = Infinity,
+			neighbourGVal,
+			returnedInstance,
+			neighbour,
 			neighbours = this.grid.getNeighbours(rootNode, this.allowDiagonal, this.doNotCrossCornersBetweenObstacles);
 
 		while(neighbours.length){
@@ -95,7 +95,7 @@ export default class IDAStar{
 				path.pop(neighbour);
 			}
 		}
-		
+
 		rootNode.visited = false;
 		return min;
 	}

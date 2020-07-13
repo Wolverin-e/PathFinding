@@ -42,6 +42,12 @@
 			"warn", 
 			"1tbs"
 		], 
-		"no-constant-condition": 0
+		"no-constant-condition": 0, 
+		"no-trailing-spaces": [
+			"warn", 
+			{
+				"ignoreComments": true
+			}
+		]
 	}
 }

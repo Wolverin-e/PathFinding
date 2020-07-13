@@ -23,15 +23,14 @@ class Controller extends StateMachine{
 		this.rows = options.rows;
 		this.columns = options.columns;
 		this.defaultStepDelay = options.stepDelay;
-		this.U = options.undoRedoBurstSteps;
-		
+
 		this.stepDelay = options.stepDelay;
 		this.undoRedoBurstSteps = options.undoRedoBurstSteps;
-		
+
 		this.grid = new PathFinding.Grid({
-			rows: this.rows, 
-			columns: this.columns, 
-			startPoint: options.startPoint, 
+			rows: this.rows,
+			columns: this.columns,
+			startPoint: options.startPoint,
 			endPoint: options.endPoint
 		});
 	}
@@ -46,9 +45,9 @@ class Controller extends StateMachine{
 	addPathToOps(path){
 		opQueue.pushArray(path.map(coordinate => {
 			return{
-				x: coordinate.x, 
-				y: coordinate.y, 
-				att: "path", 
+				x: coordinate.x,
+				y: coordinate.y,
+				att: "path",
 				val: true
 			};
 		}));
@@ -86,11 +85,11 @@ class Controller extends StateMachine{
 
 	attachControllerLifeCycleEventHooks(){
 		let states = [
-			"Editing", 
-			"Computing", 
-			"Playing", 
-			"Paused", 
-			"Finished", 
+			"Editing",
+			"Computing",
+			"Playing",
+			"Paused",
+			"Finished",
 			"PathCleared"
 		];
 
@@ -110,62 +109,62 @@ class Controller extends StateMachine{
 			set visited(val){
 				this._visited = val;
 				opQueue.push({
-					x: this.x, 
-					y: this.y, 
-					att: val?'visited':'unVisited', 
+					x: this.x,
+					y: this.y,
+					att: val?'visited':'unVisited',
 					val
 				});
-			}, 
+			},
 			get visited(){
 				return this._visited;
-			}, 
+			},
 			set addedToQueue(val){
 				this._addedToQueue = val;
 				opQueue.push({
-					x: this.x, 
-					y: this.y, 
-					att: 'addedToQueue', 
+					x: this.x,
+					y: this.y,
+					att: 'addedToQueue',
 					val
 				});
-			}, 
+			},
 			get addedToQueue(){
 				return this._addedToQueue;
-			}, 
+			},
 			set addedToHeap(val){
 				this._addedToHeap = val;
 				opQueue.push({
-					x: this.x, 
-					y: this.y, 
-					att: 'addedToHeap', 
+					x: this.x,
+					y: this.y,
+					att: 'addedToHeap',
 					val
 				});
-			}, 
+			},
 			get addedToHeap(){
 				return this._addedToHeap;
-			}, 
+			},
 			set currentNode(val){
 				this._currentNode = val;
 				opQueue.push({
-					x: this.x, 
-					y: this.y, 
-					att: 'currentNode', 
+					x: this.x,
+					y: this.y,
+					att: 'currentNode',
 					val
 				});
-			}, 
+			},
 			get currentNode(){
 				return this._currentNode;
 			},
-			set recursion(val){
-				this._recursion = val;
+			set processed(val){
+				this._processed = val;
 				opQueue.push({
-					x: this.x, 
-					y: this.y, 
-					att: 'recursion', 
+					x: this.x,
+					y: this.y,
+					att: 'processed',
 					val
 				});
-			}, 
-			get recursion(){
-				return this._recursion;
+			},
+			get processed(){
+				return this._processed;
 			}
 		};
 	}
@@ -323,7 +322,7 @@ class Controller extends StateMachine{
 		this.viewRenderer.tableElement.on('mouseover', (event) => {
 			if(!$(event.target).is('td')) return;
 			let {x, y} = $(event.target).data("coords");
-			
+
 			switch(this.state){
 				case 'AddingWalls':
 					this.makeWall(x, y);
@@ -352,15 +351,15 @@ class Controller extends StateMachine{
 	bindControlCenterEventListeners(){
 		let controlCenter = $('#control-center');
 
-		let stepsInpField = controlCenter.find("#steps"), 
-			delayInpField = controlCenter.find("#delay"), 
+		let stepsInpField = controlCenter.find("#steps"),
+			delayInpField = controlCenter.find("#delay"),
 			algorithmSelector = controlCenter.find("#algorithmSelector");
-		
+
 		stepsInpField.val(this.undoRedoBurstSteps);
 		stepsInpField.on("input", (event) => {
 			this.undoRedoBurstSteps = event.target.value?event.target.value:this.defaultUndoRedoBurstSteps;
 		});
-		
+
 		delayInpField.val(this.stepDelay);
 		delayInpField.on("input", (event) => {
 			this.stepDelay = event.target.value?event.target.value:this.defaultStepDelay;
@@ -368,10 +367,10 @@ class Controller extends StateMachine{
 
 		this.algorithm = algorithmSelector.val();
 		this.algorithmOptions = {};
-		
+
 		let radioOpt = controlCenter.find(`#${this.algorithm} .options-radio-section input[type='radio']:checked`);
 		if(radioOpt.length) this.algorithmOptions['heuristic'] = radioOpt.val();
-		
+
 		let checkBoxOpts = controlCenter.find(`#${this.algorithm} .options-checkbox-section input[type='checkbox']:checked`);
 		checkBoxOpts.each((i, elem) => {
 			this.algorithmOptions[elem.value] = true;
@@ -384,7 +383,7 @@ class Controller extends StateMachine{
 
 			let radioOpt = controlCenter.find(`#${this.algorithm} .options-radio-section input[type='radio']:checked`);
 			if(radioOpt.length) this.algorithmOptions['heuristic'] = radioOpt.val();
-			
+
 			let checkBoxOpts = controlCenter.find(`#${this.algorithm} .options-checkbox-section input[type='checkbox']:checked`);
 			checkBoxOpts.each((i, elem) => {
 				this.algorithmOptions[elem.value] = true;
@@ -397,7 +396,7 @@ class Controller extends StateMachine{
 				this.algorithmOptions.heuristic = event.target.value;
 			});
 		});
-		
+
 		controlCenter.find(`.options-checkbox-section input[type='checkbox']`).each((i, elem) => {
 			$(elem).on("click", (event) => {
 				this.accomodateControlCenterAlgorithmEntityChange();
@@ -409,16 +408,16 @@ class Controller extends StateMachine{
 	bindControlBarEventListeners(){
 		let controlBar = $("#control-bar");
 		this.controlBar = {
-			start: controlBar.find('#start'), 
-			pause: controlBar.find('#pause'), 
-			stop: controlBar.find('#stop'), 
-			restart: controlBar.find('#restart'), 
-			clearPath: controlBar.find('#clearPath'), 
-			clearWalls: controlBar.find('#clearWalls'), 
-			undo: controlBar.find('#undo'), 
+			start: controlBar.find('#start'),
+			pause: controlBar.find('#pause'),
+			stop: controlBar.find('#stop'),
+			restart: controlBar.find('#restart'),
+			clearPath: controlBar.find('#clearPath'),
+			clearWalls: controlBar.find('#clearWalls'),
+			undo: controlBar.find('#undo'),
 			step: controlBar.find('#step')
 		};
-		
+
 		this.controlBar.start.on("click", () => {
 			console.log("start");
 			// Editing | Paused

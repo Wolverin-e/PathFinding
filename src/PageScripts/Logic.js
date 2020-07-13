@@ -12,7 +12,7 @@ class PageActionsLogicAttacher{
 
 		controlCenter.css("left", negControlCenterWidth);
 		controlCenter.width(controlCenterWidth);
-		
+
 		controlCenterSwitch.on('click', () => {
 			if(switchState === "closed"){
 				expandImage.css("transform", "rotate(180deg)");
@@ -31,7 +31,7 @@ class PageActionsLogicAttacher{
 	attachControlBarDragLogic(){
 		const controlBar = $("#control-bar");
 		const draggable = $(controlBar.find("#drag"));
-		
+
 		let mouseDownOnDraggable = false;
 		let startCoords = {};
 
@@ -46,7 +46,7 @@ class PageActionsLogicAttacher{
 			startCoords.x = event.clientX;
 			startCoords.y = event.clientY;
 		});
-		
+
 		draggable.on("mouseup", () => {
 			mouseDownOnDraggable = false;
 		});
@@ -61,7 +61,7 @@ class PageActionsLogicAttacher{
 				startCoords = {x, y};
 				let curOff = controlBar.offset();
 				controlBar.offset({
-					left: curOff.left-delLeft, 
+					left: curOff.left-delLeft,
 					top: curOff.top-delTop
 				});
 			}
@@ -71,11 +71,11 @@ class PageActionsLogicAttacher{
 	attachAlgorithmOptionsShowHideLogic(){
 		const controlCenter = $("#control-center");
 		const algorithmSelector = controlCenter.find("#algorithmSelector");
-		
+
 		controlCenter.find(".algorithm-options-section").hide();
 		let current = algorithmSelector.val();
 		controlCenter.find("#"+current).show();
-		
+
 		algorithmSelector.on("change", (event) => {
 			controlCenter.find("#"+current).hide();
 			current = event.target.value;
