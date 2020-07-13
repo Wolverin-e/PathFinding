@@ -65,9 +65,6 @@ export default class JumpPointSearch{
 		if (this.grid.isXYWallElement(x, y)){
 			return null;
 		}
-		if ((x === 0) || (x === this.grid.columns -1 ) || (y === 0) || (y === this.grid.rows -1)){
-			return null;
-		}
 		if(this.markCurrentProcessingNode) currentProcessingNode.recursion = true;
         
 		if (currentProcessingNode === this.grid.endNode){
@@ -88,7 +85,9 @@ export default class JumpPointSearch{
 		}else {
 			console.log('only vertical and horizontal movements allowed');
 		}
-		return this.getJumpPoints(this.grid.getNodeAtXY(x+xDifference, y+yDifference), currentProcessingNode);
+		if (x+xDifference>=0 && x+xDifference<this.grid.columns && y+yDifference>=0 && y+yDifference<this.grid.rows){
+			return this.getJumpPoints(this.grid.getNodeAtXY(x+xDifference, y+yDifference), currentProcessingNode);
+		}
 	}        
     
 	successor(currentProcessingNode){
