@@ -154,6 +154,18 @@ class Controller extends StateMachine{
 			}, 
 			get currentNode(){
 				return this._currentNode;
+			},
+			set recursion(val){
+				this._recursion = val;
+				opQueue.push({
+					x: this.x, 
+					y: this.y, 
+					att: 'recursion', 
+					val
+				});
+			}, 
+			get recursion(){
+				return this._recursion;
 			}
 		};
 	}

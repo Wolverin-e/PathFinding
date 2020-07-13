@@ -68,7 +68,7 @@ export default class JumpPointSearch{
 		if ((x === 0) || (x === this.grid.columns -1 ) || (y === 0) || (y === this.grid.rows -1)){
 			return null;
 		}
-		if(this.markCurrentProcessingNode) currentProcessingNode.currentNode = true;
+		if(this.markCurrentProcessingNode) currentProcessingNode.recursion = true;
         
 		if (currentProcessingNode === this.grid.endNode){
 			return currentProcessingNode;
@@ -141,7 +141,7 @@ export default class JumpPointSearch{
 		while(!this.minHeap.empty()){
 
 			currentProcessingNode = this.minHeap.pop();
-			if(this.markCurrentProcessingNode) currentProcessingNode.currentNode = true;
+			if(this.markCurrentProcessingNode) currentProcessingNode.recursion = true;
 			currentProcessingNode.visited = true;
 
 			if (currentProcessingNode === this.grid.endNode){

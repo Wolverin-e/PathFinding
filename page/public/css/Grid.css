@@ -47,6 +47,9 @@ td {
 .CURRENTNODE{
     background-color: black;
 }
+.RECURSION{
+    background-color: lightgray;
+}
 
 .UNVISITED{
     background-color: white;
