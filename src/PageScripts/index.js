@@ -1,6 +1,16 @@
-import init from './main';
+import singleEndPointPageInitFunction from './SingleEndPoint/main';
+import multiEndPointsPageInitFunction from './MultiEndPoints/main';
 import '@babel/polyfill';
 
+const single = {
+	init: singleEndPointPageInitFunction
+};
+
+const multi = {
+	init: multiEndPointsPageInitFunction
+};
+
 export {
-	init
+	single,
+	multi
 };

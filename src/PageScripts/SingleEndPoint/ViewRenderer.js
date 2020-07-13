@@ -1,4 +1,3 @@
-// import PathFinding from '../PathFinding/index';
 import $ from 'jquery';
 import pageActionsLogicAttacher from './Logic';
 

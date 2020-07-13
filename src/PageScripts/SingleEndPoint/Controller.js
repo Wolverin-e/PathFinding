@@ -2,7 +2,7 @@ import $ from 'jquery';
 import StateMachine from 'javascript-state-machine';
 import Denque from 'denque';
 
-import PathFinding from '../PathFinding/index';
+import PathFinding from '../../PathFinding/index';
 import stateMachineData from './Configs/ControllerStates';
 import controlBarOptions from './Configs/ControlBarOptions';
 
