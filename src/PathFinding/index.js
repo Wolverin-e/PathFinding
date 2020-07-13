@@ -6,6 +6,7 @@ import Dijkshtra from './algorithms/Dijkshtra';
 import BestFirstSearch from './algorithms/BestFirstSearch';
 import IDAStar from './algorithms/IDAStar';
 import IDDFS from './algorithms/IDDFS';
+import JumpPointSearch from './algorithms/JumpPointSearch';
 
 export default {
 	Grid, 
@@ -15,5 +16,6 @@ export default {
 	Dijkshtra, 
 	BestFirstSearch, 
 	IDAStar, 
-	IDDFS
+	IDDFS,
+	JumpPointSearch
 };

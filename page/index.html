@@ -56,6 +56,7 @@
                     <optgroup label="GREEDY">GREEDY</optgroup>
                     <option value="AStar">AStar</option>
                     <option value="BestFirstSearch">BestFirstSearch</option>
+                    <option value="JumpPointSearch">JumpPointSearch</option>
                     <optgroup label="CLASSIC">CLASSIC</optgroup>
                     <option value="BreadthFirstSearch">BreadthFirstSearch</option>
                     <option value="Dijkshtra">Dijkshtra</option>
@@ -173,6 +174,31 @@
                             <br />
                         <input type="checkbox" id="IDDFSC3" value="markCurrentProcessingNode" checked>
                             <label for="IDDFSC4">Show Cursor</label>
+                            <br />
+                    </div>
+                </div>
+
+                <div id="JumpPointSearch" class="algorithm-options-section">
+                    HEURISTIC
+                    <div class="options-radio-section">
+                        <input type="radio" id="JPSO1" name="JPS" value="manhattan" checked />
+                            <label for="JPSO1">Manhattan</label>
+                            <br />
+                        <input type="radio" id="JPSO2" name="JPS" value="euclidean" />
+                            <label for="JPSO2">Euclidean</label>
+                            <br />
+                        <input type="radio" id="JPSO3" name="JPS" value="octile" />
+                            <label for="JPSO3">Octile</label>
+                            <br />
+                        <input type="radio" id="JPSO4" name="JPS" value="chebyshev" />
+                            <label for="JPSO4">Chebyshev</label>
+                            <br />
+                    </div>
+                    <br />
+                    OPTIONS
+                    <div class="options-checkbox-section">
+                        <input type="checkbox" id="JPSC1" value="markCurrentProcessingNode" checked>
+                            <label for="JPSC1">Show Cursor</label>
                             <br />
                     </div>
                 </div>
