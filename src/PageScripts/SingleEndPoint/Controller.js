@@ -2,7 +2,7 @@ import $ from 'jquery';
 import StateMachine from 'javascript-state-machine';
 import Denque from 'denque';
 
-import PathFinding from '../PathFinding/index';
+import PathFinding from '../../PathFinding/index';
 import stateMachineData from './Configs/ControllerStates';
 import controlBarOptions from './Configs/ControlBarOptions';
 
@@ -165,6 +165,18 @@ class Controller extends StateMachine{
 			},
 			get processed(){
 				return this._processed;
+			},
+			set explored(val){
+				this._explored = val;
+				opQueue.push({
+					x: this.x,
+					y: this.y,
+					att: 'explored',
+					val
+				});
+			},
+			get explored(){
+				return this._explored;
 			}
 		};
 	}

@@ -66,7 +66,7 @@ export default class IDAStar{
 
 		let fVal = rootGVal + this.heuristic(rootNode, this.grid.endNode);
 		if(fVal > upperBound) {
-			rootNode.addedToHeap = true;
+			rootNode.explored = true;
 			return fVal;
 		}
 

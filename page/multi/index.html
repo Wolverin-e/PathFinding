@@ -1,0 +1,114 @@
+<html>
+    <head>
+        <title>PathFinder</title>
+        
+        <link rel="icon" type="image/png" sizes="32x32" href="/PathFinding/page/public/imgs/favicon.png">
+        
+        <link rel="stylesheet" type="text/css" href="/PathFinding/page/public/css/Animations.css">
+        <link rel="stylesheet" type="text/css" href="/PathFinding/page/public/css/ControlBar.css">
+        <link rel="stylesheet" type="text/css" href="/PathFinding/page/public/css/ControlCenter.css">
+        <link rel="stylesheet" type="text/css" href="/PathFinding/page/public/css/Fonts.css">
+        <link rel="stylesheet" type="text/css" href="/PathFinding/page/public/css/Grid.css">
+        <link rel="stylesheet" type="text/css" href="/PathFinding/page/public/css/Main.css">
+    </head>
+    <body>
+        <div id="grid-container">
+            <table id="grid">
+            </table>
+        </div>
+
+        <div id="control-bar">
+            <img id="drag" src="/PathFinding/page/public/imgs/drag.png">
+            <img id="start" class="action" src="/PathFinding/page/public/imgs/start.png">
+            <img id="pause" class="action" src="/PathFinding/page/public/imgs/pause.png">
+            <img id="stop" class="action" src="/PathFinding/page/public/imgs/stop.png">
+            <img id="restart" class="action" src="/PathFinding/page/public/imgs/restart.png">
+            <img id="clearPath" class="action" src="/PathFinding/page/public/imgs/clearPath.png">
+            <img id="clearWalls" class="action" src="/PathFinding/page/public/imgs/clearWalls.png">
+            <img id="undo" class="action" src="/PathFinding/page/public/imgs/undo.png">
+            <img id="step" class="action" src="/PathFinding/page/public/imgs/step.png">
+        </div>
+
+        <div id="control-center-switch">
+            <img src="/PathFinding/page/public/imgs/expand.png" height="40px" width="30px">
+        </div>
+        
+        <div id="control-center">
+            <div id="controls-container">
+                <p id="main-lable">PATHFINDER</p>
+                <hr />
+
+                <!-- ALGORITHM SELECTOR -->
+                <p id="normal-lable">UNDO/REDO STEPS</p>
+                    <input id="steps" class="numInp" type="number" min="1" max="1000">
+                <hr />
+                
+                <p id="normal-lable">STEP DELAY (ms)</p>
+                    <input id="delay" class="numInp" type="number" min="1" max="300">
+                <hr />
+
+                <!-- ALGORITHM SELECTOR -->
+                <p id="normal-lable">ALGORITHM</p>
+                <select name="algorithm" id="algorithmSelector">
+                    <optgroup label="CLASSIC">CLASSIC</optgroup>
+                    <option value="MultiBFS">MultiBFS</option>
+                </select>
+                <hr />
+
+                <!-- ALGORITHM OPTIONS -->
+
+                <div id="MultiBFS" class="algorithm-options-section">
+                    OPTIONS
+                    <div class="options-checkbox-section">
+                        <input type="checkbox" id="MBFS1" value="allowDiagonal" checked>
+                            <label for="MBFS1">Allow Diagonal</label>
+                            <br />
+                        <input type="checkbox" id="MBFS2" value="doNotCrossCornersBetweenObstacles" checked>
+                            <label for="MBFS2">Do Not Cross Wall</label>
+                            <br />
+                        <input type="checkbox" id="MBFS3" value="markCurrentProcessingNode" checked>
+                            <label for="MBFS3">Show Cursor</label>
+                            <br />
+                    </div>
+                <!-- <div id="AStar" class="algorithm-options-section">
+                    HEURISTIC
+                    <div class="options-radio-section">
+                        <input type="radio" id="ASO1" name="AS" value="manhattan" checked />
+                            <label for="ASO1">Manhattan</label>
+                            <br />
+                        <input type="radio" id="ASO2" name="AS" value="euclidean" />
+                            <label for="ASO2">Euclidean</label>
+                            <br />
+                        <input type="radio" id="ASO3" name="AS" value="octile" />
+                            <label for="ASO3">Octile</label>
+                            <br />
+                        <input type="radio" id="ASO4" name="AS" value="chebyshev" />
+                            <label for="ASO4">Chebyshev</label>
+                            <br />
+                    </div>
+                    <br />
+                    OPTIONS
+                    <div class="options-checkbox-section">
+                        <input type="checkbox" id="ASC1" value="allowDiagonal" checked>
+                            <label for="ASC1">Allow Diagonal</label>
+                            <br />
+                        <input type="checkbox" id="ASC2" value="biDirectional">
+                            <label for="ASC2">Bi Directional</label>
+                            <br />
+                        <input type="checkbox" id="ASC3" value="doNotCrossCornersBetweenObstacles" checked>
+                            <label for="ASC3">Do Not Cross Wall</label>
+                            <br />
+                        <input type="checkbox" id="ASC4" value="markCurrentProcessingNode" checked>
+                            <label for="ASC4">Show Cursor</label>
+                            <br />
+                    </div>
+				</div> -->
+            </div>
+        </div>
+
+        <script src="/PathFinding/build/PageScripts.bundle.js"> </script>
+        <script>
+            PageScripts.multi.init();
+        </script>
+    </body>
+</html>

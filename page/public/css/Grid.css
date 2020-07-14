@@ -52,6 +52,10 @@ td {
     background-color: lightgray;
 }
 
+.EXPLORED{
+    background-color: blanchedalmond;
+}
+
 .UNVISITED{
     background-color: white;
 }

@@ -4,7 +4,7 @@ export default {
 	mode: "development",
 	entry: {
 		'PathFinder': path.join(__dirname, './src/PathFinding/index.js'),
-		'PageScript': path.join(__dirname, './src/PageScripts/index.js')
+		'PageScripts': path.join(__dirname, './src/PageScripts/index.js')
 	},
 	output: {
 		path: path.join(__dirname, './build/'),
