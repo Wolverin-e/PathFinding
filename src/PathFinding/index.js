@@ -1,4 +1,5 @@
 import Grid from './core/Grid';
+import MultiEPGrid from './core/MultiEPGrid';
 import GraphNode from './core/GraphNode';
 import BreadthFirstSearch from './algorithms/BreadthFirstSearch';
 import AStar from './algorithms/AStar';
@@ -10,6 +11,7 @@ import JumpPointSearch from './algorithms/JumpPointSearch';
 
 export default {
 	Grid,
+	MultiEPGrid,
 	GraphNode,
 	BreadthFirstSearch,
 	AStar,

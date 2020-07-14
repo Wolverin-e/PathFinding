@@ -44,9 +44,7 @@ class Grid{
 		let grid = new Grid(this);
 
 		for(let y=0; y<this.rows; y++){
-			grid[y] = new Array(this.columns);
 			for(let x=0; x<this.columns; x++){
-				grid[y][x] = new GraphNode({x, y});
 				if(this.isXYWallElement(x, y)) grid.makeXYWall(x, y);
 			}
 		}
