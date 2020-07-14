@@ -1512,7 +1512,7 @@ var IDAStar = /*#__PURE__*/function () {
       var fVal = rootGVal + this.heuristic(rootNode, this.grid.endNode);
 
       if (fVal > upperBound) {
-        rootNode.addedToHeap = true;
+        rootNode.explored = true;
         return fVal;
       }
 
@@ -1706,7 +1706,6 @@ var JumpPointSearch = /*#__PURE__*/function () {
           parentY = parent.y,
           xDifference = currentProcessingNode.x - parent.x,
           yDifference = currentProcessingNode.y - parent.y;
-      console.log(currentProcessingNode);
 
       if (this.grid.isXYWallElement(x, y)) {
         return null;
@@ -1810,6 +1809,84 @@ var JumpPointSearch = /*#__PURE__*/function () {
   }]);
 
   return JumpPointSearch;
+}();
+
+
+
+/***/ }),
+
+/***/ "./src/PathFinding/algorithms/MultiBFS.js":
+/*!************************************************!*\
+  !*** ./src/PathFinding/algorithms/MultiBFS.js ***!
+  \************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return MultiBFS; });
+/* harmony import */ var denque__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! denque */ "./node_modules/denque/index.js");
+/* harmony import */ var denque__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(denque__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _utils_BackTrace__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/BackTrace */ "./src/PathFinding/utils/BackTrace.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
+
+
+var MultiBFS = /*#__PURE__*/function () {
+  function MultiBFS(options) {
+    _classCallCheck(this, MultiBFS);
+
+    console.log(options);
+    this.allowDiagonal = options.allowDiagonal;
+    this.doNotCrossCornersBetweenObstacles = options.doNotCrossCornersBetweenObstacles;
+    this.markCurrentProcessingNode = options.markCurrentProcessingNode;
+  }
+
+  _createClass(MultiBFS, [{
+    key: "findPath",
+    value: function findPath(multiEPGrid) {
+      var startPoint = multiEPGrid.startPoint,
+          startNode = multiEPGrid.getNodeAtXY(startPoint.x, startPoint.y),
+          queue = new denque__WEBPACK_IMPORTED_MODULE_0___default.a([startNode]),
+          currentProcessingNode,
+          neighbours,
+          path = [];
+      startNode.addedToQueue = true;
+
+      while (!queue.isEmpty()) {
+        currentProcessingNode = queue.shift();
+        if (this.markCurrentProcessingNode) currentProcessingNode.currentNode = true;
+
+        if (multiEPGrid.isXYEndPoint(currentProcessingNode.x, currentProcessingNode.y)) {
+          path = path.concat(_utils_BackTrace__WEBPACK_IMPORTED_MODULE_1__["default"].backTrace(currentProcessingNode, startNode));
+          startNode = currentProcessingNode;
+          multiEPGrid.removeEndPoint(currentProcessingNode);
+          console.log(path, multiEPGrid.endPoints);
+          queue.clear();
+          multiEPGrid = multiEPGrid.clone();
+          if (!multiEPGrid.endPoints.length) return path;
+        }
+
+        neighbours = multiEPGrid.getNeighbours(currentProcessingNode, this.allowDiagonal, this.doNotCrossCornersBetweenObstacles);
+        neighbours.forEach(function (neighbour) {
+          if (neighbour.addedToQueue || neighbour.visited) return;
+          neighbour.addedToQueue = true;
+          queue.push(neighbour);
+          neighbour.parent = currentProcessingNode;
+        });
+        currentProcessingNode.visited = true;
+      }
+
+      return path;
+    }
+  }]);
+
+  return MultiBFS;
 }();
 
 
@@ -2081,6 +2158,13 @@ var MultiEPGrid = /*#__PURE__*/function (_Grid) {
       }
     }
   }, {
+    key: "removeEndPoint",
+    value: function removeEndPoint(node) {
+      this.endPoints = this.endPoints.filter(function (ep) {
+        return !(ep.x === node.x && ep.y === node.y);
+      });
+    }
+  }, {
     key: "clone",
     value: function clone() {
       var grid = new MultiEPGrid(this);
@@ -2121,6 +2205,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _algorithms_IDAStar__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./algorithms/IDAStar */ "./src/PathFinding/algorithms/IDAStar.js");
 /* harmony import */ var _algorithms_IDDFS__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./algorithms/IDDFS */ "./src/PathFinding/algorithms/IDDFS.js");
 /* harmony import */ var _algorithms_JumpPointSearch__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./algorithms/JumpPointSearch */ "./src/PathFinding/algorithms/JumpPointSearch.js");
+/* harmony import */ var _algorithms_MultiBFS__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./algorithms/MultiBFS */ "./src/PathFinding/algorithms/MultiBFS.js");
+
 
 
 
@@ -2141,7 +2227,8 @@ __webpack_require__.r(__webpack_exports__);
   BestFirstSearch: _algorithms_BestFirstSearch__WEBPACK_IMPORTED_MODULE_6__["default"],
   IDAStar: _algorithms_IDAStar__WEBPACK_IMPORTED_MODULE_7__["default"],
   IDDFS: _algorithms_IDDFS__WEBPACK_IMPORTED_MODULE_8__["default"],
-  JumpPointSearch: _algorithms_JumpPointSearch__WEBPACK_IMPORTED_MODULE_9__["default"]
+  JumpPointSearch: _algorithms_JumpPointSearch__WEBPACK_IMPORTED_MODULE_9__["default"],
+  MultiBFS: _algorithms_MultiBFS__WEBPACK_IMPORTED_MODULE_10__["default"]
 });
 
 /***/ }),

@@ -10,23 +10,24 @@ const rows = 50,
 	nodeSize = clientWidth/columns,
 	midRowIndex = Math.floor((clientHeight/nodeSize)/2),
 	colDivison = Math.floor(columns/11-1),
-	offset=15,
+	xOffset=15,
+	yOffset=2,
 	startPoint = {
-		x: colDivison+offset,
+		x: colDivison+xOffset,
 		y: midRowIndex
 	},
 	endPoints = [{
-		x: colDivison*2+offset,
-		y: midRowIndex
+		x: colDivison*2+xOffset,
+		y: midRowIndex-yOffset
 	}, {
-		x: colDivison*3+offset,
-		y: midRowIndex
+		x: colDivison*3+xOffset,
+		y: midRowIndex+yOffset
 	}, {
-		x: colDivison*4+offset,
-		y: midRowIndex
+		x: colDivison*4+xOffset,
+		y: midRowIndex-yOffset
 	}, {
-		x: colDivison*5+offset,
-		y: midRowIndex
+		x: colDivison*5+xOffset,
+		y: midRowIndex+yOffset
 	}];
 
 function init(){

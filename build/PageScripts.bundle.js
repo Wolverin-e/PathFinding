@@ -22719,12 +22719,13 @@ var MultiController = /*#__PURE__*/function (_Controller) {
   _createClass(MultiController, [{
     key: "onAfterInitialize",
     value: function onAfterInitialize() {
+      var _this2 = this;
+
       this.viewRenderer.init();
       this.shiftStartPoint(this.grid.startPoint.x, this.grid.startPoint.y);
-      this.viewRenderer.addEndPoint(this.grid.endPoints[0].x, this.grid.endPoints[0].y);
-      this.viewRenderer.addEndPoint(this.grid.endPoints[1].x, this.grid.endPoints[1].y);
-      this.viewRenderer.addEndPoint(this.grid.endPoints[2].x, this.grid.endPoints[2].y);
-      this.viewRenderer.addEndPoint(this.grid.endPoints[3].x, this.grid.endPoints[3].y);
+      this.grid.endPoints.forEach(function (ep) {
+        _this2.viewRenderer.addEndPoint(ep.x, ep.y);
+      });
       this.bindDOMEventListeners();
       this.attachOpsEventListeners();
       this.attachControllerLifeCycleEventHooks();
@@ -22754,69 +22755,69 @@ var MultiController = /*#__PURE__*/function (_Controller) {
   }, {
     key: "bindGridEventListeners",
     value: function bindGridEventListeners() {
-      var _this2 = this;
+      var _this3 = this;
 
       this.viewRenderer.tableElement.on('mousedown', function (event) {
         var _$$data = jquery__WEBPACK_IMPORTED_MODULE_0___default()(event.target).data("coords"),
             x = _$$data.x,
             y = _$$data.y;
 
-        if (_this2.is('Paused')) {
-          _this2.finish(); // STATEMACHINE TRANSITION
+        if (_this3.is('Paused')) {
+          _this3.finish(); // STATEMACHINE TRANSITION
 
 
-          _this2.clearPath(); // STATEMACHINE TRANSITION
+          _this3.clearPath(); // STATEMACHINE TRANSITION
 
 
-          _this2.clearReasources();
+          _this3.clearReasources();
 
-          _this2.gridEdit(); // STATEMACHINE TRANSITION
-
-        }
-
-        if (_this2.is('Finished')) {
-          _this2.clearPath(); // STATEMACHINE TRANSITION
-
-
-          _this2.clearReasources();
-
-          _this2.gridEdit(); // STATEMACHINE TRANSITION
+          _this3.gridEdit(); // STATEMACHINE TRANSITION
 
         }
 
-        if (_this2.is('pathCleared')) {
-          _this2.clearReasources();
+        if (_this3.is('Finished')) {
+          _this3.clearPath(); // STATEMACHINE TRANSITION
 
-          _this2.gridEdit(); // STATEMACHINE TRANSITION
+
+          _this3.clearReasources();
+
+          _this3.gridEdit(); // STATEMACHINE TRANSITION
 
         }
 
-        if (_this2.is('Editing')) {
-          if (_this2.grid.isXYStartPoint(x, y)) {
-            _this2.startShiftingStartPoint();
+        if (_this3.is('pathCleared')) {
+          _this3.clearReasources();
+
+          _this3.gridEdit(); // STATEMACHINE TRANSITION
+
+        }
+
+        if (_this3.is('Editing')) {
+          if (_this3.grid.isXYStartPoint(x, y)) {
+            _this3.startShiftingStartPoint();
 
             return;
           }
 
-          if (_this2.grid.isXYEndPoint(x, y)) {
-            _this2.endPointBeingShifted = {
+          if (_this3.grid.isXYEndPoint(x, y)) {
+            _this3.endPointBeingShifted = {
               x: x,
               y: y
             };
 
-            _this2.startShiftingEndPoint();
+            _this3.startShiftingEndPoint();
 
             return;
           }
 
-          if (_this2.grid.isXYWallElement(x, y)) {
-            _this2.startRemovingWalls();
+          if (_this3.grid.isXYWallElement(x, y)) {
+            _this3.startRemovingWalls();
 
-            _this2.removeWall(x, y);
+            _this3.removeWall(x, y);
           } else {
-            _this2.startAddingWalls();
+            _this3.startAddingWalls();
 
-            _this2.makeWall(x, y);
+            _this3.makeWall(x, y);
           }
         }
       });
@@ -22827,24 +22828,24 @@ var MultiController = /*#__PURE__*/function (_Controller) {
             x = _$$data2.x,
             y = _$$data2.y;
 
-        switch (_this2.state) {
+        switch (_this3.state) {
           case 'AddingWalls':
-            _this2.makeWall(x, y);
+            _this3.makeWall(x, y);
 
             break;
 
           case 'RemovingWalls':
-            _this2.removeWall(x, y);
+            _this3.removeWall(x, y);
 
             break;
 
           case 'ShiftingStartPoint':
-            _this2.shiftStartPoint(x, y);
+            _this3.shiftStartPoint(x, y);
 
             break;
 
           case 'ShiftingEndPoint':
-            _this2.shiftEndPointTo(x, y);
+            _this3.shiftEndPointTo(x, y);
 
             break;
 
@@ -22853,10 +22854,10 @@ var MultiController = /*#__PURE__*/function (_Controller) {
         }
       });
       this.viewRenderer.tableElement.on('mouseup', function () {
-        if (_this2.can('goBackToEditing')) {
-          _this2.endPointBeingShifted = undefined;
+        if (_this3.can('goBackToEditing')) {
+          _this3.endPointBeingShifted = undefined;
 
-          _this2.goBackToEditing();
+          _this3.goBackToEditing();
         }
       });
     }
@@ -22949,30 +22950,31 @@ __webpack_require__.r(__webpack_exports__);
 
 var rows = 50,
     columns = 50,
-    undoRedoBurstSteps = 2,
-    stepDelay = 10,
+    undoRedoBurstSteps = 1000,
+    stepDelay = 1,
     clientHeight = document.documentElement.clientHeight,
     clientWidth = document.documentElement.clientWidth,
     nodeSize = clientWidth / columns,
     midRowIndex = Math.floor(clientHeight / nodeSize / 2),
-    colDivison = Math.floor(columns / 5 - 1),
-    offset = -2,
+    colDivison = Math.floor(columns / 11 - 1),
+    xOffset = 15,
+    yOffset = 2,
     startPoint = {
-  x: colDivison + offset,
+  x: colDivison + xOffset,
   y: midRowIndex
 },
     endPoints = [{
-  x: colDivison * 2 + offset,
-  y: midRowIndex
+  x: colDivison * 2 + xOffset,
+  y: midRowIndex - yOffset
 }, {
-  x: colDivison * 3 + offset,
-  y: midRowIndex
+  x: colDivison * 3 + xOffset,
+  y: midRowIndex + yOffset
 }, {
-  x: colDivison * 4 + offset,
-  y: midRowIndex
+  x: colDivison * 4 + xOffset,
+  y: midRowIndex - yOffset
 }, {
-  x: colDivison * 5 + offset,
-  y: midRowIndex
+  x: colDivison * 5 + xOffset,
+  y: midRowIndex + yOffset
 }];
 
 function init() {
@@ -23365,6 +23367,20 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
 
         get processed() {
           return this._processed;
+        },
+
+        set explored(val) {
+          this._explored = val;
+          opQueue.push({
+            x: this.x,
+            y: this.y,
+            att: 'explored',
+            val: val
+          });
+        },
+
+        get explored() {
+          return this._explored;
         }
 
       };
@@ -24927,7 +24943,7 @@ var IDAStar = /*#__PURE__*/function () {
       var fVal = rootGVal + this.heuristic(rootNode, this.grid.endNode);
 
       if (fVal > upperBound) {
-        rootNode.addedToHeap = true;
+        rootNode.explored = true;
         return fVal;
       }
 
@@ -25121,7 +25137,6 @@ var JumpPointSearch = /*#__PURE__*/function () {
           parentY = parent.y,
           xDifference = currentProcessingNode.x - parent.x,
           yDifference = currentProcessingNode.y - parent.y;
-      console.log(currentProcessingNode);
 
       if (this.grid.isXYWallElement(x, y)) {
         return null;
@@ -25225,6 +25240,84 @@ var JumpPointSearch = /*#__PURE__*/function () {
   }]);
 
   return JumpPointSearch;
+}();
+
+
+
+/***/ }),
+
+/***/ "./src/PathFinding/algorithms/MultiBFS.js":
+/*!************************************************!*\
+  !*** ./src/PathFinding/algorithms/MultiBFS.js ***!
+  \************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return MultiBFS; });
+/* harmony import */ var denque__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! denque */ "./node_modules/denque/index.js");
+/* harmony import */ var denque__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(denque__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _utils_BackTrace__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/BackTrace */ "./src/PathFinding/utils/BackTrace.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
+
+
+var MultiBFS = /*#__PURE__*/function () {
+  function MultiBFS(options) {
+    _classCallCheck(this, MultiBFS);
+
+    console.log(options);
+    this.allowDiagonal = options.allowDiagonal;
+    this.doNotCrossCornersBetweenObstacles = options.doNotCrossCornersBetweenObstacles;
+    this.markCurrentProcessingNode = options.markCurrentProcessingNode;
+  }
+
+  _createClass(MultiBFS, [{
+    key: "findPath",
+    value: function findPath(multiEPGrid) {
+      var startPoint = multiEPGrid.startPoint,
+          startNode = multiEPGrid.getNodeAtXY(startPoint.x, startPoint.y),
+          queue = new denque__WEBPACK_IMPORTED_MODULE_0___default.a([startNode]),
+          currentProcessingNode,
+          neighbours,
+          path = [];
+      startNode.addedToQueue = true;
+
+      while (!queue.isEmpty()) {
+        currentProcessingNode = queue.shift();
+        if (this.markCurrentProcessingNode) currentProcessingNode.currentNode = true;
+
+        if (multiEPGrid.isXYEndPoint(currentProcessingNode.x, currentProcessingNode.y)) {
+          path = path.concat(_utils_BackTrace__WEBPACK_IMPORTED_MODULE_1__["default"].backTrace(currentProcessingNode, startNode));
+          startNode = currentProcessingNode;
+          multiEPGrid.removeEndPoint(currentProcessingNode);
+          console.log(path, multiEPGrid.endPoints);
+          queue.clear();
+          multiEPGrid = multiEPGrid.clone();
+          if (!multiEPGrid.endPoints.length) return path;
+        }
+
+        neighbours = multiEPGrid.getNeighbours(currentProcessingNode, this.allowDiagonal, this.doNotCrossCornersBetweenObstacles);
+        neighbours.forEach(function (neighbour) {
+          if (neighbour.addedToQueue || neighbour.visited) return;
+          neighbour.addedToQueue = true;
+          queue.push(neighbour);
+          neighbour.parent = currentProcessingNode;
+        });
+        currentProcessingNode.visited = true;
+      }
+
+      return path;
+    }
+  }]);
+
+  return MultiBFS;
 }();
 
 
@@ -25496,6 +25589,13 @@ var MultiEPGrid = /*#__PURE__*/function (_Grid) {
       }
     }
   }, {
+    key: "removeEndPoint",
+    value: function removeEndPoint(node) {
+      this.endPoints = this.endPoints.filter(function (ep) {
+        return !(ep.x === node.x && ep.y === node.y);
+      });
+    }
+  }, {
     key: "clone",
     value: function clone() {
       var grid = new MultiEPGrid(this);
@@ -25536,6 +25636,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _algorithms_IDAStar__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./algorithms/IDAStar */ "./src/PathFinding/algorithms/IDAStar.js");
 /* harmony import */ var _algorithms_IDDFS__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./algorithms/IDDFS */ "./src/PathFinding/algorithms/IDDFS.js");
 /* harmony import */ var _algorithms_JumpPointSearch__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./algorithms/JumpPointSearch */ "./src/PathFinding/algorithms/JumpPointSearch.js");
+/* harmony import */ var _algorithms_MultiBFS__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./algorithms/MultiBFS */ "./src/PathFinding/algorithms/MultiBFS.js");
+
 
 
 
@@ -25556,7 +25658,8 @@ __webpack_require__.r(__webpack_exports__);
   BestFirstSearch: _algorithms_BestFirstSearch__WEBPACK_IMPORTED_MODULE_6__["default"],
   IDAStar: _algorithms_IDAStar__WEBPACK_IMPORTED_MODULE_7__["default"],
   IDDFS: _algorithms_IDDFS__WEBPACK_IMPORTED_MODULE_8__["default"],
-  JumpPointSearch: _algorithms_JumpPointSearch__WEBPACK_IMPORTED_MODULE_9__["default"]
+  JumpPointSearch: _algorithms_JumpPointSearch__WEBPACK_IMPORTED_MODULE_9__["default"],
+  MultiBFS: _algorithms_MultiBFS__WEBPACK_IMPORTED_MODULE_10__["default"]
 });
 
 /***/ }),
