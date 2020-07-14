@@ -61,7 +61,6 @@ export default class JumpPointSearch{
 			parentY = parent.y,
 			xDifference = currentProcessingNode.x - parent.x,
 			yDifference = currentProcessingNode.y - parent.y;
-		console.log(currentProcessingNode);
 		if (this.grid.isXYWallElement(x, y)){
 			return null;
 		}

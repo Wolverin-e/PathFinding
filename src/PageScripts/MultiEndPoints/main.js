@@ -3,14 +3,14 @@ import ViewRenderer from './MultiViewRenderer';
 
 const rows = 50,
 	columns = 50,
-	undoRedoBurstSteps = 2,
-	stepDelay = 10,
+	undoRedoBurstSteps = 1000,
+	stepDelay = 1,
 	clientHeight = document.documentElement.clientHeight,
 	clientWidth = document.documentElement.clientWidth,
 	nodeSize = clientWidth/columns,
 	midRowIndex = Math.floor((clientHeight/nodeSize)/2),
-	colDivison = Math.floor(columns/5-1),
-	offset=-2,
+	colDivison = Math.floor(columns/11-1),
+	offset=15,
 	startPoint = {
 		x: colDivison+offset,
 		y: midRowIndex

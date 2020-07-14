@@ -165,6 +165,18 @@ class Controller extends StateMachine{
 			},
 			get processed(){
 				return this._processed;
+			},
+			set explored(val){
+				this._explored = val;
+				opQueue.push({
+					x: this.x,
+					y: this.y,
+					att: 'explored',
+					val
+				});
+			},
+			get explored(){
+				return this._explored;
 			}
 		};
 	}

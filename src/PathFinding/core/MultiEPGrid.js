@@ -18,6 +18,10 @@ class MultiEPGrid extends Grid{
 		}
 	}
 
+	removeEndPoint(node){
+		this.endPoints = this.endPoints.filter(ep => !((ep.x===node.x)&&(ep.y===node.y)));
+	}
+
 	clone(){
 		let grid = new MultiEPGrid(this);
 

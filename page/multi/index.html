@@ -50,14 +50,27 @@
                 <!-- ALGORITHM SELECTOR -->
                 <p id="normal-lable">ALGORITHM</p>
                 <select name="algorithm" id="algorithmSelector">
-                    <optgroup label="GREEDY">GREEDY</optgroup>
-                    <option value="AStar">AStar</option>
+                    <optgroup label="CLASSIC">CLASSIC</optgroup>
+                    <option value="MultiBFS">MultiBFS</option>
                 </select>
                 <hr />
 
                 <!-- ALGORITHM OPTIONS -->
 
-                <div id="AStar" class="algorithm-options-section">
+                <div id="MultiBFS" class="algorithm-options-section">
+                    OPTIONS
+                    <div class="options-checkbox-section">
+                        <input type="checkbox" id="MBFS1" value="allowDiagonal" checked>
+                            <label for="MBFS1">Allow Diagonal</label>
+                            <br />
+                        <input type="checkbox" id="MBFS2" value="doNotCrossCornersBetweenObstacles" checked>
+                            <label for="MBFS2">Do Not Cross Wall</label>
+                            <br />
+                        <input type="checkbox" id="MBFS3" value="markCurrentProcessingNode" checked>
+                            <label for="MBFS3">Show Cursor</label>
+                            <br />
+                    </div>
+                <!-- <div id="AStar" class="algorithm-options-section">
                     HEURISTIC
                     <div class="options-radio-section">
                         <input type="radio" id="ASO1" name="AS" value="manhattan" checked />
@@ -89,7 +102,7 @@
                             <label for="ASC4">Show Cursor</label>
                             <br />
                     </div>
-				</div>
+				</div> -->
             </div>
         </div>
 

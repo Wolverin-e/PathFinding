@@ -8,6 +8,7 @@ import BestFirstSearch from './algorithms/BestFirstSearch';
 import IDAStar from './algorithms/IDAStar';
 import IDDFS from './algorithms/IDDFS';
 import JumpPointSearch from './algorithms/JumpPointSearch';
+import MultiBFS from './algorithms/MultiBFS';
 
 export default {
 	Grid,
@@ -19,5 +20,6 @@ export default {
 	BestFirstSearch,
 	IDAStar,
 	IDDFS,
-	JumpPointSearch
+	JumpPointSearch,
+	MultiBFS
 };

@@ -21,10 +21,9 @@ class MultiController extends Controller{
 	onAfterInitialize(){
 		this.viewRenderer.init();
 		this.shiftStartPoint(this.grid.startPoint.x, this.grid.startPoint.y);
-		this.viewRenderer.addEndPoint(this.grid.endPoints[0].x, this.grid.endPoints[0].y);
-		this.viewRenderer.addEndPoint(this.grid.endPoints[1].x, this.grid.endPoints[1].y);
-		this.viewRenderer.addEndPoint(this.grid.endPoints[2].x, this.grid.endPoints[2].y);
-		this.viewRenderer.addEndPoint(this.grid.endPoints[3].x, this.grid.endPoints[3].y);
+		this.grid.endPoints.forEach(ep => {
+			this.viewRenderer.addEndPoint(ep.x, ep.y);
+		});
 		this.bindDOMEventListeners();
 		this.attachOpsEventListeners();
 		this.attachControllerLifeCycleEventHooks();
