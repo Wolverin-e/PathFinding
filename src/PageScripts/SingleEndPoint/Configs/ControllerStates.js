@@ -1,7 +1,7 @@
 // var visualize = require('javascript-state-machine/lib/visualize');
 // var StateMachine = require('javascript-state-machine');
 
-export const states = {
+export const STATES = {
 	STEADY: "steady",
 	RENDERING: "Rendering",
 	PLAYING: "Playing",
@@ -16,7 +16,7 @@ export const states = {
 	SHIFTING_END_POINT: "ShiftingEndPoint"
 };
 
-export const transitions = {
+export const TRANSITIONS = {
 	INITIALIZE: "initialize",
 	EDIT: "edit",
 	START_ADDING_WALLS: "startAddingWalls",
@@ -35,89 +35,87 @@ export const transitions = {
 };
 
 const stateMachineData = {
-	init: states.STEADY,
+	init: STATES.STEADY,
 	transitions: [
 		{
-			name: transitions.INITIALIZE,
-			from: states.STEADY,
-			to: states.RENDERING
+			name: TRANSITIONS.INITIALIZE,
+			from: STATES.STEADY,
+			to: STATES.RENDERING
 		},
 		{
-			name: transitions.EDIT,
-			from: states.RENDERING,
-			to: states.EDITING
+			name: TRANSITIONS.EDIT,
+			from: STATES.RENDERING,
+			to: STATES.EDITING
 		},
 		{
-			name: transitions.START_ADDING_WALLS,
-			from: states.EDITING,
-			to: states.ADDING_WALLS
+			name: TRANSITIONS.START_ADDING_WALLS,
+			from: STATES.EDITING,
+			to: STATES.ADDING_WALLS
 		},
 		{
-			name: transitions.START_SHIFTING_END_POINT,
-			from: states.EDITING,
-			to: states.SHIFTING_END_POINT
+			name: TRANSITIONS.START_SHIFTING_END_POINT,
+			from: STATES.EDITING,
+			to: STATES.SHIFTING_END_POINT
 		},
 		{
-			name: transitions.START_REMOVING_WALLS,
-			from: states.EDITING,
-			to: states.REMOVING_WALLS
+			name: TRANSITIONS.START_REMOVING_WALLS,
+			from: STATES.EDITING,
+			to: STATES.REMOVING_WALLS
 		},
 		{
-			name: transitions.START_SHIFTING_START_POINT,
-			from: states.EDITING,
-			to: states.SHIFTING_START_POINT
+			name: TRANSITIONS.START_SHIFTING_START_POINT,
+			from: STATES.EDITING,
+			to: STATES.SHIFTING_START_POINT
 		},
 		{
-			name: transitions.GO_BACK_TO_EDITING,
-			from: [states.ADDING_WALLS, states.REMOVING_WALLS, states.SHIFTING_START_POINT, states.SHIFTING_END_POINT],
-			to: states.EDITING
+			name: TRANSITIONS.GO_BACK_TO_EDITING,
+			from: [STATES.ADDING_WALLS, STATES.REMOVING_WALLS, STATES.SHIFTING_START_POINT, STATES.SHIFTING_END_POINT],
+			to: STATES.EDITING
 		},
 		{
-			name: transitions.COMPUTE,
-			from: states.EDITING,
-			to: states.COMPUTING
+			name: TRANSITIONS.COMPUTE,
+			from: STATES.EDITING,
+			to: STATES.COMPUTING
 		},
 		{
-			name: transitions.PLAY,
-			from: states.COMPUTING,
-			to: states.PLAYING
+			name: TRANSITIONS.PLAY,
+			from: STATES.COMPUTING,
+			to: STATES.PLAYING
 		},
 		{
-			name: transitions.PAUSE,
-			from: [states.PLAYING, states.FINISHED],
-			to: states.PAUSED
+			name: TRANSITIONS.PAUSE,
+			from: [STATES.PLAYING, STATES.FINISHED],
+			to: STATES.PAUSED
 		},
 		{
-			name: transitions.RESUME,
-			from: states.PAUSED,
-			to: states.PLAYING
+			name: TRANSITIONS.RESUME,
+			from: STATES.PAUSED,
+			to: STATES.PLAYING
 		},
 		{
-			name: transitions.FINISH,
-			from: [states.PAUSED],
-			to: states.FINISHED
+			name: TRANSITIONS.FINISH,
+			from: [STATES.PAUSED],
+			to: STATES.FINISHED
 		},
 		{
-			name: transitions.RESTART,
-			from: [states.FINISHED, states.PAUSED, states.PATH_CLEARED],
-			to: states.PLAYING
+			name: TRANSITIONS.RESTART,
+			from: [STATES.FINISHED, STATES.PAUSED, STATES.PATH_CLEARED],
+			to: STATES.PLAYING
 		},
 		{
-			name: transitions.CLEAR_PATH,
-			from: [states.PAUSED, states.FINISHED],
-			to: states.PATH_CLEARED
+			name: TRANSITIONS.CLEAR_PATH,
+			from: [STATES.PAUSED, STATES.FINISHED],
+			to: STATES.PATH_CLEARED
 		},
 		{
-			name: transitions.GRID_EDIT,
-			from: [states.FINISHED, states.PAUSED, states.PATH_CLEARED],
-			to: states.EDITING
+			name: TRANSITIONS.GRID_EDIT,
+			from: [STATES.FINISHED, STATES.PAUSED, STATES.PATH_CLEARED],
+			to: STATES.EDITING
 		}
 	]
 };
 
 // const sm = new StateMachine(stateMachineData);
 // console.log(visualize(sm));
-
-
 
 export default stateMachineData;

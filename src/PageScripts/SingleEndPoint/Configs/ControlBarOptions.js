@@ -1,4 +1,4 @@
-import { states } from './ControllerStates';
+import { STATES } from './ControllerStates';
 
 const START = 'start',
 	PAUSE = 'pause',
@@ -22,18 +22,18 @@ const allOptions = [
 
 const stateOptionMapping = {};
 
-stateOptionMapping[states.EDITING] = {
+stateOptionMapping[STATES.EDITING] = {
 	allowed: [
 		START,
 		CLEAR_WALLS
 	]
 };
 
-stateOptionMapping[states.COMPUTING] = {
+stateOptionMapping[STATES.COMPUTING] = {
 	allowed: []
 };
 
-stateOptionMapping[states.PLAYING] = {
+stateOptionMapping[STATES.PLAYING] = {
 	allowed: [
 		PAUSE,
 		STOP,
@@ -45,7 +45,7 @@ stateOptionMapping[states.PLAYING] = {
 	]
 };
 
-stateOptionMapping[states.PAUSED] = {
+stateOptionMapping[STATES.PAUSED] = {
 	allowed: [
 		START,
 		STOP,
@@ -57,14 +57,14 @@ stateOptionMapping[states.PAUSED] = {
 	]
 };
 
-stateOptionMapping[states.PATH_CLEARED] = {
+stateOptionMapping[STATES.PATH_CLEARED] = {
 	allowed: [
 		RESTART,
 		CLEAR_WALLS
 	]
 };
 
-stateOptionMapping[states.FINISHED] = {
+stateOptionMapping[STATES.FINISHED] = {
 	allowed: [
 		RESTART,
 		CLEAR_PATH,
