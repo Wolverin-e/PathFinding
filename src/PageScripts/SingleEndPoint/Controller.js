@@ -4,8 +4,8 @@ import Denque from 'denque';
 
 import PathFinding from '../../PathFinding/index';
 import stateMachineData, { STATES, TRANSITIONS } from './Configs/ControllerStates';
-import stateOptionMapping, { barOptions } from './Configs/ControlBarOptions';
-import keys from './Configs/KeyBoardMapping';
+import stateOptionMapping, { BAR_OPTIONS } from './Configs/ControlBarOptions';
+import KEYS from './Configs/KeyBoardMapping';
 
 Denque.prototype.pushArray = function(arr) {
 	arr.forEach(elem => this.push(elem));
@@ -623,37 +623,37 @@ class Controller extends StateMachine{
 		$(document).keydown(event => {
 
 			switch(event.keyCode){
-				case keys.SPACE:
-					if(isVisible(barOptions.START)){
-						click(barOptions.START);
-					} else if(isVisible(barOptions.PAUSE)){
-						click(barOptions.PAUSE);
-					} else if(isVisible(barOptions.RESTART)){
-						click(barOptions.RESTART);
+				case KEYS.SPACE:
+					if(isVisible(BAR_OPTIONS.START)){
+						click(BAR_OPTIONS.START);
+					} else if(isVisible(BAR_OPTIONS.PAUSE)){
+						click(BAR_OPTIONS.PAUSE);
+					} else if(isVisible(BAR_OPTIONS.RESTART)){
+						click(BAR_OPTIONS.RESTART);
 					}
 					break;
 
-				case keys.BACKSPACE:
-					if(isVisible(barOptions.CLEAR_PATH)){
-						click(barOptions.CLEAR_PATH);
-					} else if(isVisible(barOptions.CLEAR_WALLS)){
-						click(barOptions.CLEAR_WALLS);
+				case KEYS.BACKSPACE:
+					if(isVisible(BAR_OPTIONS.CLEAR_PATH)){
+						click(BAR_OPTIONS.CLEAR_PATH);
+					} else if(isVisible(BAR_OPTIONS.CLEAR_WALLS)){
+						click(BAR_OPTIONS.CLEAR_WALLS);
 					}
 					break;
 
-				case keys.ARROW_LEFT:
-					if(isVisible(barOptions.UNDO)){
-						click(barOptions.UNDO);
+				case KEYS.ARROW_LEFT:
+					if(isVisible(BAR_OPTIONS.UNDO)){
+						click(BAR_OPTIONS.UNDO);
 					}
 					break;
 
-				case keys.ARROW_RIGHT:
-					if(isVisible(barOptions.STEP)){
-						click(barOptions.STEP);
+				case KEYS.ARROW_RIGHT:
+					if(isVisible(BAR_OPTIONS.STEP)){
+						click(BAR_OPTIONS.STEP);
 					}
 					break;
 
-				case keys.ARROW_UP:
+				case KEYS.ARROW_UP:
 					if(event.altKey){
 						increase("delayInpField", 5, "stepDelay");
 					} else {
@@ -661,7 +661,7 @@ class Controller extends StateMachine{
 					}
 					break;
 
-				case keys.ARROW_DOWN:
+				case KEYS.ARROW_DOWN:
 					if(event.altKey){
 						increase("delayInpField", -5, "stepDelay");
 					} else {

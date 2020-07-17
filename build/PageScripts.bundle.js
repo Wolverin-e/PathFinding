@@ -23004,12 +23004,12 @@ function init() {
 /*!*********************************************************************!*\
   !*** ./src/PageScripts/SingleEndPoint/Configs/ControlBarOptions.js ***!
   \*********************************************************************/
-/*! exports provided: barOptions, default */
+/*! exports provided: BAR_OPTIONS, default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "barOptions", function() { return barOptions; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "BAR_OPTIONS", function() { return BAR_OPTIONS; });
 /* harmony import */ var _ControllerStates__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ControllerStates */ "./src/PageScripts/SingleEndPoint/Configs/ControllerStates.js");
 
 var START = 'start',
@@ -23045,7 +23045,7 @@ Object.keys(stateOptionMapping).forEach(function (key) {
     return !stateOptionMapping[key].allowed.includes(opt);
   });
 });
-var barOptions = {
+var BAR_OPTIONS = {
   START: START,
   PAUSE: PAUSE,
   STOP: STOP,
@@ -24099,35 +24099,35 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
       jquery__WEBPACK_IMPORTED_MODULE_0___default()(document).keydown(function (event) {
         switch (event.keyCode) {
           case _Configs_KeyBoardMapping__WEBPACK_IMPORTED_MODULE_6__["default"].SPACE:
-            if (isVisible(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["barOptions"].START)) {
-              click(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["barOptions"].START);
-            } else if (isVisible(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["barOptions"].PAUSE)) {
-              click(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["barOptions"].PAUSE);
-            } else if (isVisible(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["barOptions"].RESTART)) {
-              click(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["barOptions"].RESTART);
+            if (isVisible(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["BAR_OPTIONS"].START)) {
+              click(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["BAR_OPTIONS"].START);
+            } else if (isVisible(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["BAR_OPTIONS"].PAUSE)) {
+              click(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["BAR_OPTIONS"].PAUSE);
+            } else if (isVisible(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["BAR_OPTIONS"].RESTART)) {
+              click(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["BAR_OPTIONS"].RESTART);
             }
 
             break;
 
           case _Configs_KeyBoardMapping__WEBPACK_IMPORTED_MODULE_6__["default"].BACKSPACE:
-            if (isVisible(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["barOptions"].CLEAR_PATH)) {
-              click(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["barOptions"].CLEAR_PATH);
-            } else if (isVisible(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["barOptions"].CLEAR_WALLS)) {
-              click(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["barOptions"].CLEAR_WALLS);
+            if (isVisible(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["BAR_OPTIONS"].CLEAR_PATH)) {
+              click(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["BAR_OPTIONS"].CLEAR_PATH);
+            } else if (isVisible(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["BAR_OPTIONS"].CLEAR_WALLS)) {
+              click(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["BAR_OPTIONS"].CLEAR_WALLS);
             }
 
             break;
 
           case _Configs_KeyBoardMapping__WEBPACK_IMPORTED_MODULE_6__["default"].ARROW_LEFT:
-            if (isVisible(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["barOptions"].UNDO)) {
-              click(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["barOptions"].UNDO);
+            if (isVisible(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["BAR_OPTIONS"].UNDO)) {
+              click(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["BAR_OPTIONS"].UNDO);
             }
 
             break;
 
           case _Configs_KeyBoardMapping__WEBPACK_IMPORTED_MODULE_6__["default"].ARROW_RIGHT:
-            if (isVisible(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["barOptions"].STEP)) {
-              click(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["barOptions"].STEP);
+            if (isVisible(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["BAR_OPTIONS"].STEP)) {
+              click(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["BAR_OPTIONS"].STEP);
             }
 
             break;

@@ -80,7 +80,7 @@ Object.keys(stateOptionMapping).forEach(key => {
 	});
 });
 
-export const barOptions = {
+export const BAR_OPTIONS = {
 	START,
 	PAUSE,
 	STOP,
