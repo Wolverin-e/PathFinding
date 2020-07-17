@@ -30,8 +30,6 @@ class MultiController extends Controller{
 		this.makeTransitionFromEventHook("edit");
 	}
 
-
-
 	// CONTROLLER TO VIEW PROXIES
 	shiftEndPointTo(x, y){
 		if(this.grid.isXYWallElement(x, y)) return;

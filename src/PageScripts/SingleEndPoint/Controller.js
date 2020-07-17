@@ -4,7 +4,8 @@ import Denque from 'denque';
 
 import PathFinding from '../../PathFinding/index';
 import stateMachineData from './Configs/ControllerStates';
-import controlBarOptions from './Configs/ControlBarOptions';
+import stateOptionMapping, { barOptions } from './Configs/ControlBarOptions';
+import keys from './Configs/KeyBoardMapping';
 
 Denque.prototype.pushArray = function(arr) {
 	arr.forEach(elem => this.push(elem));
@@ -95,10 +96,10 @@ class Controller extends StateMachine{
 
 		states.forEach(state => {
 			this["onEnter"+state] = function(){
-				controlBarOptions[state].allowed.forEach(opt => {
+				stateOptionMapping[state].allowed.forEach(opt => {
 					this.controlBar[opt].show();
 				});
-				controlBarOptions[state].notAllowed.forEach(opt => {
+				stateOptionMapping[state].notAllowed.forEach(opt => {
 					this.controlBar[opt].hide();
 				});
 			};
@@ -289,6 +290,7 @@ class Controller extends StateMachine{
 		this.bindGridEventListeners();
 		this.bindControlCenterEventListeners();
 		this.bindControlBarEventListeners();
+		this.bindKeyBoardEventListeners();
 	}
 
 	bindGridEventListeners(){
@@ -363,21 +365,23 @@ class Controller extends StateMachine{
 	bindControlCenterEventListeners(){
 		let controlCenter = $('#control-center');
 
-		let stepsInpField = controlCenter.find("#steps"),
-			delayInpField = controlCenter.find("#delay"),
-			algorithmSelector = controlCenter.find("#algorithmSelector");
+		this.controlCenter = {
+			stepsInpField: controlCenter.find("#steps"),
+			delayInpField: controlCenter.find("#delay"),
+			algorithmSelector: controlCenter.find("#algorithmSelector")
+		};
 
-		stepsInpField.val(this.undoRedoBurstSteps);
-		stepsInpField.on("input", (event) => {
+		this.controlCenter.stepsInpField.val(this.undoRedoBurstSteps);
+		this.controlCenter.stepsInpField.on("input", (event) => {
 			this.undoRedoBurstSteps = event.target.value?event.target.value:this.defaultUndoRedoBurstSteps;
 		});
 
-		delayInpField.val(this.stepDelay);
-		delayInpField.on("input", (event) => {
+		this.controlCenter.delayInpField.val(this.stepDelay);
+		this.controlCenter.delayInpField.on("input", (event) => {
 			this.stepDelay = event.target.value?event.target.value:this.defaultStepDelay;
 		});
 
-		this.algorithm = algorithmSelector.val();
+		this.algorithm = this.controlCenter.algorithmSelector.val();
 		this.algorithmOptions = {};
 
 		let radioOpt = controlCenter.find(`#${this.algorithm} .options-radio-section input[type='radio']:checked`);
@@ -388,7 +392,7 @@ class Controller extends StateMachine{
 			this.algorithmOptions[elem.value] = true;
 		});
 
-		algorithmSelector.on('change', (event) => {
+		this.controlCenter.algorithmSelector.on('change', (event) => {
 			this.accomodateControlCenterAlgorithmEntityChange();
 			this.algorithm = event.target.value;
 			this.algorithmOptions = {};
@@ -587,6 +591,74 @@ class Controller extends StateMachine{
 					break;
 				default:
 					console.warn("Undefined State Behaviour");
+					break;
+			}
+		});
+	}
+
+	bindKeyBoardEventListeners(){
+		const isVisible = btn => this.controlBar[btn].is(":visible");
+		const click = btn => this.controlBar[btn].click();
+		const increase = (field, byValueOf, thisAttrToChange) => {
+			let min = Number.parseInt(this.controlCenter[field].attr("min"));
+			let max = Number.parseInt(this.controlCenter[field].attr("max"));
+			let val = Number.parseInt(this.controlCenter[field].val());
+			val = val+byValueOf;
+			val = val<min?min:(val>max?max:val);
+			this.controlCenter[field].val(val); // not triggering Change Event
+			this[thisAttrToChange] = val;
+		};
+
+		$(document).keydown(event => {
+
+			switch(event.keyCode){
+				case keys.SPACE:
+					if(isVisible(barOptions.START)){
+						click(barOptions.START);
+					} else if(isVisible(barOptions.PAUSE)){
+						click(barOptions.PAUSE);
+					} else if(isVisible(barOptions.RESTART)){
+						click(barOptions.RESTART);
+					}
+					break;
+
+				case keys.BACKSPACE:
+					if(isVisible(barOptions.CLEARPATH)){
+						click(barOptions.CLEARPATH);
+					} else if(isVisible(barOptions.CLEARWALLS)){
+						click(barOptions.CLEARWALLS);
+					}
+					break;
+
+				case keys.ARROW_LEFT:
+					if(isVisible(barOptions.UNDO)){
+						click(barOptions.UNDO);
+					}
+					break;
+
+				case keys.ARROW_RIGHT:
+					if(isVisible(barOptions.STEP)){
+						click(barOptions.STEP);
+					}
+					break;
+
+				case keys.ARROW_UP:
+					if(event.altKey){
+						increase("delayInpField", 5, "stepDelay");
+					} else {
+						increase("stepsInpField", 5, "undoRedoBurstSteps");
+					}
+					break;
+
+				case keys.ARROW_DOWN:
+					if(event.altKey){
+						increase("delayInpField", -5, "stepDelay");
+					} else {
+						increase("stepsInpField", -5, "undoRedoBurstSteps");
+					}
+					break;
+
+				default:
 					break;
 			}
 		});

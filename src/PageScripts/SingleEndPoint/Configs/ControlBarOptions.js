@@ -18,7 +18,7 @@ const allOptions = [
 	STEP
 ];
 
-const barOptions = {
+const stateOptionMapping = {
 	Editing: {
 		allowed: [
 			START,
@@ -66,10 +66,21 @@ const barOptions = {
 	}
 };
 
-Object.keys(barOptions).forEach(key => {
-	barOptions[key].notAllowed = allOptions.filter(opt => {
-		return !barOptions[key].allowed.includes(opt);
+Object.keys(stateOptionMapping).forEach(key => {
+	stateOptionMapping[key].notAllowed = allOptions.filter(opt => {
+		return !stateOptionMapping[key].allowed.includes(opt);
 	});
 });
 
-export default barOptions;
+export const barOptions = {
+	START,
+	PAUSE,
+	STOP,
+	RESTART,
+	CLEARPATH,
+	CLEARWALLS,
+	UNDO,
+	STEP,
+};
+
+export default stateOptionMapping;

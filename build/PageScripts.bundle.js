@@ -23002,11 +23002,12 @@ function init() {
 /*!*********************************************************************!*\
   !*** ./src/PageScripts/SingleEndPoint/Configs/ControlBarOptions.js ***!
   \*********************************************************************/
-/*! exports provided: default */
+/*! exports provided: barOptions, default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "barOptions", function() { return barOptions; });
 var START = 'start',
     PAUSE = 'pause',
     STOP = 'stop',
@@ -23016,7 +23017,7 @@ var START = 'start',
     UNDO = 'undo',
     STEP = 'step';
 var allOptions = [START, PAUSE, STOP, RESTART, CLEARPATH, CLEARWALLS, UNDO, STEP];
-var barOptions = {
+var stateOptionMapping = {
   Editing: {
     allowed: [START, CLEARWALLS]
   },
@@ -23036,12 +23037,22 @@ var barOptions = {
     allowed: [RESTART, CLEARPATH, CLEARWALLS, UNDO]
   }
 };
-Object.keys(barOptions).forEach(function (key) {
-  barOptions[key].notAllowed = allOptions.filter(function (opt) {
-    return !barOptions[key].allowed.includes(opt);
+Object.keys(stateOptionMapping).forEach(function (key) {
+  stateOptionMapping[key].notAllowed = allOptions.filter(function (opt) {
+    return !stateOptionMapping[key].allowed.includes(opt);
   });
 });
-/* harmony default export */ __webpack_exports__["default"] = (barOptions);
+var barOptions = {
+  START: START,
+  PAUSE: PAUSE,
+  STOP: STOP,
+  RESTART: RESTART,
+  CLEARPATH: CLEARPATH,
+  CLEARWALLS: CLEARWALLS,
+  UNDO: UNDO,
+  STEP: STEP
+};
+/* harmony default export */ __webpack_exports__["default"] = (stateOptionMapping);
 
 /***/ }),
 
@@ -23126,6 +23137,26 @@ var stateMachineData = {
 
 /***/ }),
 
+/***/ "./src/PageScripts/SingleEndPoint/Configs/KeyBoardMapping.js":
+/*!*******************************************************************!*\
+  !*** ./src/PageScripts/SingleEndPoint/Configs/KeyBoardMapping.js ***!
+  \*******************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = ({
+  "ARROW_LEFT": 37,
+  "ARROW_UP": 38,
+  "ARROW_RIGHT": 39,
+  "ARROW_DOWN": 40,
+  "SPACE": 32,
+  "BACKSPACE": 8
+});
+
+/***/ }),
+
 /***/ "./src/PageScripts/SingleEndPoint/Controller.js":
 /*!******************************************************!*\
   !*** ./src/PageScripts/SingleEndPoint/Controller.js ***!
@@ -23144,6 +23175,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _PathFinding_index__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../PathFinding/index */ "./src/PathFinding/index.js");
 /* harmony import */ var _Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Configs/ControllerStates */ "./src/PageScripts/SingleEndPoint/Configs/ControllerStates.js");
 /* harmony import */ var _Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Configs/ControlBarOptions */ "./src/PageScripts/SingleEndPoint/Configs/ControlBarOptions.js");
+/* harmony import */ var _Configs_KeyBoardMapping__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Configs/KeyBoardMapping */ "./src/PageScripts/SingleEndPoint/Configs/KeyBoardMapping.js");
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -23169,6 +23201,7 @@ function _assertThisInitialized(self) { if (self === void 0) { throw new Referen
 function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
 
 
 
@@ -23563,6 +23596,7 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
       this.bindGridEventListeners();
       this.bindControlCenterEventListeners();
       this.bindControlBarEventListeners();
+      this.bindKeyBoardEventListeners();
     }
   }, {
     key: "bindGridEventListeners",
@@ -23672,18 +23706,20 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
       var _this9 = this;
 
       var controlCenter = jquery__WEBPACK_IMPORTED_MODULE_0___default()('#control-center');
-      var stepsInpField = controlCenter.find("#steps"),
-          delayInpField = controlCenter.find("#delay"),
-          algorithmSelector = controlCenter.find("#algorithmSelector");
-      stepsInpField.val(this.undoRedoBurstSteps);
-      stepsInpField.on("input", function (event) {
+      this.controlCenter = {
+        stepsInpField: controlCenter.find("#steps"),
+        delayInpField: controlCenter.find("#delay"),
+        algorithmSelector: controlCenter.find("#algorithmSelector")
+      };
+      this.controlCenter.stepsInpField.val(this.undoRedoBurstSteps);
+      this.controlCenter.stepsInpField.on("input", function (event) {
         _this9.undoRedoBurstSteps = event.target.value ? event.target.value : _this9.defaultUndoRedoBurstSteps;
       });
-      delayInpField.val(this.stepDelay);
-      delayInpField.on("input", function (event) {
+      this.controlCenter.delayInpField.val(this.stepDelay);
+      this.controlCenter.delayInpField.on("input", function (event) {
         _this9.stepDelay = event.target.value ? event.target.value : _this9.defaultStepDelay;
       });
-      this.algorithm = algorithmSelector.val();
+      this.algorithm = this.controlCenter.algorithmSelector.val();
       this.algorithmOptions = {};
       var radioOpt = controlCenter.find("#".concat(this.algorithm, " .options-radio-section input[type='radio']:checked"));
       if (radioOpt.length) this.algorithmOptions['heuristic'] = radioOpt.val();
@@ -23691,7 +23727,7 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
       checkBoxOpts.each(function (i, elem) {
         _this9.algorithmOptions[elem.value] = true;
       });
-      algorithmSelector.on('change', function (event) {
+      this.controlCenter.algorithmSelector.on('change', function (event) {
         _this9.accomodateControlCenterAlgorithmEntityChange();
 
         _this9.algorithm = event.target.value;
@@ -23993,6 +24029,91 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
 
           default:
             console.warn("Undefined State Behaviour");
+            break;
+        }
+      });
+    }
+  }, {
+    key: "bindKeyBoardEventListeners",
+    value: function bindKeyBoardEventListeners() {
+      var _this11 = this;
+
+      var isVisible = function isVisible(btn) {
+        return _this11.controlBar[btn].is(":visible");
+      };
+
+      var click = function click(btn) {
+        return _this11.controlBar[btn].click();
+      };
+
+      var increase = function increase(field, byValueOf, thisAttrToChange) {
+        var min = Number.parseInt(_this11.controlCenter[field].attr("min"));
+        var max = Number.parseInt(_this11.controlCenter[field].attr("max"));
+        var val = Number.parseInt(_this11.controlCenter[field].val());
+        val = val + byValueOf;
+        val = val < min ? min : val > max ? max : val;
+
+        _this11.controlCenter[field].val(val); // not triggering Change Event
+
+
+        _this11[thisAttrToChange] = val;
+      };
+
+      jquery__WEBPACK_IMPORTED_MODULE_0___default()(document).keydown(function (event) {
+        switch (event.keyCode) {
+          case _Configs_KeyBoardMapping__WEBPACK_IMPORTED_MODULE_6__["default"].SPACE:
+            if (isVisible(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["barOptions"].START)) {
+              click(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["barOptions"].START);
+            } else if (isVisible(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["barOptions"].PAUSE)) {
+              click(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["barOptions"].PAUSE);
+            } else if (isVisible(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["barOptions"].RESTART)) {
+              click(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["barOptions"].RESTART);
+            }
+
+            break;
+
+          case _Configs_KeyBoardMapping__WEBPACK_IMPORTED_MODULE_6__["default"].BACKSPACE:
+            if (isVisible(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["barOptions"].CLEARPATH)) {
+              click(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["barOptions"].CLEARPATH);
+            } else if (isVisible(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["barOptions"].CLEARWALLS)) {
+              click(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["barOptions"].CLEARWALLS);
+            }
+
+            break;
+
+          case _Configs_KeyBoardMapping__WEBPACK_IMPORTED_MODULE_6__["default"].ARROW_LEFT:
+            if (isVisible(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["barOptions"].UNDO)) {
+              click(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["barOptions"].UNDO);
+            }
+
+            break;
+
+          case _Configs_KeyBoardMapping__WEBPACK_IMPORTED_MODULE_6__["default"].ARROW_RIGHT:
+            if (isVisible(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["barOptions"].STEP)) {
+              click(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["barOptions"].STEP);
+            }
+
+            break;
+
+          case _Configs_KeyBoardMapping__WEBPACK_IMPORTED_MODULE_6__["default"].ARROW_UP:
+            if (event.altKey) {
+              increase("delayInpField", 5, "stepDelay");
+            } else {
+              increase("stepsInpField", 5, "undoRedoBurstSteps");
+            }
+
+            break;
+
+          case _Configs_KeyBoardMapping__WEBPACK_IMPORTED_MODULE_6__["default"].ARROW_DOWN:
+            if (event.altKey) {
+              increase("delayInpField", -5, "stepDelay");
+            } else {
+              increase("stepsInpField", -5, "undoRedoBurstSteps");
+            }
+
+            break;
+
+          default:
             break;
         }
       });
