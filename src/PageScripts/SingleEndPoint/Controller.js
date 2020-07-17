@@ -3,7 +3,7 @@ import StateMachine from 'javascript-state-machine';
 import Denque from 'denque';
 
 import PathFinding from '../../PathFinding/index';
-import stateMachineData from './Configs/ControllerStates';
+import stateMachineData, { states, transitions } from './Configs/ControllerStates';
 import stateOptionMapping, { barOptions } from './Configs/ControlBarOptions';
 import keys from './Configs/KeyBoardMapping';
 
@@ -55,21 +55,21 @@ class Controller extends StateMachine{
 	}
 
 	accomodateControlCenterAlgorithmEntityChange(){
-		if(this.is("Playing")) this.pause();
-		if(this.is('Paused')){
-			this.finish(); // STATEMACHINE TRANSITION
-			this.clearPath(); // STATEMACHINE TRANSITION
+		if(this.is(states.PLAYING)) this[transitions.PAUSE]();
+		if(this.is(states.PAUSED)){
+			this[transitions.FINISH](); // STATEMACHINE TRANSITION
+			this[transitions.CLEAR_PATH](); // STATEMACHINE TRANSITION
 			this.clearReasources();
-			this.gridEdit(); // STATEMACHINE TRANSITION
+			this[transitions.GRID_EDIT](); // STATEMACHINE TRANSITION
 		}
-		if(this.is('Finished')){
-			this.clearPath(); // STATEMACHINE TRANSITION
+		if(this.is(states.FINISHED)){
+			this[transitions.CLEAR_PATH](); // STATEMACHINE TRANSITION
 			this.clearReasources();
-			this.gridEdit(); // STATEMACHINE TRANSITION
+			this[transitions.GRID_EDIT](); // STATEMACHINE TRANSITION
 		}
-		if(this.is('pathCleared')){
+		if(this.is(states.PATH_CLEARED)){
 			this.clearReasources();
-			this.gridEdit(); // STATEMACHINE TRANSITION
+			this[transitions.GRID_EDIT](); // STATEMACHINE TRANSITION
 		}
 	}
 
@@ -79,22 +79,22 @@ class Controller extends StateMachine{
 		this.shiftStartPoint(this.grid.startPoint.x, this.grid.startPoint.y);
 		this.shiftEndPoint(this.grid.endPoint.x, this.grid.endPoint.y);
 		this.bindDOMEventListeners();
-		this.attachOpsEventListeners();
+		this.attachPathFindingOpsSnoopLayer();
 		this.attachControllerLifeCycleEventHooks();
-		this.makeTransitionFromEventHook("edit");
+		this.makeTransitionFromEventHook(transitions.EDIT);
 	}
 
 	attachControllerLifeCycleEventHooks(){
-		let states = [
-			"Editing",
-			"Computing",
-			"Playing",
-			"Paused",
-			"Finished",
-			"PathCleared"
+		let mainStates = [
+			states.EDITING,
+			states.COMPUTING,
+			states.PLAYING,
+			states.PAUSED,
+			states.FINISHED,
+			states.PATH_CLEARED
 		];
 
-		states.forEach(state => {
+		mainStates.forEach(state => {
 			this["onEnter"+state] = function(){
 				stateOptionMapping[state].allowed.forEach(opt => {
 					this.controlBar[opt].show();
@@ -105,7 +105,8 @@ class Controller extends StateMachine{
 			};
 		});
 	}
-	attachOpsEventListeners(){
+
+	attachPathFindingOpsSnoopLayer(){
 		PathFinding.GraphNode.prototype = {
 			set visited(val){
 				this._visited = val;
@@ -218,16 +219,18 @@ class Controller extends StateMachine{
 		let path = algorithm.findPath(this.grid.clone());
 		this.addPathToOps(path);
 	}
+
 	instantStep(){
 		if(opQueue.isEmpty()) {
-			if(this.can("pause")) this.pause();
-			if(this.can("finish")) this.finish();
+			if(this.can(transitions.PAUSE)) this[transitions.PAUSE]();
+			if(this.can(transitions.FINISH)) this[transitions.FINISH]();
 			return;
 		}
 		let coords = opQueue.shift();
 		undoQueue.push(coords);
 		this.viewRenderer.addOpClassAtXY(coords.x, coords.y, coords.att);
 	}
+
 	delayedStep(){
 		// ONE STEP FORWARD FROM THE <opQueue>
 		return new Promise((resolve) => {
@@ -237,20 +240,23 @@ class Controller extends StateMachine{
 			}, this.stepDelay);
 		});
 	}
+
 	startDelayedStepLoop(){
 		// START PLAY LOOP
 		let loop = async () => {
-			if(this.state !== "Playing") return;
+			if(this.state !== states.PLAYING) return;
 			await this.delayedStep();
 			loop();
 		};
 		loop();
 	}
+
 	burstInstantSteps(steps){
 		while(steps--){
 			this.instantStep();
 		}
 	}
+
 	instantUndo(){
 		// ONE STEP UNDO FROM THE <undoQueue>
 		if(undoQueue.isEmpty()) return;
@@ -258,20 +264,24 @@ class Controller extends StateMachine{
 		this.viewRenderer.popOpClassAtXY(coords.x, coords.y);
 		opQueue.unshift(coords);
 	}
+
 	startInstantUndoLoop(){
 		while(!undoQueue.isEmpty()){
 			this.instantUndo();
 		}
 	}
+
 	burstUndo(steps){
 		while(steps--){
 			this.instantUndo();
 		}
 	}
+
 	onClearPath(){
 		// CLEAR PATH FROM THE <undoQueue>
 		this.startInstantUndoLoop();
 	}
+
 	clearWalls(){
 		// CLEAR WALLS FROM THE <wallList>
 		while(wallList.length){
@@ -279,6 +289,7 @@ class Controller extends StateMachine{
 			this.removeWall(coords.x, coords.y);
 		}
 	}
+
 	clearReasources(){
 		// CLEAR <opQueue> <undoQueue> <wallList>
 		opQueue.clear();
@@ -296,38 +307,38 @@ class Controller extends StateMachine{
 	bindGridEventListeners(){
 		this.viewRenderer.tableElement.on('mousedown', (event) => {
 			const {x, y} = $(event.target).data("coords");
-			if(this.is('Paused')){
-				this.finish(); // STATEMACHINE TRANSITION
-				this.clearPath(); // STATEMACHINE TRANSITION
+			if(this.is(states.PAUSED)){
+				this[transitions.FINISH](); // STATEMACHINE TRANSITION
+				this[transitions.CLEAR_PATH](); // STATEMACHINE TRANSITION
 				this.clearReasources();
-				this.gridEdit(); // STATEMACHINE TRANSITION
+				this[transitions.GRID_EDIT](); // STATEMACHINE TRANSITION
 			}
-			if(this.is('Finished')){
-				this.clearPath(); // STATEMACHINE TRANSITION
+			if(this.is(states.FINISHED)){
+				this[transitions.CLEAR_PATH](); // STATEMACHINE TRANSITION
 				this.clearReasources();
-				this.gridEdit(); // STATEMACHINE TRANSITION
+				this[transitions.GRID_EDIT](); // STATEMACHINE TRANSITION
 			}
-			if(this.is('pathCleared')){
+			if(this.is(states.PATH_CLEARED)){
 				this.clearReasources();
-				this.gridEdit(); // STATEMACHINE TRANSITION
+				this[transitions.GRID_EDIT](); // STATEMACHINE TRANSITION
 			}
 
-			if(this.is('Editing')){
+			if(this.is(states.EDITING)){
 				if(this.grid.isXYStartPoint(x, y)){
-					this.startShiftingStartPoint();
+					this[transitions.START_SHIFTING_START_POINT]();
 					return;
 				}
 
 				if(this.grid.isXYEndPoint(x, y)){
-					this.startShiftingEndPoint();
+					this[transitions.START_SHIFTING_END_POINT]();
 					return;
 				}
 
 				if(this.grid.isXYWallElement(x, y)){
-					this.startRemovingWalls();
+					this[transitions.START_REMOVING_WALLS]();
 					this.removeWall(x, y);
 				} else {
-					this.startAddingWalls();
+					this[transitions.START_ADDING_WALLS]();
 					this.makeWall(x, y);
 				}
 			}
@@ -338,16 +349,16 @@ class Controller extends StateMachine{
 			let {x, y} = $(event.target).data("coords");
 
 			switch(this.state){
-				case 'AddingWalls':
+				case states.ADDING_WALLS:
 					this.makeWall(x, y);
 					break;
-				case 'RemovingWalls':
+				case states.REMOVING_WALLS:
 					this.removeWall(x, y);
 					break;
-				case 'ShiftingStartPoint':
+				case states.SHIFTING_START_POINT:
 					this.shiftStartPoint(x, y);
 					break;
-				case 'ShiftingEndPoint':
+				case states.SHIFTING_END_POINT:
 					this.shiftEndPoint(x, y);
 					break;
 				default:
@@ -356,8 +367,8 @@ class Controller extends StateMachine{
 		});
 
 		this.viewRenderer.tableElement.on('mouseup', () => {
-			if(this.can('goBackToEditing')){
-				this.goBackToEditing();
+			if(this.can(transitions.GO_BACK_TO_EDITING)){
+				this[transitions.GO_BACK_TO_EDITING]();
 			}
 		});
 	}
@@ -438,14 +449,14 @@ class Controller extends StateMachine{
 			console.log("start");
 			// Editing | Paused
 			switch(this.state){
-				case "Editing":
-					this.compute(); // STATEMACHINE TRANSITION
+				case states.EDITING:
+					this[transitions.COMPUTE](); // STATEMACHINE TRANSITION
 					this.findPath();
-					this.play(); // STATEMACHINE TRANSITION
+					this[transitions.PLAY](); // STATEMACHINE TRANSITION
 					this.startDelayedStepLoop();
 					break;
-				case "Paused":
-					this.resume(); // STATEMACHINE TRANSITION
+				case states.PAUSED:
+					this[transitions.RESUME](); // STATEMACHINE TRANSITION
 					this.startDelayedStepLoop();
 					break;
 				default:
@@ -455,19 +466,19 @@ class Controller extends StateMachine{
 		});
 		this.controlBar.pause.on("click", () => {
 			console.log("pause");
-			this.pause(); // STATEMACHINE TRANSITION
+			this[transitions.PAUSE](); // STATEMACHINE TRANSITION
 			// Playing
 		});
 		this.controlBar.stop.on("click", () => {
 			console.log("stop");
 			// Playing | Paused
 			switch(this.state){
-				case "Playing":
-					this.pause(); // STATEMACHINE TRANSITION
-					this.clearPath(); // STATEMACHINE TRANSITION
+				case states.PLAYING:
+					this[transitions.PAUSE](); // STATEMACHINE TRANSITION
+					this[transitions.CLEAR_PATH](); // STATEMACHINE TRANSITION
 					break;
-				case "Paused":
-					this.clearPath(); // STATEMACHINE TRANSITION
+				case states.PAUSED:
+					this[transitions.CLEAR_PATH](); // STATEMACHINE TRANSITION
 					break;
 				default:
 					console.warn("Undefined State Behaviour");
@@ -478,24 +489,24 @@ class Controller extends StateMachine{
 			console.log("restart");
 			// Playing | Paused | Finished
 			switch(this.state){
-				case "Playing":
-					this.pause(); // STATEMACHINE TRANSITION
-					this.clearPath(); // STATEMACHINE TRANSITION
-					this.restart(); // STATEMACHINE TRANSITION
+				case states.PLAYING:
+					this[transitions.PAUSE](); // STATEMACHINE TRANSITION
+					this[transitions.CLEAR_PATH](); // STATEMACHINE TRANSITION
+					this[transitions.RESTART](); // STATEMACHINE TRANSITION
 					this.startDelayedStepLoop();
 					break;
-				case "Paused":
-					this.clearPath(); // STATEMACHINE TRANSITION
-					this.restart(); // STATEMACHINE TRANSITION
+				case states.PAUSED:
+					this[transitions.CLEAR_PATH](); // STATEMACHINE TRANSITION
+					this[transitions.RESTART](); // STATEMACHINE TRANSITION
 					this.startDelayedStepLoop();
 					break;
-				case "Finished":
-					this.clearPath(); // STATEMACHINE TRANSITION
-					this.restart(); // STATEMACHINE TRANSITION
+				case states.FINISHED:
+					this[transitions.CLEAR_PATH](); // STATEMACHINE TRANSITION
+					this[transitions.RESTART](); // STATEMACHINE TRANSITION
 					this.startDelayedStepLoop();
 					break;
-				case "pathCleared":
-					this.restart(); // STATEMACHINE TRANSITION
+				case states.PATH_CLEARED:
+					this[transitions.RESTART](); // STATEMACHINE TRANSITION
 					this.startDelayedStepLoop();
 					break;
 				default:
@@ -507,15 +518,15 @@ class Controller extends StateMachine{
 			console.log("clearPath");
 			// Playing | Paused | Finished
 			switch(this.state){
-				case "Playing":
-					this.pause(); // STATEMACHINE TRANSITION
-					this.clearPath(); // STATEMACHINE TRANSITION
+				case states.PLAYING:
+					this[transitions.PAUSE](); // STATEMACHINE TRANSITION
+					this[transitions.CLEAR_PATH](); // STATEMACHINE TRANSITION
 					break;
-				case "Paused":
-					this.clearPath(); // STATEMACHINE TRANSITION
+				case states.PAUSED:
+					this[transitions.CLEAR_PATH](); // STATEMACHINE TRANSITION
 					break;
-				case "Finished":
-					this.clearPath(); // STATEMACHINE TRANSITION
+				case states.FINISHED:
+					this[transitions.CLEAR_PATH](); // STATEMACHINE TRANSITION
 					break;
 				default:
 					console.warn("Undefined State Behaviour");
@@ -526,32 +537,32 @@ class Controller extends StateMachine{
 			console.log("clearWalls");
 			// Playing | Paused | Finished | pathCleared
 			switch(this.state){
-				case "Editing":
+				case states.EDITING:
 					this.clearWalls();
 					break;
-				case "Playing":
-					this.pause(); // STATEMACHINE TRANSITION
+				case states.PLAYING:
+					this[transitions.PAUSE](); // STATEMACHINE TRANSITION
 					this.clearWalls();
-					this.clearPath(); // STATEMACHINE TRANSITION
+					this[transitions.CLEAR_PATH](); // STATEMACHINE TRANSITION
 					this.clearReasources();
-					this.gridEdit(); // STATEMACHINE TRANSITION
+					this[transitions.GRID_EDIT](); // STATEMACHINE TRANSITION
 					break;
-				case "Paused":
+				case states.PAUSED:
 					this.clearWalls();
-					this.clearPath(); // STATEMACHINE TRANSITION
+					this[transitions.CLEAR_PATH](); // STATEMACHINE TRANSITION
 					this.clearReasources();
-					this.gridEdit(); // STATEMACHINE TRANSITION
+					this[transitions.GRID_EDIT](); // STATEMACHINE TRANSITION
 					break;
-				case "Finished":
+				case states.FINISHED:
 					this.clearWalls();
-					this.clearPath(); // STATEMACHINE TRANSITION
+					this[transitions.CLEAR_PATH](); // STATEMACHINE TRANSITION
 					this.clearReasources();
-					this.gridEdit(); // STATEMACHINE TRANSITION
+					this[transitions.GRID_EDIT](); // STATEMACHINE TRANSITION
 					break;
-				case "pathCleared":
+				case states.PATH_CLEARED:
 					this.clearWalls();
 					this.clearReasources();
-					this.gridEdit();  // STATEMACHINE TRANSITION
+					this[transitions.GRID_EDIT]();  // STATEMACHINE TRANSITION
 					break;
 				default:
 					console.warn("Undefined State Behaviour");
@@ -562,16 +573,16 @@ class Controller extends StateMachine{
 			console.log("undo");
 			// Playing | Paused | Finished
 			switch(this.state){
-				case "Playing":
-					this.pause(); // STATEMACHINE TRANSITION
+				case states.PLAYING:
+					this[transitions.PAUSE](); // STATEMACHINE TRANSITION
 					this.burstUndo(this.undoRedoBurstSteps);
 					break;
-				case "Paused":
+				case states.PAUSED:
 					this.burstUndo(this.undoRedoBurstSteps);
 					break;
-				case "Finished":
+				case states.FINISHED:
 					this.burstUndo(this.undoRedoBurstSteps);
-					this.pause(); // STATEMACHINE TRANSITION
+					this[transitions.PAUSE](); // STATEMACHINE TRANSITION
 					break;
 				default:
 					console.warn("Undefined State Behaviour");
@@ -582,11 +593,11 @@ class Controller extends StateMachine{
 			console.log("step");
 			// Playing | Paused
 			switch(this.state){
-				case "Playing":
-					this.pause(); // STATEMACHINE-TRANSITION
+				case states.PLAYING:
+					this[transitions.PAUSE](); // STATEMACHINE-TRANSITION
 					this.burstInstantSteps(this.undoRedoBurstSteps);
 					break;
-				case "Paused":
+				case states.PAUSED:
 					this.burstInstantSteps(this.undoRedoBurstSteps);
 					break;
 				default:
@@ -623,10 +634,10 @@ class Controller extends StateMachine{
 					break;
 
 				case keys.BACKSPACE:
-					if(isVisible(barOptions.CLEARPATH)){
-						click(barOptions.CLEARPATH);
-					} else if(isVisible(barOptions.CLEARWALLS)){
-						click(barOptions.CLEARWALLS);
+					if(isVisible(barOptions.CLEAR_PATH)){
+						click(barOptions.CLEAR_PATH);
+					} else if(isVisible(barOptions.CLEAR_WALLS)){
+						click(barOptions.CLEAR_WALLS);
 					}
 					break;
 

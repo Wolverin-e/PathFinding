@@ -22668,6 +22668,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _PathFinding_index__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../PathFinding/index */ "./src/PathFinding/index.js");
 /* harmony import */ var _SingleEndPoint_Controller__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../SingleEndPoint/Controller */ "./src/PageScripts/SingleEndPoint/Controller.js");
+/* harmony import */ var _SingleEndPoint_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../SingleEndPoint/Configs/ControllerStates */ "./src/PageScripts/SingleEndPoint/Configs/ControllerStates.js");
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -22689,6 +22690,7 @@ function _assertThisInitialized(self) { if (self === void 0) { throw new Referen
 function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
 
 
 
@@ -22727,9 +22729,9 @@ var MultiController = /*#__PURE__*/function (_Controller) {
         _this2.viewRenderer.addEndPoint(ep.x, ep.y);
       });
       this.bindDOMEventListeners();
-      this.attachOpsEventListeners();
+      this.attachPathFindingOpsSnoopLayer();
       this.attachControllerLifeCycleEventHooks();
-      this.makeTransitionFromEventHook("edit");
+      this.makeTransitionFromEventHook(_SingleEndPoint_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_3__["transitions"].EDIT);
     } // CONTROLLER TO VIEW PROXIES
 
   }, {
@@ -22762,39 +22764,39 @@ var MultiController = /*#__PURE__*/function (_Controller) {
             x = _$$data.x,
             y = _$$data.y;
 
-        if (_this3.is('Paused')) {
-          _this3.finish(); // STATEMACHINE TRANSITION
+        if (_this3.is(_SingleEndPoint_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_3__["states"].PAUSED)) {
+          _this3[_SingleEndPoint_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_3__["transitions"].FINISH](); // STATEMACHINE TRANSITION
 
 
-          _this3.clearPath(); // STATEMACHINE TRANSITION
-
-
-          _this3.clearReasources();
-
-          _this3.gridEdit(); // STATEMACHINE TRANSITION
-
-        }
-
-        if (_this3.is('Finished')) {
-          _this3.clearPath(); // STATEMACHINE TRANSITION
+          _this3[_SingleEndPoint_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_3__["transitions"].CLEAR_PATH](); // STATEMACHINE TRANSITION
 
 
           _this3.clearReasources();
 
-          _this3.gridEdit(); // STATEMACHINE TRANSITION
+          _this3[_SingleEndPoint_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_3__["transitions"].GRID_EDIT](); // STATEMACHINE TRANSITION
 
         }
 
-        if (_this3.is('pathCleared')) {
+        if (_this3.is(_SingleEndPoint_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_3__["states"].FINISHED)) {
+          _this3[_SingleEndPoint_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_3__["transitions"].CLEAR_PATH](); // STATEMACHINE TRANSITION
+
+
           _this3.clearReasources();
 
-          _this3.gridEdit(); // STATEMACHINE TRANSITION
+          _this3[_SingleEndPoint_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_3__["transitions"].GRID_EDIT](); // STATEMACHINE TRANSITION
 
         }
 
-        if (_this3.is('Editing')) {
+        if (_this3.is(_SingleEndPoint_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_3__["states"].PATH_CLEARED)) {
+          _this3.clearReasources();
+
+          _this3[_SingleEndPoint_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_3__["transitions"].GRID_EDIT](); // STATEMACHINE TRANSITION
+
+        }
+
+        if (_this3.is(_SingleEndPoint_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_3__["states"].EDITING)) {
           if (_this3.grid.isXYStartPoint(x, y)) {
-            _this3.startShiftingStartPoint();
+            _this3[_SingleEndPoint_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_3__["transitions"].START_SHIFTING_START_POINT]();
 
             return;
           }
@@ -22805,17 +22807,17 @@ var MultiController = /*#__PURE__*/function (_Controller) {
               y: y
             };
 
-            _this3.startShiftingEndPoint();
+            _this3[_SingleEndPoint_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_3__["transitions"].START_SHIFTING_END_POINT]();
 
             return;
           }
 
           if (_this3.grid.isXYWallElement(x, y)) {
-            _this3.startRemovingWalls();
+            _this3[_SingleEndPoint_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_3__["transitions"].START_REMOVING_WALLS]();
 
             _this3.removeWall(x, y);
           } else {
-            _this3.startAddingWalls();
+            _this3[_SingleEndPoint_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_3__["transitions"].START_ADDING_WALLS]();
 
             _this3.makeWall(x, y);
           }
@@ -22829,22 +22831,22 @@ var MultiController = /*#__PURE__*/function (_Controller) {
             y = _$$data2.y;
 
         switch (_this3.state) {
-          case 'AddingWalls':
+          case _SingleEndPoint_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_3__["states"].ADDING_WALLS:
             _this3.makeWall(x, y);
 
             break;
 
-          case 'RemovingWalls':
+          case _SingleEndPoint_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_3__["states"].REMOVING_WALLS:
             _this3.removeWall(x, y);
 
             break;
 
-          case 'ShiftingStartPoint':
+          case _SingleEndPoint_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_3__["states"].SHIFTING_START_POINT:
             _this3.shiftStartPoint(x, y);
 
             break;
 
-          case 'ShiftingEndPoint':
+          case _SingleEndPoint_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_3__["states"].SHIFTING_END_POINT:
             _this3.shiftEndPointTo(x, y);
 
             break;
@@ -22854,10 +22856,10 @@ var MultiController = /*#__PURE__*/function (_Controller) {
         }
       });
       this.viewRenderer.tableElement.on('mouseup', function () {
-        if (_this3.can('goBackToEditing')) {
+        if (_this3.can(_SingleEndPoint_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_3__["transitions"].GO_BACK_TO_EDITING)) {
           _this3.endPointBeingShifted = undefined;
 
-          _this3.goBackToEditing();
+          _this3[_SingleEndPoint_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_3__["transitions"].GO_BACK_TO_EDITING]();
         }
       });
     }
@@ -23008,34 +23010,35 @@ function init() {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "barOptions", function() { return barOptions; });
+/* harmony import */ var _ControllerStates__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ControllerStates */ "./src/PageScripts/SingleEndPoint/Configs/ControllerStates.js");
+
 var START = 'start',
     PAUSE = 'pause',
     STOP = 'stop',
     RESTART = 'restart',
-    CLEARPATH = 'clearPath',
-    CLEARWALLS = 'clearWalls',
+    CLEAR_PATH = 'clearPath',
+    CLEAR_WALLS = 'clearWalls',
     UNDO = 'undo',
     STEP = 'step';
-var allOptions = [START, PAUSE, STOP, RESTART, CLEARPATH, CLEARWALLS, UNDO, STEP];
-var stateOptionMapping = {
-  Editing: {
-    allowed: [START, CLEARWALLS]
-  },
-  Computing: {
-    allowed: []
-  },
-  Playing: {
-    allowed: [PAUSE, STOP, RESTART, CLEARPATH, CLEARWALLS, UNDO, STEP]
-  },
-  Paused: {
-    allowed: [START, STOP, RESTART, CLEARPATH, CLEARWALLS, UNDO, STEP]
-  },
-  PathCleared: {
-    allowed: [RESTART, CLEARWALLS]
-  },
-  Finished: {
-    allowed: [RESTART, CLEARPATH, CLEARWALLS, UNDO]
-  }
+var allOptions = [START, PAUSE, STOP, RESTART, CLEAR_PATH, CLEAR_WALLS, UNDO, STEP];
+var stateOptionMapping = {};
+stateOptionMapping[_ControllerStates__WEBPACK_IMPORTED_MODULE_0__["states"].EDITING] = {
+  allowed: [START, CLEAR_WALLS]
+};
+stateOptionMapping[_ControllerStates__WEBPACK_IMPORTED_MODULE_0__["states"].COMPUTING] = {
+  allowed: []
+};
+stateOptionMapping[_ControllerStates__WEBPACK_IMPORTED_MODULE_0__["states"].PLAYING] = {
+  allowed: [PAUSE, STOP, RESTART, CLEAR_PATH, CLEAR_WALLS, UNDO, STEP]
+};
+stateOptionMapping[_ControllerStates__WEBPACK_IMPORTED_MODULE_0__["states"].PAUSED] = {
+  allowed: [START, STOP, RESTART, CLEAR_PATH, CLEAR_WALLS, UNDO, STEP]
+};
+stateOptionMapping[_ControllerStates__WEBPACK_IMPORTED_MODULE_0__["states"].PATH_CLEARED] = {
+  allowed: [RESTART, CLEAR_WALLS]
+};
+stateOptionMapping[_ControllerStates__WEBPACK_IMPORTED_MODULE_0__["states"].FINISHED] = {
+  allowed: [RESTART, CLEAR_PATH, CLEAR_WALLS, UNDO]
 };
 Object.keys(stateOptionMapping).forEach(function (key) {
   stateOptionMapping[key].notAllowed = allOptions.filter(function (opt) {
@@ -23047,8 +23050,8 @@ var barOptions = {
   PAUSE: PAUSE,
   STOP: STOP,
   RESTART: RESTART,
-  CLEARPATH: CLEARPATH,
-  CLEARWALLS: CLEARWALLS,
+  CLEAR_PATH: CLEAR_PATH,
+  CLEAR_WALLS: CLEAR_WALLS,
   UNDO: UNDO,
   STEP: STEP
 };
@@ -23060,75 +23063,109 @@ var barOptions = {
 /*!********************************************************************!*\
   !*** ./src/PageScripts/SingleEndPoint/Configs/ControllerStates.js ***!
   \********************************************************************/
-/*! exports provided: default */
+/*! exports provided: states, transitions, default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "states", function() { return states; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "transitions", function() { return transitions; });
 // var visualize = require('javascript-state-machine/lib/visualize');
 // var StateMachine = require('javascript-state-machine');
+var states = {
+  STEADY: "steady",
+  RENDERING: "Rendering",
+  PLAYING: "Playing",
+  PAUSED: "Paused",
+  FINISHED: "Finished",
+  PATH_CLEARED: "Pathcleared",
+  // Can't do "PathCleared" due to StateMachine event handlers convention
+  EDITING: "Editing",
+  COMPUTING: "Computing",
+  ADDING_WALLS: "AddingWalls",
+  REMOVING_WALLS: "RemovingWalls",
+  SHIFTING_START_POINT: "ShiftingStartPoint",
+  SHIFTING_END_POINT: "ShiftingEndPoint"
+};
+var transitions = {
+  INITIALIZE: "initialize",
+  EDIT: "edit",
+  START_ADDING_WALLS: "startAddingWalls",
+  START_SHIFTING_END_POINT: "startShiftingEndPoint",
+  START_REMOVING_WALLS: "startRemovingWalls",
+  START_SHIFTING_START_POINT: "startShiftingStartPoint",
+  GO_BACK_TO_EDITING: "goBackToEditing",
+  COMPUTE: "compute",
+  PLAY: "play",
+  PAUSE: "pause",
+  RESUME: "resume",
+  FINISH: "finish",
+  RESTART: "restart",
+  CLEAR_PATH: "clearPath",
+  GRID_EDIT: "gridEdit"
+};
 var stateMachineData = {
-  init: 'steady',
+  init: states.STEADY,
   transitions: [{
-    name: 'initialize',
-    from: 'steady',
-    to: 'Rendering'
+    name: transitions.INITIALIZE,
+    from: states.STEADY,
+    to: states.RENDERING
   }, {
-    name: 'edit',
-    from: 'Rendering',
-    to: 'Editing'
+    name: transitions.EDIT,
+    from: states.RENDERING,
+    to: states.EDITING
   }, {
-    name: 'startAddingWalls',
-    from: 'Editing',
-    to: 'AddingWalls'
+    name: transitions.START_ADDING_WALLS,
+    from: states.EDITING,
+    to: states.ADDING_WALLS
   }, {
-    name: 'startShiftingEndPoint',
-    from: 'Editing',
-    to: 'ShiftingEndPoint'
+    name: transitions.START_SHIFTING_END_POINT,
+    from: states.EDITING,
+    to: states.SHIFTING_END_POINT
   }, {
-    name: 'startRemovingWalls',
-    from: 'Editing',
-    to: 'RemovingWalls'
+    name: transitions.START_REMOVING_WALLS,
+    from: states.EDITING,
+    to: states.REMOVING_WALLS
   }, {
-    name: 'startShiftingStartPoint',
-    from: 'Editing',
-    to: 'ShiftingStartPoint'
+    name: transitions.START_SHIFTING_START_POINT,
+    from: states.EDITING,
+    to: states.SHIFTING_START_POINT
   }, {
-    name: 'goBackToEditing',
-    from: ['AddingWalls', 'RemovingWalls', 'ShiftingStartPoint', 'ShiftingEndPoint'],
-    to: 'Editing'
+    name: transitions.GO_BACK_TO_EDITING,
+    from: [states.ADDING_WALLS, states.REMOVING_WALLS, states.SHIFTING_START_POINT, states.SHIFTING_END_POINT],
+    to: states.EDITING
   }, {
-    name: 'compute',
-    from: 'Editing',
-    to: 'Computing'
+    name: transitions.COMPUTE,
+    from: states.EDITING,
+    to: states.COMPUTING
   }, {
-    name: 'play',
-    from: 'Computing',
-    to: 'Playing'
+    name: transitions.PLAY,
+    from: states.COMPUTING,
+    to: states.PLAYING
   }, {
-    name: 'pause',
-    from: ['Playing', 'Finished'],
-    to: 'Paused'
+    name: transitions.PAUSE,
+    from: [states.PLAYING, states.FINISHED],
+    to: states.PAUSED
   }, {
-    name: 'resume',
-    from: 'Paused',
-    to: 'Playing'
+    name: transitions.RESUME,
+    from: states.PAUSED,
+    to: states.PLAYING
   }, {
-    name: 'finish',
-    from: ['Paused'],
-    to: 'Finished'
+    name: transitions.FINISH,
+    from: [states.PAUSED],
+    to: states.FINISHED
   }, {
-    name: 'restart',
-    from: ['Finished', 'Paused', 'pathCleared'],
-    to: 'Playing'
+    name: transitions.RESTART,
+    from: [states.FINISHED, states.PAUSED, states.PATH_CLEARED],
+    to: states.PLAYING
   }, {
-    name: 'clearPath',
-    from: ['Paused', 'Finished'],
-    to: 'pathCleared'
+    name: transitions.CLEAR_PATH,
+    from: [states.PAUSED, states.FINISHED],
+    to: states.PATH_CLEARED
   }, {
-    name: 'gridEdit',
-    from: ['Finished', 'Paused', 'pathCleared'],
-    to: 'Editing'
+    name: transitions.GRID_EDIT,
+    from: [states.FINISHED, states.PAUSED, states.PATH_CLEARED],
+    to: states.EDITING
   }]
 }; // const sm = new StateMachine(stateMachineData);
 // console.log(visualize(sm));
@@ -23274,27 +23311,27 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
   }, {
     key: "accomodateControlCenterAlgorithmEntityChange",
     value: function accomodateControlCenterAlgorithmEntityChange() {
-      if (this.is("Playing")) this.pause();
+      if (this.is(_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].PLAYING)) this[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].PAUSE]();
 
-      if (this.is('Paused')) {
-        this.finish(); // STATEMACHINE TRANSITION
+      if (this.is(_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].PAUSED)) {
+        this[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].FINISH](); // STATEMACHINE TRANSITION
 
-        this.clearPath(); // STATEMACHINE TRANSITION
+        this[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].CLEAR_PATH](); // STATEMACHINE TRANSITION
 
         this.clearReasources();
-        this.gridEdit(); // STATEMACHINE TRANSITION
+        this[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].GRID_EDIT](); // STATEMACHINE TRANSITION
       }
 
-      if (this.is('Finished')) {
-        this.clearPath(); // STATEMACHINE TRANSITION
+      if (this.is(_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].FINISHED)) {
+        this[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].CLEAR_PATH](); // STATEMACHINE TRANSITION
 
         this.clearReasources();
-        this.gridEdit(); // STATEMACHINE TRANSITION
+        this[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].GRID_EDIT](); // STATEMACHINE TRANSITION
       }
 
-      if (this.is('pathCleared')) {
+      if (this.is(_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].PATH_CLEARED)) {
         this.clearReasources();
-        this.gridEdit(); // STATEMACHINE TRANSITION
+        this[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].GRID_EDIT](); // STATEMACHINE TRANSITION
       }
     } // STATE-MACHINE EVENT-HOOKS
 
@@ -23305,17 +23342,17 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
       this.shiftStartPoint(this.grid.startPoint.x, this.grid.startPoint.y);
       this.shiftEndPoint(this.grid.endPoint.x, this.grid.endPoint.y);
       this.bindDOMEventListeners();
-      this.attachOpsEventListeners();
+      this.attachPathFindingOpsSnoopLayer();
       this.attachControllerLifeCycleEventHooks();
-      this.makeTransitionFromEventHook("edit");
+      this.makeTransitionFromEventHook(_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].EDIT);
     }
   }, {
     key: "attachControllerLifeCycleEventHooks",
     value: function attachControllerLifeCycleEventHooks() {
       var _this4 = this;
 
-      var states = ["Editing", "Computing", "Playing", "Paused", "Finished", "PathCleared"];
-      states.forEach(function (state) {
+      var mainStates = [_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].EDITING, _Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].COMPUTING, _Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].PLAYING, _Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].PAUSED, _Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].FINISHED, _Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].PATH_CLEARED];
+      mainStates.forEach(function (state) {
         _this4["onEnter" + state] = function () {
           var _this5 = this;
 
@@ -23329,8 +23366,8 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
       });
     }
   }, {
-    key: "attachOpsEventListeners",
-    value: function attachOpsEventListeners() {
+    key: "attachPathFindingOpsSnoopLayer",
+    value: function attachPathFindingOpsSnoopLayer() {
       _PathFinding_index__WEBPACK_IMPORTED_MODULE_3__["default"].GraphNode.prototype = {
         set visited(val) {
           this._visited = val;
@@ -23473,8 +23510,8 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
     key: "instantStep",
     value: function instantStep() {
       if (opQueue.isEmpty()) {
-        if (this.can("pause")) this.pause();
-        if (this.can("finish")) this.finish();
+        if (this.can(_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].PAUSE)) this[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].PAUSE]();
+        if (this.can(_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].FINISH)) this[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].FINISH]();
         return;
       }
 
@@ -23508,7 +23545,7 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
             while (1) {
               switch (_context.prev = _context.next) {
                 case 0:
-                  if (!(_this7.state !== "Playing")) {
+                  if (!(_this7.state !== _Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].PLAYING)) {
                     _context.next = 2;
                     break;
                   }
@@ -23608,55 +23645,55 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
             x = _$$data.x,
             y = _$$data.y;
 
-        if (_this8.is('Paused')) {
-          _this8.finish(); // STATEMACHINE TRANSITION
+        if (_this8.is(_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].PAUSED)) {
+          _this8[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].FINISH](); // STATEMACHINE TRANSITION
 
 
-          _this8.clearPath(); // STATEMACHINE TRANSITION
-
-
-          _this8.clearReasources();
-
-          _this8.gridEdit(); // STATEMACHINE TRANSITION
-
-        }
-
-        if (_this8.is('Finished')) {
-          _this8.clearPath(); // STATEMACHINE TRANSITION
+          _this8[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].CLEAR_PATH](); // STATEMACHINE TRANSITION
 
 
           _this8.clearReasources();
 
-          _this8.gridEdit(); // STATEMACHINE TRANSITION
+          _this8[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].GRID_EDIT](); // STATEMACHINE TRANSITION
 
         }
 
-        if (_this8.is('pathCleared')) {
+        if (_this8.is(_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].FINISHED)) {
+          _this8[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].CLEAR_PATH](); // STATEMACHINE TRANSITION
+
+
           _this8.clearReasources();
 
-          _this8.gridEdit(); // STATEMACHINE TRANSITION
+          _this8[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].GRID_EDIT](); // STATEMACHINE TRANSITION
 
         }
 
-        if (_this8.is('Editing')) {
+        if (_this8.is(_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].PATH_CLEARED)) {
+          _this8.clearReasources();
+
+          _this8[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].GRID_EDIT](); // STATEMACHINE TRANSITION
+
+        }
+
+        if (_this8.is(_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].EDITING)) {
           if (_this8.grid.isXYStartPoint(x, y)) {
-            _this8.startShiftingStartPoint();
+            _this8[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].START_SHIFTING_START_POINT]();
 
             return;
           }
 
           if (_this8.grid.isXYEndPoint(x, y)) {
-            _this8.startShiftingEndPoint();
+            _this8[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].START_SHIFTING_END_POINT]();
 
             return;
           }
 
           if (_this8.grid.isXYWallElement(x, y)) {
-            _this8.startRemovingWalls();
+            _this8[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].START_REMOVING_WALLS]();
 
             _this8.removeWall(x, y);
           } else {
-            _this8.startAddingWalls();
+            _this8[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].START_ADDING_WALLS]();
 
             _this8.makeWall(x, y);
           }
@@ -23670,22 +23707,22 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
             y = _$$data2.y;
 
         switch (_this8.state) {
-          case 'AddingWalls':
+          case _Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].ADDING_WALLS:
             _this8.makeWall(x, y);
 
             break;
 
-          case 'RemovingWalls':
+          case _Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].REMOVING_WALLS:
             _this8.removeWall(x, y);
 
             break;
 
-          case 'ShiftingStartPoint':
+          case _Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].SHIFTING_START_POINT:
             _this8.shiftStartPoint(x, y);
 
             break;
 
-          case 'ShiftingEndPoint':
+          case _Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].SHIFTING_END_POINT:
             _this8.shiftEndPoint(x, y);
 
             break;
@@ -23695,8 +23732,8 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
         }
       });
       this.viewRenderer.tableElement.on('mouseup', function () {
-        if (_this8.can('goBackToEditing')) {
-          _this8.goBackToEditing();
+        if (_this8.can(_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].GO_BACK_TO_EDITING)) {
+          _this8[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].GO_BACK_TO_EDITING]();
         }
       });
     }
@@ -23774,21 +23811,21 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
         console.log("start"); // Editing | Paused
 
         switch (_this10.state) {
-          case "Editing":
-            _this10.compute(); // STATEMACHINE TRANSITION
+          case _Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].EDITING:
+            _this10[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].COMPUTE](); // STATEMACHINE TRANSITION
 
 
             _this10.findPath();
 
-            _this10.play(); // STATEMACHINE TRANSITION
+            _this10[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].PLAY](); // STATEMACHINE TRANSITION
 
 
             _this10.startDelayedStepLoop();
 
             break;
 
-          case "Paused":
-            _this10.resume(); // STATEMACHINE TRANSITION
+          case _Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].PAUSED:
+            _this10[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].RESUME](); // STATEMACHINE TRANSITION
 
 
             _this10.startDelayedStepLoop();
@@ -23803,7 +23840,7 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
       this.controlBar.pause.on("click", function () {
         console.log("pause");
 
-        _this10.pause(); // STATEMACHINE TRANSITION
+        _this10[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].PAUSE](); // STATEMACHINE TRANSITION
         // Playing
 
       });
@@ -23811,17 +23848,17 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
         console.log("stop"); // Playing | Paused
 
         switch (_this10.state) {
-          case "Playing":
-            _this10.pause(); // STATEMACHINE TRANSITION
+          case _Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].PLAYING:
+            _this10[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].PAUSE](); // STATEMACHINE TRANSITION
 
 
-            _this10.clearPath(); // STATEMACHINE TRANSITION
+            _this10[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].CLEAR_PATH](); // STATEMACHINE TRANSITION
 
 
             break;
 
-          case "Paused":
-            _this10.clearPath(); // STATEMACHINE TRANSITION
+          case _Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].PAUSED:
+            _this10[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].CLEAR_PATH](); // STATEMACHINE TRANSITION
 
 
             break;
@@ -23835,44 +23872,44 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
         console.log("restart"); // Playing | Paused | Finished
 
         switch (_this10.state) {
-          case "Playing":
-            _this10.pause(); // STATEMACHINE TRANSITION
+          case _Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].PLAYING:
+            _this10[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].PAUSE](); // STATEMACHINE TRANSITION
 
 
-            _this10.clearPath(); // STATEMACHINE TRANSITION
+            _this10[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].CLEAR_PATH](); // STATEMACHINE TRANSITION
 
 
-            _this10.restart(); // STATEMACHINE TRANSITION
-
-
-            _this10.startDelayedStepLoop();
-
-            break;
-
-          case "Paused":
-            _this10.clearPath(); // STATEMACHINE TRANSITION
-
-
-            _this10.restart(); // STATEMACHINE TRANSITION
+            _this10[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].RESTART](); // STATEMACHINE TRANSITION
 
 
             _this10.startDelayedStepLoop();
 
             break;
 
-          case "Finished":
-            _this10.clearPath(); // STATEMACHINE TRANSITION
+          case _Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].PAUSED:
+            _this10[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].CLEAR_PATH](); // STATEMACHINE TRANSITION
 
 
-            _this10.restart(); // STATEMACHINE TRANSITION
+            _this10[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].RESTART](); // STATEMACHINE TRANSITION
 
 
             _this10.startDelayedStepLoop();
 
             break;
 
-          case "pathCleared":
-            _this10.restart(); // STATEMACHINE TRANSITION
+          case _Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].FINISHED:
+            _this10[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].CLEAR_PATH](); // STATEMACHINE TRANSITION
+
+
+            _this10[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].RESTART](); // STATEMACHINE TRANSITION
+
+
+            _this10.startDelayedStepLoop();
+
+            break;
+
+          case _Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].PATH_CLEARED:
+            _this10[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].RESTART](); // STATEMACHINE TRANSITION
 
 
             _this10.startDelayedStepLoop();
@@ -23888,23 +23925,23 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
         console.log("clearPath"); // Playing | Paused | Finished
 
         switch (_this10.state) {
-          case "Playing":
-            _this10.pause(); // STATEMACHINE TRANSITION
+          case _Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].PLAYING:
+            _this10[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].PAUSE](); // STATEMACHINE TRANSITION
 
 
-            _this10.clearPath(); // STATEMACHINE TRANSITION
-
-
-            break;
-
-          case "Paused":
-            _this10.clearPath(); // STATEMACHINE TRANSITION
+            _this10[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].CLEAR_PATH](); // STATEMACHINE TRANSITION
 
 
             break;
 
-          case "Finished":
-            _this10.clearPath(); // STATEMACHINE TRANSITION
+          case _Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].PAUSED:
+            _this10[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].CLEAR_PATH](); // STATEMACHINE TRANSITION
+
+
+            break;
+
+          case _Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].FINISHED:
+            _this10[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].CLEAR_PATH](); // STATEMACHINE TRANSITION
 
 
             break;
@@ -23918,59 +23955,59 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
         console.log("clearWalls"); // Playing | Paused | Finished | pathCleared
 
         switch (_this10.state) {
-          case "Editing":
+          case _Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].EDITING:
             _this10.clearWalls();
 
             break;
 
-          case "Playing":
-            _this10.pause(); // STATEMACHINE TRANSITION
+          case _Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].PLAYING:
+            _this10[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].PAUSE](); // STATEMACHINE TRANSITION
 
 
             _this10.clearWalls();
 
-            _this10.clearPath(); // STATEMACHINE TRANSITION
+            _this10[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].CLEAR_PATH](); // STATEMACHINE TRANSITION
 
 
             _this10.clearReasources();
 
-            _this10.gridEdit(); // STATEMACHINE TRANSITION
+            _this10[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].GRID_EDIT](); // STATEMACHINE TRANSITION
 
 
             break;
 
-          case "Paused":
+          case _Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].PAUSED:
             _this10.clearWalls();
 
-            _this10.clearPath(); // STATEMACHINE TRANSITION
+            _this10[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].CLEAR_PATH](); // STATEMACHINE TRANSITION
 
 
             _this10.clearReasources();
 
-            _this10.gridEdit(); // STATEMACHINE TRANSITION
+            _this10[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].GRID_EDIT](); // STATEMACHINE TRANSITION
 
 
             break;
 
-          case "Finished":
+          case _Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].FINISHED:
             _this10.clearWalls();
 
-            _this10.clearPath(); // STATEMACHINE TRANSITION
+            _this10[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].CLEAR_PATH](); // STATEMACHINE TRANSITION
 
 
             _this10.clearReasources();
 
-            _this10.gridEdit(); // STATEMACHINE TRANSITION
+            _this10[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].GRID_EDIT](); // STATEMACHINE TRANSITION
 
 
             break;
 
-          case "pathCleared":
+          case _Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].PATH_CLEARED:
             _this10.clearWalls();
 
             _this10.clearReasources();
 
-            _this10.gridEdit(); // STATEMACHINE TRANSITION
+            _this10[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].GRID_EDIT](); // STATEMACHINE TRANSITION
 
 
             break;
@@ -23984,23 +24021,23 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
         console.log("undo"); // Playing | Paused | Finished
 
         switch (_this10.state) {
-          case "Playing":
-            _this10.pause(); // STATEMACHINE TRANSITION
+          case _Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].PLAYING:
+            _this10[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].PAUSE](); // STATEMACHINE TRANSITION
 
 
             _this10.burstUndo(_this10.undoRedoBurstSteps);
 
             break;
 
-          case "Paused":
+          case _Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].PAUSED:
             _this10.burstUndo(_this10.undoRedoBurstSteps);
 
             break;
 
-          case "Finished":
+          case _Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].FINISHED:
             _this10.burstUndo(_this10.undoRedoBurstSteps);
 
-            _this10.pause(); // STATEMACHINE TRANSITION
+            _this10[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].PAUSE](); // STATEMACHINE TRANSITION
 
 
             break;
@@ -24014,15 +24051,15 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
         console.log("step"); // Playing | Paused
 
         switch (_this10.state) {
-          case "Playing":
-            _this10.pause(); // STATEMACHINE-TRANSITION
+          case _Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].PLAYING:
+            _this10[_Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["transitions"].PAUSE](); // STATEMACHINE-TRANSITION
 
 
             _this10.burstInstantSteps(_this10.undoRedoBurstSteps);
 
             break;
 
-          case "Paused":
+          case _Configs_ControllerStates__WEBPACK_IMPORTED_MODULE_4__["states"].PAUSED:
             _this10.burstInstantSteps(_this10.undoRedoBurstSteps);
 
             break;
@@ -24073,10 +24110,10 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
             break;
 
           case _Configs_KeyBoardMapping__WEBPACK_IMPORTED_MODULE_6__["default"].BACKSPACE:
-            if (isVisible(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["barOptions"].CLEARPATH)) {
-              click(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["barOptions"].CLEARPATH);
-            } else if (isVisible(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["barOptions"].CLEARWALLS)) {
-              click(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["barOptions"].CLEARWALLS);
+            if (isVisible(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["barOptions"].CLEAR_PATH)) {
+              click(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["barOptions"].CLEAR_PATH);
+            } else if (isVisible(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["barOptions"].CLEAR_WALLS)) {
+              click(_Configs_ControlBarOptions__WEBPACK_IMPORTED_MODULE_5__["barOptions"].CLEAR_WALLS);
             }
 
             break;
@@ -25407,7 +25444,8 @@ var MultiBFS = /*#__PURE__*/function () {
           queue = new denque__WEBPACK_IMPORTED_MODULE_0___default.a([startNode]),
           currentProcessingNode,
           neighbours,
-          path = [];
+          path = [],
+          currentFlagID = 1;
       startNode.addedToQueue = true;
 
       while (!queue.isEmpty()) {
@@ -25417,21 +25455,21 @@ var MultiBFS = /*#__PURE__*/function () {
         if (multiEPGrid.isXYEndPoint(currentProcessingNode.x, currentProcessingNode.y)) {
           path = path.concat(_utils_BackTrace__WEBPACK_IMPORTED_MODULE_1__["default"].backTrace(currentProcessingNode, startNode));
           startNode = currentProcessingNode;
-          multiEPGrid.removeEndPoint(currentProcessingNode);
-          console.log(path, multiEPGrid.endPoints);
+          multiEPGrid.removeEndPoint(currentProcessingNode); // console.log(path, multiEPGrid.endPoints);
+
           queue.clear();
-          multiEPGrid = multiEPGrid.clone();
+          currentFlagID++;
           if (!multiEPGrid.endPoints.length) return path;
         }
 
         neighbours = multiEPGrid.getNeighbours(currentProcessingNode, this.allowDiagonal, this.doNotCrossCornersBetweenObstacles);
         neighbours.forEach(function (neighbour) {
-          if (neighbour.addedToQueue || neighbour.visited) return;
-          neighbour.addedToQueue = true;
+          if (neighbour.addedToQueue === currentFlagID || neighbour.visited === currentFlagID) return;
+          neighbour.addedToQueue = currentFlagID;
           queue.push(neighbour);
           neighbour.parent = currentProcessingNode;
         });
-        currentProcessingNode.visited = true;
+        currentProcessingNode.visited = currentFlagID;
       }
 
       return path;

@@ -15,7 +15,8 @@ export default class MultiBFS{
 			queue = new Denque([startNode]),
 			currentProcessingNode,
 			neighbours,
-			path = [];
+			path = [],
+			currentFlagID = 1;
 
 		startNode.addedToQueue = true;
 		while(!queue.isEmpty()){
@@ -27,22 +28,22 @@ export default class MultiBFS{
 				path = path.concat(backTrace.backTrace(currentProcessingNode, startNode));
 				startNode = currentProcessingNode;
 				multiEPGrid.removeEndPoint(currentProcessingNode);
-				console.log(path, multiEPGrid.endPoints);
+				// console.log(path, multiEPGrid.endPoints);
 				queue.clear();
-				multiEPGrid = multiEPGrid.clone();
+				currentFlagID++;
 				if(!multiEPGrid.endPoints.length) return path;
 			}
 
 			neighbours = multiEPGrid.getNeighbours(currentProcessingNode, this.allowDiagonal, this.doNotCrossCornersBetweenObstacles);
 			neighbours.forEach(neighbour => {
-				if(neighbour.addedToQueue || neighbour.visited) return;
+				if(neighbour.addedToQueue === currentFlagID || neighbour.visited === currentFlagID) return;
 
-				neighbour.addedToQueue = true;
+				neighbour.addedToQueue = currentFlagID;
 				queue.push(neighbour);
 				neighbour.parent = currentProcessingNode;
 			});
 
-			currentProcessingNode.visited = true;
+			currentProcessingNode.visited = currentFlagID;
 		}
 
 		return path;

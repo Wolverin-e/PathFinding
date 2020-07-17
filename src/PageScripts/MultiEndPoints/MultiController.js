@@ -2,6 +2,7 @@ import $ from 'jquery';
 import PathFinding from '../../PathFinding/index';
 
 import Controller from '../SingleEndPoint/Controller';
+import { states, transitions } from '../SingleEndPoint/Configs/ControllerStates';
 
 class MultiController extends Controller{
 
@@ -25,9 +26,9 @@ class MultiController extends Controller{
 			this.viewRenderer.addEndPoint(ep.x, ep.y);
 		});
 		this.bindDOMEventListeners();
-		this.attachOpsEventListeners();
+		this.attachPathFindingOpsSnoopLayer();
 		this.attachControllerLifeCycleEventHooks();
-		this.makeTransitionFromEventHook("edit");
+		this.makeTransitionFromEventHook(transitions.EDIT);
 	}
 
 	// CONTROLLER TO VIEW PROXIES
@@ -44,39 +45,39 @@ class MultiController extends Controller{
 	bindGridEventListeners(){
 		this.viewRenderer.tableElement.on('mousedown', (event) => {
 			const {x, y} = $(event.target).data("coords");
-			if(this.is('Paused')){
-				this.finish(); // STATEMACHINE TRANSITION
-				this.clearPath(); // STATEMACHINE TRANSITION
+			if(this.is(states.PAUSED)){
+				this[transitions.FINISH](); // STATEMACHINE TRANSITION
+				this[transitions.CLEAR_PATH](); // STATEMACHINE TRANSITION
 				this.clearReasources();
-				this.gridEdit(); // STATEMACHINE TRANSITION
+				this[transitions.GRID_EDIT](); // STATEMACHINE TRANSITION
 			}
-			if(this.is('Finished')){
-				this.clearPath(); // STATEMACHINE TRANSITION
+			if(this.is(states.FINISHED)){
+				this[transitions.CLEAR_PATH](); // STATEMACHINE TRANSITION
 				this.clearReasources();
-				this.gridEdit(); // STATEMACHINE TRANSITION
+				this[transitions.GRID_EDIT](); // STATEMACHINE TRANSITION
 			}
-			if(this.is('pathCleared')){
+			if(this.is(states.PATH_CLEARED)){
 				this.clearReasources();
-				this.gridEdit(); // STATEMACHINE TRANSITION
+				this[transitions.GRID_EDIT](); // STATEMACHINE TRANSITION
 			}
 
-			if(this.is('Editing')){
+			if(this.is(states.EDITING)){
 				if(this.grid.isXYStartPoint(x, y)){
-					this.startShiftingStartPoint();
+					this[transitions.START_SHIFTING_START_POINT]();
 					return;
 				}
 
 				if(this.grid.isXYEndPoint(x, y)){
 					this.endPointBeingShifted = {x, y};
-					this.startShiftingEndPoint();
+					this[transitions.START_SHIFTING_END_POINT]();
 					return;
 				}
 
 				if(this.grid.isXYWallElement(x, y)){
-					this.startRemovingWalls();
+					this[transitions.START_REMOVING_WALLS]();
 					this.removeWall(x, y);
 				} else {
-					this.startAddingWalls();
+					this[transitions.START_ADDING_WALLS]();
 					this.makeWall(x, y);
 				}
 			}
@@ -87,16 +88,16 @@ class MultiController extends Controller{
 			let {x, y} = $(event.target).data("coords");
 
 			switch(this.state){
-				case 'AddingWalls':
+				case states.ADDING_WALLS:
 					this.makeWall(x, y);
 					break;
-				case 'RemovingWalls':
+				case states.REMOVING_WALLS:
 					this.removeWall(x, y);
 					break;
-				case 'ShiftingStartPoint':
+				case states.SHIFTING_START_POINT:
 					this.shiftStartPoint(x, y);
 					break;
-				case 'ShiftingEndPoint':
+				case states.SHIFTING_END_POINT:
 					this.shiftEndPointTo(x, y);
 					break;
 				default:
@@ -105,9 +106,9 @@ class MultiController extends Controller{
 		});
 
 		this.viewRenderer.tableElement.on('mouseup', () => {
-			if(this.can('goBackToEditing')){
+			if(this.can(transitions.GO_BACK_TO_EDITING)){
 				this.endPointBeingShifted = undefined;
-				this.goBackToEditing();
+				this[transitions.GO_BACK_TO_EDITING]();
 			}
 		});
 	}

@@ -1855,7 +1855,8 @@ var MultiBFS = /*#__PURE__*/function () {
           queue = new denque__WEBPACK_IMPORTED_MODULE_0___default.a([startNode]),
           currentProcessingNode,
           neighbours,
-          path = [];
+          path = [],
+          currentFlagID = 1;
       startNode.addedToQueue = true;
 
       while (!queue.isEmpty()) {
@@ -1865,21 +1866,21 @@ var MultiBFS = /*#__PURE__*/function () {
         if (multiEPGrid.isXYEndPoint(currentProcessingNode.x, currentProcessingNode.y)) {
           path = path.concat(_utils_BackTrace__WEBPACK_IMPORTED_MODULE_1__["default"].backTrace(currentProcessingNode, startNode));
           startNode = currentProcessingNode;
-          multiEPGrid.removeEndPoint(currentProcessingNode);
-          console.log(path, multiEPGrid.endPoints);
+          multiEPGrid.removeEndPoint(currentProcessingNode); // console.log(path, multiEPGrid.endPoints);
+
           queue.clear();
-          multiEPGrid = multiEPGrid.clone();
+          currentFlagID++;
           if (!multiEPGrid.endPoints.length) return path;
         }
 
         neighbours = multiEPGrid.getNeighbours(currentProcessingNode, this.allowDiagonal, this.doNotCrossCornersBetweenObstacles);
         neighbours.forEach(function (neighbour) {
-          if (neighbour.addedToQueue || neighbour.visited) return;
-          neighbour.addedToQueue = true;
+          if (neighbour.addedToQueue === currentFlagID || neighbour.visited === currentFlagID) return;
+          neighbour.addedToQueue = currentFlagID;
           queue.push(neighbour);
           neighbour.parent = currentProcessingNode;
         });
-        currentProcessingNode.visited = true;
+        currentProcessingNode.visited = currentFlagID;
       }
 
       return path;
