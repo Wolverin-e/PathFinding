@@ -1,28 +1,29 @@
 
 
+
+
 # PathFinder
 Microsoft MentorShip Project as Team StarLight
-- [About](#LINK)
-- [Usage](#LINK)
-  1. [Draw Wall](#LINK)
-  2. [Erase Wall](#LINK)
-  3. [Shift Start/End-Point](#LINK)
-  4. [ControlBar](#LINK)
-  5. [ControlCenter](#LINK)
-  6. [KeyBoard Shortcuts](#LINK)
-- [Architecture](#LINK)
-  1. [Folder Structure](#LINK)
-  2. [Main Flow](#LINK)
-  3. [Controller State Machine](#LINK)
-  4. [PageScripts Class Diagram](#LINK)
-  5. [PathFinding Class Diagram](#LINK)
-  6. [Snoop Layer Sequence Diagram](#LINK)
-  7. [ControlBar Action Map](#LINK)
-- [Technical Achievements](#LINK)
-- [Code Quality](#LINK)
-- [Uniqueness](#LINK)
-- [Getting Started](#LINK) 
-	- // With Repo
+- [About](#about)
+- [Usage](#usage)
+  1. [Draw Wall](#draw-wall)
+  2. [Erase Wall](#erase-wall)
+  3. [Shift Start/End-Point](#shift-startend-point)
+  4. [ControlBar](#control-bar)
+  5. [ControlCenter](#control-center)
+  6. [KeyBoard Shortcuts](#keyboard-shortcuts)
+- [Architecture](#architecture)
+  1. [Folder Structure](#folder-structure)
+  2. [Main Flow](#main-flow)
+  3. [Controller State Machine](#controller-state-chart)
+  4. [PageScripts Class Diagram](#pagescripts-class-diagram)
+  5. [PathFinding Class Diagram](#pathfinding-class-diagram)
+  6. [Snoop Layer Sequence Diagram](#snoop-layer-sequence-diagram)
+  7. [ControlBar Action Map](#controlbar-action-map)
+- [Technical Achievements](#technical-achievements)
+- [Code Quality](#code-quality)
+- [Uniqueness](#uniqueness)
+- [Getting Started](#getting-started)
 
 # About
 This Project is for Visualization of various PathFinding algorithms.
@@ -72,10 +73,10 @@ This Project is for Visualization of various PathFinding algorithms.
 </p>
 
 2. ## Main Flow
-[page/index.html](https://github.com/Wolverin-e/PathFinding/blob/master/page/index.html) has
-```js
-<script>PageScripts.single.init()</script>
-```
+	-  [page/index.html](https://github.com/Wolverin-e/PathFinding/blob/master/page/index.html) has
+	```js
+	<script>PageScripts.single.init()</script>
+	```
 <p align="center">
 	<img src=".readme/imgs/Diagrams/MainFlow.jpg" height="800px">
 </p>
@@ -128,11 +129,11 @@ Snoop Layer is just a bunch of getters/setters. [Here](https://github.com/Wolver
 	- We have used Standard Jquery to actuate page related actions.
 # Uniqueness
 - New UI with no 2D-WebGL **just Jquery/HTML/CSS**.
-- new [**ControlBar**](#controlBar) to deliver functionalities easily.
-- Provided [**Burst-Mode Undo/Redo**](#controlBar) with dynamic amount of steps, So that user can go through the steps manually.
-- Provided functionality to [**choose delay dynamically**](#controlCenter)(ControlCenter) to play at high/low speed and let user understand at desirable speed.
-- Provided functionality to [**choose burst magnitude of undo/redo dynamically**](#controlCenter), So that user can go through steps at desirable burst undo/redo.
-- Provided [**KeyBoard Shortcuts**](#KeyBoard%20Shortcuts) so that user can control the portal easily.
+- new [**ControlBar**](#control-bar) to deliver functionalities easily.
+- Provided [**Burst-Mode Undo/Redo**](#control-bar) with dynamic amount of steps, So that user can go through the steps manually.
+- Provided functionality to [**choose delay dynamically**](#control-center)(ControlCenter) to play at high/low speed and let user understand at desirable speed.
+- Provided functionality to [**choose burst magnitude of undo/redo dynamically**](#control-center), So that user can go through steps at desirable burst undo/redo.
+- Provided [**KeyBoard Shortcuts**](#keyboard-shortcuts) so that user can control the portal easily.
 - Implemented MultiEndPoint Algorithm [**MultiBFS**](https://github.com/Wolverin-e/PathFinding/blob/master/src/PathFinding/algorithms/MultiBFS.js).
 
 # Getting Started
@@ -150,6 +151,8 @@ Snoop Layer is just a bunch of getters/setters. [Here](https://github.com/Wolver
 	```
 3. **Start DevServer**
 	```sh
+	# webpack dev-server will be serving at 
+	# localhost:8000/PathFinding/page & localhost:8000/PathFinding/page/multi
 	$ npm start
 	```
 4.  **Lint Test**
