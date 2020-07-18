@@ -16,7 +16,7 @@ export default class MultiBFS{
 			currentProcessingNode,
 			neighbours,
 			path = [],
-			currentFlagID = 1;
+			currentIterationID = 1;
 
 		startNode.addedToQueue = true;
 		while(!queue.isEmpty()){
@@ -25,25 +25,28 @@ export default class MultiBFS{
 			if(this.markCurrentProcessingNode) currentProcessingNode.currentNode = true;
 
 			if(multiEPGrid.isXYEndPoint(currentProcessingNode.x, currentProcessingNode.y)){
-				path = path.concat(backTrace.backTrace(currentProcessingNode, startNode));
+				path = path.concat(backTrace.backTraceInIteration(currentIterationID, currentProcessingNode, startNode));
 				startNode = currentProcessingNode;
 				multiEPGrid.removeEndPoint(currentProcessingNode);
 				// console.log(path, multiEPGrid.endPoints);
 				queue.clear();
-				currentFlagID++;
+				currentIterationID++;
 				if(!multiEPGrid.endPoints.length) return path;
 			}
 
 			neighbours = multiEPGrid.getNeighbours(currentProcessingNode, this.allowDiagonal, this.doNotCrossCornersBetweenObstacles);
 			neighbours.forEach(neighbour => {
-				if(neighbour.addedToQueue === currentFlagID || neighbour.visited === currentFlagID) return;
+				if(neighbour.addedToQueue === currentIterationID || neighbour.visited === currentIterationID) return;
 
-				neighbour.addedToQueue = currentFlagID;
+				neighbour.addedToQueue = currentIterationID;
 				queue.push(neighbour);
-				neighbour.parent = currentProcessingNode;
+				neighbour.parent = {
+					node: currentProcessingNode,
+					iterationID: currentIterationID
+				};
 			});
 
-			currentProcessingNode.visited = currentFlagID;
+			currentProcessingNode.visited = currentIterationID;
 		}
 
 		return path;

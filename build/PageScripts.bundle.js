@@ -25445,7 +25445,7 @@ var MultiBFS = /*#__PURE__*/function () {
           currentProcessingNode,
           neighbours,
           path = [],
-          currentFlagID = 1;
+          currentIterationID = 1;
       startNode.addedToQueue = true;
 
       while (!queue.isEmpty()) {
@@ -25453,23 +25453,26 @@ var MultiBFS = /*#__PURE__*/function () {
         if (this.markCurrentProcessingNode) currentProcessingNode.currentNode = true;
 
         if (multiEPGrid.isXYEndPoint(currentProcessingNode.x, currentProcessingNode.y)) {
-          path = path.concat(_utils_BackTrace__WEBPACK_IMPORTED_MODULE_1__["default"].backTrace(currentProcessingNode, startNode));
+          path = path.concat(_utils_BackTrace__WEBPACK_IMPORTED_MODULE_1__["default"].backTraceInIteration(currentIterationID, currentProcessingNode, startNode));
           startNode = currentProcessingNode;
           multiEPGrid.removeEndPoint(currentProcessingNode); // console.log(path, multiEPGrid.endPoints);
 
           queue.clear();
-          currentFlagID++;
+          currentIterationID++;
           if (!multiEPGrid.endPoints.length) return path;
         }
 
         neighbours = multiEPGrid.getNeighbours(currentProcessingNode, this.allowDiagonal, this.doNotCrossCornersBetweenObstacles);
         neighbours.forEach(function (neighbour) {
-          if (neighbour.addedToQueue === currentFlagID || neighbour.visited === currentFlagID) return;
-          neighbour.addedToQueue = currentFlagID;
+          if (neighbour.addedToQueue === currentIterationID || neighbour.visited === currentIterationID) return;
+          neighbour.addedToQueue = currentIterationID;
           queue.push(neighbour);
-          neighbour.parent = currentProcessingNode;
+          neighbour.parent = {
+            node: currentProcessingNode,
+            iterationID: currentIterationID
+          };
         });
-        currentProcessingNode.visited = currentFlagID;
+        currentProcessingNode.visited = currentIterationID;
       }
 
       return path;
@@ -25851,6 +25854,19 @@ var BackTrace = /*#__PURE__*/function () {
       while (node !== startNode) {
         path.push(node);
         node = node.parent;
+      }
+
+      path.reverse();
+      return path;
+    }
+  }, {
+    key: "backTraceInIteration",
+    value: function backTraceInIteration(inIteration, node, startNode) {
+      var path = [];
+
+      while (node !== startNode && node.parent.iterationID === inIteration) {
+        path.push(node);
+        node = node.parent.node;
       }
 
       path.reverse();

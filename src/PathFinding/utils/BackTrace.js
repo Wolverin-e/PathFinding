@@ -9,6 +9,16 @@ class BackTrace{
 		return path;
 	}
 
+	backTraceInIteration(inIteration, node, startNode){
+		let path = [];
+		while(node !== startNode && node.parent.iterationID === inIteration){
+			path.push(node);
+			node = node.parent.node;
+		}
+		path.reverse();
+		return path;
+	}
+
 	biBackTrace(node1, startNode, node2, endNode){
 		let path1 = this.backTrace(node1, startNode),
 			path2 = this.backTrace(node2, endNode);
