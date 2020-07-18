@@ -7,7 +7,6 @@ Array.prototype.peekTop = function(){
 export default class IDAStar{
 	constructor(options){
 		this.allowDiagonal = options.allowDiagonal;
-		this.biDirectional = options.biDirectional;
 		this.doNotCrossCornersBetweenObstacles = options.doNotCrossCornersBetweenObstacles;
 		this.markCurrentProcessingNode = options.markCurrentProcessingNode;
 

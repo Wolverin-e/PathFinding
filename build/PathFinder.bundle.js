@@ -1448,7 +1448,6 @@ var IDAStar = /*#__PURE__*/function () {
     _classCallCheck(this, IDAStar);
 
     this.allowDiagonal = options.allowDiagonal;
-    this.biDirectional = options.biDirectional;
     this.doNotCrossCornersBetweenObstacles = options.doNotCrossCornersBetweenObstacles;
     this.markCurrentProcessingNode = options.markCurrentProcessingNode;
     this.heuristic = _utils_Heuristics__WEBPACK_IMPORTED_MODULE_0__["default"][options.heuristic]; // this.heuristic = heuristics["euclidean"];

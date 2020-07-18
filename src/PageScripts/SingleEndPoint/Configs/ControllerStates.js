@@ -109,7 +109,7 @@ const stateMachineData = {
 		},
 		{
 			name: TRANSITIONS.GRID_EDIT,
-			from: [STATES.FINISHED, STATES.PAUSED, STATES.PATH_CLEARED],
+			from: [STATES.FINISHED, STATES.PATH_CLEARED],
 			to: STATES.EDITING
 		}
 	]

@@ -24,6 +24,7 @@ class Controller extends StateMachine{
 		this.rows = options.rows;
 		this.columns = options.columns;
 		this.defaultStepDelay = options.stepDelay;
+		this.defaultUndoRedoBurstSteps = options.undoRedoBurstSteps;
 
 		this.stepDelay = options.stepDelay;
 		this.undoRedoBurstSteps = options.undoRedoBurstSteps;
@@ -56,13 +57,7 @@ class Controller extends StateMachine{
 
 	accomodateControlCenterAlgorithmEntityChange(){
 		if(this.is(STATES.PLAYING)) this[TRANSITIONS.PAUSE]();
-		if(this.is(STATES.PAUSED)){
-			this[TRANSITIONS.FINISH](); // STATEMACHINE TRANSITION
-			this[TRANSITIONS.CLEAR_PATH](); // STATEMACHINE TRANSITION
-			this.clearReasources();
-			this[TRANSITIONS.GRID_EDIT](); // STATEMACHINE TRANSITION
-		}
-		if(this.is(STATES.FINISHED)){
+		if(this.is(STATES.PAUSED) || this.is(STATES.FINISHED)){
 			this[TRANSITIONS.CLEAR_PATH](); // STATEMACHINE TRANSITION
 			this.clearReasources();
 			this[TRANSITIONS.GRID_EDIT](); // STATEMACHINE TRANSITION
@@ -307,13 +302,7 @@ class Controller extends StateMachine{
 	bindGridEventListeners(){
 		this.viewRenderer.tableElement.on('mousedown', (event) => {
 			const {x, y} = $(event.target).data("coords");
-			if(this.is(STATES.PAUSED)){
-				this[TRANSITIONS.FINISH](); // STATEMACHINE TRANSITION
-				this[TRANSITIONS.CLEAR_PATH](); // STATEMACHINE TRANSITION
-				this.clearReasources();
-				this[TRANSITIONS.GRID_EDIT](); // STATEMACHINE TRANSITION
-			}
-			if(this.is(STATES.FINISHED)){
+			if(this.is(STATES.PAUSED) || this.is(STATES.FINISHED)){
 				this[TRANSITIONS.CLEAR_PATH](); // STATEMACHINE TRANSITION
 				this.clearReasources();
 				this[TRANSITIONS.GRID_EDIT](); // STATEMACHINE TRANSITION
