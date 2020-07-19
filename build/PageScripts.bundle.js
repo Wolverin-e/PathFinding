@@ -25429,62 +25429,72 @@ var MultiAStar = /*#__PURE__*/function () {
     }
   }, {
     key: "findPath",
-    value: function findPath(multiGrid) {
-      this.multiGrid = multiGrid;
-      var endNodesHeap = new heap__WEBPACK_IMPORTED_MODULE_0___default.a(function (node1, node2) {
-        return node1.h - node2.h;
-      }),
-          currentIterationID = 1,
-          startNode = multiGrid.getNodeAtXY(multiGrid.startPoint.x, multiGrid.startPoint.y),
+    value: function findPath(multiEPGrid) {
+      var endNodesList = [],
+          multiEPGridPass,
+          startNode = multiEPGrid.getNodeAtXY(multiEPGrid.startPoint.x, multiEPGrid.startPoint.y),
           endPoint,
-          closestEndNode,
           endNode,
+          closestEndNode,
           path = [],
-          subPath = [],
-          endPointsList = multiGrid.endPoints();
+          subPath = [];
+      console.log(startNode);
+      console.log(multiEPGrid.endPoints);
 
-      while (endPointsList.length) {
-        endPoint = endPointsList.shift();
-        endNodesHeap.insert(multiGrid.getNodeAtXY(endPoint[0], endPoint[1]));
+      for (var i = 0; i < multiEPGrid.endPoints.length; i++) {
+        endPoint = multiEPGrid.endPoints[i];
+        endNode = multiEPGrid.getNodeAtXY(endPoint.x, endPoint.y);
+        endNodesList.push(endNode);
+        endNode.h = _utils_Heuristics__WEBPACK_IMPORTED_MODULE_2__["default"]['euclidean'](endNode, startNode);
       }
 
-      while (endNodesHeap.length) {
-        for (var i = 0; endNodesHeap.length; i++) {
-          endNodesHeap[i].h = this.heuristic(endNodesHeap[i], startNode);
-        }
+      endNodesList.sort(function (node1, node2) {
+        return node1.h - node2.h;
+      });
 
-        endNodesHeap.updateItem();
-        closestEndNode = endNodesHeap.pop();
-        subPath = this.finder(startNode, closestEndNode, currentIterationID);
+      while (endNodesList.length) {
+        multiEPGridPass = multiEPGrid.clone();
+        closestEndNode = endNodesList.shift();
+        subPath = this.finder(startNode, closestEndNode, multiEPGridPass);
+        console.log(subPath);
 
-        if (subPath[subPath.length - 1] == closestEndNode) {
-          this.multiGrid.removeEndPoint(closestEndNode);
-        } else {
-          for (var _i = 0; _i < endNodesHeap.length; _i++) {
-            endNode = endNodesHeap.pop();
+        if (subPath.length) {
+          if (subPath[subPath.length - 1].x === closestEndNode.x && subPath[subPath.length - 1].y === closestEndNode.y) {
+            multiEPGrid.removeEndPoint(closestEndNode);
+          } else {
+            endNodesList.push(closestEndNode);
+            multiEPGrid.removeEndPoint(subPath[subPath.length - 1]);
 
-            if (endNode === subPath[subPath.length - 1]) {
-              break;
+            for (var k = 0; k < endNodesList.length; k++) {
+              endNode = endNodesList[k];
+
+              if (endNode.x === subPath[subPath.length - 1].x && endNode.y === subPath[subPath.length - 1].y) {
+                endNodesList.splice(k, 1);
+                console.log(endNodesList);
+                break;
+              }
             }
-
-            this.multiGrid.removeEndPoint(endNode);
           }
 
-          this.multiGrid.removeEndPoint(endNode);
+          path = path.concat(subPath);
+          startNode = subPath[subPath.length - 1];
         }
 
-        if (subPath) {
-          path.concat(subPath);
-          startNode = closestEndNode;
-          currentIterationID++;
+        for (var _i = 0; _i < endNodesList.length; _i++) {
+          endNode = endNodesList[_i];
+          endNode.h = _utils_Heuristics__WEBPACK_IMPORTED_MODULE_2__["default"]['euclidean'](endNode, startNode);
         }
+
+        endNodesList.sort(function (node1, node2) {
+          return node1.h - node2.h;
+        });
       }
 
       return path;
     }
   }, {
     key: "finder",
-    value: function finder(startNode, endNode, currentIterationID) {
+    value: function finder(startNode, endNode, multiEPGrid) {
       var _this = this;
 
       var minHeap = new heap__WEBPACK_IMPORTED_MODULE_0___default.a(function (node1, node2) {
@@ -25504,11 +25514,11 @@ var MultiAStar = /*#__PURE__*/function () {
         currentProcessingNode = minHeap.pop();
         if (this.markCurrentProcessingNode) currentProcessingNode.currentNode = true;
 
-        if (this.multiGrid.isXYEndPoint(currentProcessingNode.x, currentProcessingNode.y)) {
+        if (multiEPGrid.isXYEndPoint(currentProcessingNode.x, currentProcessingNode.y)) {
           return _utils_BackTrace__WEBPACK_IMPORTED_MODULE_1__["default"].backTrace(currentProcessingNode, startNode);
         }
 
-        neighbours = this.multiGrid.getNeighbours(currentProcessingNode, this.allowDiagonal, this.doNotCrossCornersBetweenObstacles);
+        neighbours = multiEPGrid.getNeighbours(currentProcessingNode, this.allowDiagonal, this.doNotCrossCornersBetweenObstacles);
         neighbours.forEach(function (neighbour) {
           if (neighbour.visited) return; //equivalent to continue in forEach
 
@@ -25520,19 +25530,13 @@ var MultiAStar = /*#__PURE__*/function () {
             neighbour.f = neighbour.g + neighbour.h;
             minHeap.insert(neighbour);
             neighbour.addedToHeap = true;
-            neighbour.parent = {
-              node: currentProcessingNode,
-              iterationID: currentIterationID
-            };
+            neighbour.parent = currentProcessingNode;
           } else if (neighbour.g > neighbourGValFromCurrentProcessingNode) {
             neighbour.g = neighbourGValFromCurrentProcessingNode;
             neighbour.h = _this.heuristic(endNode, neighbour);
             neighbour.f = neighbour.g + neighbour.h;
             minHeap.updateItem(neighbour);
-            neighbour.parent = {
-              node: currentProcessingNode,
-              iterationID: currentIterationID
-            };
+            neighbour.parent = currentProcessingNode;
           }
         });
         currentProcessingNode.visited = true;
