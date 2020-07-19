@@ -22,6 +22,7 @@ class ViewRenderer{
 		pageActionsLogicAttacher.attachControlBarDragLogic();
 		pageActionsLogicAttacher.attachDarkModeLogic();
 		this.renderGrid();
+		$("#loader").hide();
 	}
 
 	renderGrid(){

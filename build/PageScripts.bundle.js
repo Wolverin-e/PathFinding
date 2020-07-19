@@ -24250,8 +24250,11 @@ var PageActionsLogicAttacher = /*#__PURE__*/function () {
     value: function attachDarkModeLogic() {
       var darkModeBtn = jquery__WEBPACK_IMPORTED_MODULE_0___default()("#control-bar #darkMode"),
           styleSheetLink = jquery__WEBPACK_IMPORTED_MODULE_0___default()("head #MasterSheet"),
-          currentMode = "Light";
+          currentMode = "Light",
+          loader = jquery__WEBPACK_IMPORTED_MODULE_0___default()("#loader");
       darkModeBtn.on("click", function () {
+        loader.show();
+
         if (currentMode === "Light") {
           currentMode = "Dark";
         } else {
@@ -24259,6 +24262,9 @@ var PageActionsLogicAttacher = /*#__PURE__*/function () {
         }
 
         styleSheetLink.attr("href", "/PathFinding/page/public/css/".concat(currentMode, "/Master.css"));
+        setTimeout(function () {
+          loader.hide();
+        }, 1500);
       });
     }
   }]);
@@ -24314,6 +24320,7 @@ var ViewRenderer = /*#__PURE__*/function () {
       _Logic__WEBPACK_IMPORTED_MODULE_1__["default"].attachControlBarDragLogic();
       _Logic__WEBPACK_IMPORTED_MODULE_1__["default"].attachDarkModeLogic();
       this.renderGrid();
+      jquery__WEBPACK_IMPORTED_MODULE_0___default()("#loader").hide();
     }
   }, {
     key: "renderGrid",

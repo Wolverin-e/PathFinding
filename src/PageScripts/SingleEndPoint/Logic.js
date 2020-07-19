@@ -86,16 +86,22 @@ class PageActionsLogicAttacher{
 	attachDarkModeLogic(){
 		let darkModeBtn = $("#control-bar #darkMode"),
 			styleSheetLink = $("head #MasterSheet"),
-			currentMode = "Light";
+			currentMode = "Light",
+			loader = $("#loader");
 
 		darkModeBtn.on("click", () => {
+			loader.show();
 			if(currentMode === "Light"){
 				currentMode = "Dark";
 			} else {
 				currentMode = "Light";
 			}
 			styleSheetLink.attr("href", `/PathFinding/page/public/css/${currentMode}/Master.css`);
+			setTimeout(() => {
+				loader.hide();
+			}, 1500);
 		});
+
 	}
 }
 
