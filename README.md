@@ -1,7 +1,14 @@
+
+
 ![Node.js CI](https://github.com/Wolverin-e/PathFinding/workflows/Node.js%20CI/badge.svg)
 
 # PathFinder
 Microsoft MentorShip Project as Team StarLight
+
+<p align="center">
+	<img src=".readme/imgs/ScreenShots/DarkMode.png" height="500px">
+</p>
+
 - [About](#about)
 - [Usage](#usage)
   1. [Draw Wall](#draw-wall)
@@ -67,8 +74,8 @@ This Project is for Visualization of various PathFinding algorithms.
 	> 	- <kbd>→</kbd> - Redo/Step
 	> 	- <kbd>↑</kbd> - Increase Undo/Redo steps
 	> 	- <kbd>↓</kbd> - Increase Undo/Redo steps
-	> 	- <kbd>⌥</kbd>+<kbd>↑</kbd> - Increase Step Delay when Playing
-	> 	- <kbd>⌥</kbd>+<kbd>↓</kbd> - Increase Step Delay when Playing
+	> 	- <kbd>⌥ - alt/option</kbd>+<kbd>↑</kbd> - Increase Step Delay when Playing
+	> 	- <kbd>⌥ - alt/option</kbd>+<kbd>↓</kbd> - Increase Step Delay when Playing
 
 # Architecture
 1. ## Folder Structure
@@ -117,6 +124,7 @@ This Project is for Visualization of various PathFinding algorithms.
 	- **'x'** in a cell shows that that action will not be available in that controller state.
 	- **'<>'** around a word shows that the word is a controller state Machine transition from a state to another state.
 	- under **'----'** are the states from which the controller state Machine is going to pass through
+	- Toggle DarkMode is allowed in every state. It doesn't cause any state changes.
 <p align="center">
 	<img src=".readme/imgs/Diagrams/ControlBarActionTable.png">
 </p>
@@ -146,6 +154,7 @@ This Project is for Visualization of various PathFinding algorithms.
 		- **ACTUATING** by finding a path and following it. (showed on grid).
 8. Learnt how to **Tap(Snoop) on an attribute assignments** to an object via getters and setters.
 9. Practiced **Object Oriented Paradigm in JavaScript**.
+10. Learnt **Controller-ViewRenderer** approach to softwares with UI. 
 # Code Quality
 1. Readability
 	- We have used **EsLint** as a devDependency to follow a **common coding style** and maintain Redability.
@@ -168,6 +177,11 @@ This Project is for Visualization of various PathFinding algorithms.
 	2. [**MultiBestFirstSearch**](https://github.com/Wolverin-e/PathFinding/blob/master/src/PathFinding/algorithms/MultiBestFirstSearch.js)
 	3. [**MultiAStar**](https://github.com/Wolverin-e/PathFinding/blob/master/src/PathFinding/algorithms/MultiAStar.js)
 	4. [**MultiDijkshtra**](https://github.com/Wolverin-e/PathFinding/blob/master/src/PathFinding/algorithms/MultiDijkshtra.js)
+8. Added Dark Mode🔥.
+<p align="center">
+	<img src=".readme/imgs/ScreenShots/DarkMode.png" height="500px">
+</p>
+
 
 # Getting Started
 - **Clone**
