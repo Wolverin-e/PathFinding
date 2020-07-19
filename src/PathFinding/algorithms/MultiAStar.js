@@ -7,10 +7,10 @@ export default class MultiAStar{
 		console.log(options);
 		this.allowDiagonal = options.allowDiagonal;
 		this.doNotCrossCornersBetweenObstacles = options.doNotCrossCornersBetweenObstacles;
-		this.biDirectional = options.biDirectional;
 		this.markCurrentProcessingNode = options.markCurrentProcessingNode;
 		this.heuristic = heuristics[options.heuristic];
 	}
+
 	getDistanceFromCurrentProcessignNode(currentProcessingNode, neighbour){
 		if((Math.abs(currentProcessingNode.x-neighbour.x)+Math.abs(currentProcessingNode.y-neighbour.y))===1){
 			return 1;
@@ -28,8 +28,8 @@ export default class MultiAStar{
 			path = [],
 			subPath = [];
 
-		console.log(startNode);
-		console.log(multiEPGrid.endPoints);
+		// console.log(startNode);
+		// console.log(multiEPGrid.endPoints);
 
 		for(let i=0;i<multiEPGrid.endPoints.length;i++){
 			endPoint = multiEPGrid.endPoints[i];
@@ -47,7 +47,7 @@ export default class MultiAStar{
 			multiEPGridPass = multiEPGrid.clone();
 			closestEndNode = endNodesList.shift();
 			subPath = this.finder(startNode, closestEndNode, multiEPGridPass);
-			console.log(subPath);
+			// console.log(subPath);
 
 			if (subPath.length){
 				if ((subPath[subPath.length -1].x === closestEndNode.x) && (subPath[subPath.length -1].y === closestEndNode.y)){
@@ -59,7 +59,7 @@ export default class MultiAStar{
 						endNode = endNodesList[k];
 						if ((endNode.x === subPath[subPath.length -1].x) && (endNode.y === subPath[subPath.length -1].y)){
 							endNodesList.splice(k, 1);
-							console.log(endNodesList);
+							// console.log(endNodesList);
 							break;
 						}
 					}

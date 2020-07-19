@@ -52,9 +52,11 @@
                 <select name="algorithm" id="algorithmSelector">
                     <optgroup label="CLASSIC">
                         <option value="MultiBFS">MultiBFS</option>
+                        <option value="MultiDijkshtra">MultiDijkshtra</option>
                     </optgroup>
-                    <optgroup label="Greedy">
+                    <optgroup label="GREEDY">
                         <option value="MultiAStar">MultiAStar</option>
+                        <option value="MultiBestFirstSearch">MultiBestFirstSearch</option>
                     </optgroup>
                 </select>
                 <hr />
@@ -71,6 +73,21 @@
                             <br />
                         <input type="checkbox" id="MBFS3" value="markCurrentProcessingNode" checked>
                             <label for="MBFS3">Show Cursor</label>
+                            <br />
+                    </div>
+                </div>
+                
+                <div id="MultiDijkshtra" class="algorithm-options-section">
+                    OPTIONS
+                    <div class="options-checkbox-section">
+                        <input type="checkbox" id="MDij1" value="allowDiagonal" checked>
+                            <label for="MDij1">Allow Diagonal</label>
+                            <br />
+                        <input type="checkbox" id="MDij2" value="doNotCrossCornersBetweenObstacles" checked>
+                            <label for="MDij2">Do Not Cross Wall</label>
+                            <br />
+                        <input type="checkbox" id="MDij3" value="markCurrentProcessingNode" checked>
+                            <label for="MDij3">Show Cursor</label>
                             <br />
                     </div>
                 </div>
@@ -97,17 +114,45 @@
                         <input type="checkbox" id="MASC1" value="allowDiagonal" checked>
                             <label for="MASC1">Allow Diagonal</label>
                             <br />
-                        <input type="checkbox" id="MASC2" value="biDirectional">
-                            <label for="MASC2">Bi Directional</label>
+                        <input type="checkbox" id="MASC2" value="doNotCrossCornersBetweenObstacles" checked>
+                            <label for="MASC2">Do Not Cross Wall</label>
                             <br />
-                        <input type="checkbox" id="MASC3" value="doNotCrossCornersBetweenObstacles" checked>
-                            <label for="MASC3">Do Not Cross Wall</label>
-                            <br />
-                        <input type="checkbox" id="MASC4" value="markCurrentProcessingNode" checked>
-                            <label for="MASC4">Show Cursor</label>
+                        <input type="checkbox" id="MASC3" value="markCurrentProcessingNode" checked>
+                            <label for="MASC3">Show Cursor</label>
                             <br />
                     </div>
-                </div>>
+                </div>
+
+                <div id="MultiBestFirstSearch" class="algorithm-options-section">
+                    HEURISTIC
+                    <div class="options-radio-section">
+                        <input type="radio" id="MBeFSO1" name="MBeFS" value="manhattan" checked />
+                            <label for="MBeFSO1">Manhattan</label>
+                            <br />
+                        <input type="radio" id="MBeFSO2" name="MBeFS" value="euclidean" />
+                            <label for="MBeFSO2">Euclidean</label>
+                            <br />
+                        <input type="radio" id="MBeFSO3" name="MBeFS" value="octile" />
+                            <label for="MBeFSO3">Octile</label>
+                            <br />
+                        <input type="radio" id="MBeFSO4" name="MBeFS" value="chebyshev" />
+                            <label for="MBeFSO4">Chebyshev</label>
+                            <br />
+                    </div>
+                    <br />
+                    OPTIONS
+                    <div class="options-checkbox-section">
+                        <input type="checkbox" id="MBeFSC1" value="allowDiagonal" checked>
+                            <label for="MBeFSC1">Allow Diagonal</label>
+                            <br />
+                        <input type="checkbox" id="MBeFSC2" value="doNotCrossCornersBetweenObstacles" checked>
+                            <label for="MBeFSC2">Do Not Cross Wall</label>
+                            <br />
+                        <input type="checkbox" id="MBeFSC3" value="markCurrentProcessingNode" checked>
+                            <label for="MBeFSC3">Show Cursor</label>
+                            <br />
+                    </div>
+                </div>
             </div>
         </div>
 

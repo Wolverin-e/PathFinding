@@ -17,6 +17,7 @@ export default class MultiBFS{
 			neighbours,
 			path = [],
 			currentIterationID = 1;
+
 		startNode.addedToQueue = true;
 		while(!queue.isEmpty()){
 			currentProcessingNode = queue.shift();

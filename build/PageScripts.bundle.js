@@ -25413,7 +25413,6 @@ var MultiAStar = /*#__PURE__*/function () {
     console.log(options);
     this.allowDiagonal = options.allowDiagonal;
     this.doNotCrossCornersBetweenObstacles = options.doNotCrossCornersBetweenObstacles;
-    this.biDirectional = options.biDirectional;
     this.markCurrentProcessingNode = options.markCurrentProcessingNode;
     this.heuristic = _utils_Heuristics__WEBPACK_IMPORTED_MODULE_2__["default"][options.heuristic];
   }
@@ -25437,9 +25436,8 @@ var MultiAStar = /*#__PURE__*/function () {
           endNode,
           closestEndNode,
           path = [],
-          subPath = [];
-      console.log(startNode);
-      console.log(multiEPGrid.endPoints);
+          subPath = []; // console.log(startNode);
+      // console.log(multiEPGrid.endPoints);
 
       for (var i = 0; i < multiEPGrid.endPoints.length; i++) {
         endPoint = multiEPGrid.endPoints[i];
@@ -25455,8 +25453,7 @@ var MultiAStar = /*#__PURE__*/function () {
       while (endNodesList.length) {
         multiEPGridPass = multiEPGrid.clone();
         closestEndNode = endNodesList.shift();
-        subPath = this.finder(startNode, closestEndNode, multiEPGridPass);
-        console.log(subPath);
+        subPath = this.finder(startNode, closestEndNode, multiEPGridPass); // console.log(subPath);
 
         if (subPath.length) {
           if (subPath[subPath.length - 1].x === closestEndNode.x && subPath[subPath.length - 1].y === closestEndNode.y) {
@@ -25469,8 +25466,8 @@ var MultiAStar = /*#__PURE__*/function () {
               endNode = endNodesList[k];
 
               if (endNode.x === subPath[subPath.length - 1].x && endNode.y === subPath[subPath.length - 1].y) {
-                endNodesList.splice(k, 1);
-                console.log(endNodesList);
+                endNodesList.splice(k, 1); // console.log(endNodesList);
+
                 break;
               }
             }
@@ -25630,6 +25627,121 @@ var MultiBFS = /*#__PURE__*/function () {
 
   return MultiBFS;
 }();
+
+
+
+/***/ }),
+
+/***/ "./src/PathFinding/algorithms/MultiBestFirstSearch.js":
+/*!************************************************************!*\
+  !*** ./src/PathFinding/algorithms/MultiBestFirstSearch.js ***!
+  \************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return MultiBestFirstSearch; });
+/* harmony import */ var _MultiAStar__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./MultiAStar */ "./src/PathFinding/algorithms/MultiAStar.js");
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+
+
+var MultiBestFirstSearch = /*#__PURE__*/function (_MultiAStar) {
+  _inherits(MultiBestFirstSearch, _MultiAStar);
+
+  var _super = _createSuper(MultiBestFirstSearch);
+
+  function MultiBestFirstSearch(options) {
+    var _this;
+
+    _classCallCheck(this, MultiBestFirstSearch);
+
+    _this = _super.call(this, options);
+    var heuristicToOverride = _this.heuristic;
+
+    _this.heuristic = function (node1, node2) {
+      return heuristicToOverride(node1, node2, 500000);
+    };
+
+    return _this;
+  }
+
+  return MultiBestFirstSearch;
+}(_MultiAStar__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+
+
+/***/ }),
+
+/***/ "./src/PathFinding/algorithms/MultiDijkshtra.js":
+/*!******************************************************!*\
+  !*** ./src/PathFinding/algorithms/MultiDijkshtra.js ***!
+  \******************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return MultiDijkshtra; });
+/* harmony import */ var _MultiAStar__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./MultiAStar */ "./src/PathFinding/algorithms/MultiAStar.js");
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+
+
+var MultiDijkshtra = /*#__PURE__*/function (_MultiAStar) {
+  _inherits(MultiDijkshtra, _MultiAStar);
+
+  var _super = _createSuper(MultiDijkshtra);
+
+  function MultiDijkshtra(options) {
+    var _this;
+
+    _classCallCheck(this, MultiDijkshtra);
+
+    _this = _super.call(this, options);
+
+    _this.heuristic = function () {
+      return 0;
+    };
+
+    return _this;
+  }
+
+  return MultiDijkshtra;
+}(_MultiAStar__WEBPACK_IMPORTED_MODULE_0__["default"]);
 
 
 
@@ -25949,6 +26061,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _algorithms_JumpPointSearch__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./algorithms/JumpPointSearch */ "./src/PathFinding/algorithms/JumpPointSearch.js");
 /* harmony import */ var _algorithms_MultiBFS__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./algorithms/MultiBFS */ "./src/PathFinding/algorithms/MultiBFS.js");
 /* harmony import */ var _algorithms_MultiAStar__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./algorithms/MultiAStar */ "./src/PathFinding/algorithms/MultiAStar.js");
+/* harmony import */ var _algorithms_MultiBestFirstSearch__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./algorithms/MultiBestFirstSearch */ "./src/PathFinding/algorithms/MultiBestFirstSearch.js");
+/* harmony import */ var _algorithms_MultiDijkshtra__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./algorithms/MultiDijkshtra */ "./src/PathFinding/algorithms/MultiDijkshtra.js");
+// Core
+
+
+ // Single EndPoint
 
 
 
@@ -25956,6 +26074,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+ // Multi EndPoints
 
 
 
@@ -25973,7 +26092,9 @@ __webpack_require__.r(__webpack_exports__);
   IDDFS: _algorithms_IDDFS__WEBPACK_IMPORTED_MODULE_8__["default"],
   JumpPointSearch: _algorithms_JumpPointSearch__WEBPACK_IMPORTED_MODULE_9__["default"],
   MultiBFS: _algorithms_MultiBFS__WEBPACK_IMPORTED_MODULE_10__["default"],
-  MultiAStar: _algorithms_MultiAStar__WEBPACK_IMPORTED_MODULE_11__["default"]
+  MultiAStar: _algorithms_MultiAStar__WEBPACK_IMPORTED_MODULE_11__["default"],
+  MultiBestFirstSearch: _algorithms_MultiBestFirstSearch__WEBPACK_IMPORTED_MODULE_12__["default"],
+  MultiDijkshtra: _algorithms_MultiDijkshtra__WEBPACK_IMPORTED_MODULE_13__["default"]
 });
 
 /***/ }),
