@@ -1,6 +1,6 @@
 /* <----------------HTML,BODY,HEAD----------------> */
-html, body, head {
-    margin: 0;
+html, body {
+    margin: -2px 0 0 -2px;
     padding: 0;
     -webkit-touch-callout: none;
     -webkit-user-select: none;

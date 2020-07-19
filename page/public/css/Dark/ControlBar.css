@@ -1,0 +1,32 @@
+/* <----------------CONTROL-BAR----------------> */
+#control-bar {
+    position: absolute;
+    top: 90%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-radius: 10px;
+    padding: 5px;
+}
+
+#control-bar img{
+    filter: invert(90%);
+    margin: 5px;
+    height: 35px;
+}
+
+#drag{
+    cursor: move;
+}
+
+.action{
+    cursor: pointer;
+    transition: 100ms;
+}
+
+.action:hover{
+    transform: scale(1.1);
+    transition: 100ms;
+}

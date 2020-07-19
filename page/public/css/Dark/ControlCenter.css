@@ -1,0 +1,75 @@
+/* <----------------CONTROL-CENTER----------------> */
+#control-center-switch{
+    position: absolute;
+    left: -6px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 5px 0px 5px 0px;
+    border-radius: 0px 7px 7px 0px;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    transition: 200ms;
+    background-color: rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+
+#control-center-switch img{
+    filter: invert(90%);
+}
+
+#control-center {
+    position: absolute;
+    top: 0%;
+    height: 100%;
+    z-index: 1;
+    background-color: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    transition: 200ms;
+    color: white;
+}
+
+#controls-container{
+    position: relative;
+    width: 80%;
+    top: 50%;
+    transform: translateY(-50%);
+    padding-left: 10%;
+    padding-right: 10%;
+}
+
+#main-lable{
+    font-family: 'JuraBold', sans-serif;
+    margin: 0;
+    font-size: 30px;
+}
+
+hr{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#normal-lable{
+    padding-left: 2px;
+    font-family: 'JuraSemiBold', sans-serif;
+    margin: 0;
+    margin-bottom: 2px;
+    font-size: 13px;
+}
+
+#algorithmSelector{
+    width: 100%;
+    height: 20px;
+    font-family: 'JuraSemiBold', sans-serif;
+    font-size: 13px;
+}
+
+.algorithm-options-section{
+    font-family: 'JuraSemiBold', sans-serif;
+    font-size: 13px;
+}
+
+.numInp{
+    width: 100%;
+    backdrop-filter: blur(20px);
+}

@@ -82,6 +82,21 @@ class PageActionsLogicAttacher{
 			controlCenter.find("#"+current).show();
 		});
 	}
+
+	attachDarkModeLogic(){
+		let darkModeBtn = $("#control-bar #darkMode"),
+			styleSheetLink = $("head #MasterSheet"),
+			currentMode = "Light";
+
+		darkModeBtn.on("click", () => {
+			if(currentMode === "Light"){
+				currentMode = "Dark";
+			} else {
+				currentMode = "Light";
+			}
+			styleSheetLink.attr("href", `/PathFinding/page/public/css/${currentMode}/Master.css`);
+		});
+	}
 }
 
 export default new PageActionsLogicAttacher();

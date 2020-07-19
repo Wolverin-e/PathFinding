@@ -24245,6 +24245,22 @@ var PageActionsLogicAttacher = /*#__PURE__*/function () {
         controlCenter.find("#" + current).show();
       });
     }
+  }, {
+    key: "attachDarkModeLogic",
+    value: function attachDarkModeLogic() {
+      var darkModeBtn = jquery__WEBPACK_IMPORTED_MODULE_0___default()("#control-bar #darkMode"),
+          styleSheetLink = jquery__WEBPACK_IMPORTED_MODULE_0___default()("head #MasterSheet"),
+          currentMode = "Light";
+      darkModeBtn.on("click", function () {
+        if (currentMode === "Light") {
+          currentMode = "Dark";
+        } else {
+          currentMode = "Light";
+        }
+
+        styleSheetLink.attr("href", "/PathFinding/page/public/css/".concat(currentMode, "/Master.css"));
+      });
+    }
   }]);
 
   return PageActionsLogicAttacher;
@@ -24296,6 +24312,7 @@ var ViewRenderer = /*#__PURE__*/function () {
       _Logic__WEBPACK_IMPORTED_MODULE_1__["default"].attachControlCenterSwitchLogic();
       _Logic__WEBPACK_IMPORTED_MODULE_1__["default"].attachAlgorithmOptionsShowHideLogic();
       _Logic__WEBPACK_IMPORTED_MODULE_1__["default"].attachControlBarDragLogic();
+      _Logic__WEBPACK_IMPORTED_MODULE_1__["default"].attachDarkModeLogic();
       this.renderGrid();
     }
   }, {

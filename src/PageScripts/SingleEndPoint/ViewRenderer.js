@@ -20,6 +20,7 @@ class ViewRenderer{
 		pageActionsLogicAttacher.attachControlCenterSwitchLogic();
 		pageActionsLogicAttacher.attachAlgorithmOptionsShowHideLogic();
 		pageActionsLogicAttacher.attachControlBarDragLogic();
+		pageActionsLogicAttacher.attachDarkModeLogic();
 		this.renderGrid();
 	}
 
