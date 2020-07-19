@@ -25382,6 +25382,173 @@ var JumpPointSearch = /*#__PURE__*/function () {
 
 /***/ }),
 
+/***/ "./src/PathFinding/algorithms/MultiAStar.js":
+/*!**************************************************!*\
+  !*** ./src/PathFinding/algorithms/MultiAStar.js ***!
+  \**************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return MultiAStar; });
+/* harmony import */ var heap__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! heap */ "./node_modules/heap/index.js");
+/* harmony import */ var heap__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(heap__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _utils_BackTrace__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/BackTrace */ "./src/PathFinding/utils/BackTrace.js");
+/* harmony import */ var _utils_Heuristics__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/Heuristics */ "./src/PathFinding/utils/Heuristics.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
+
+
+
+var MultiAStar = /*#__PURE__*/function () {
+  function MultiAStar(options) {
+    _classCallCheck(this, MultiAStar);
+
+    console.log(options);
+    this.allowDiagonal = options.allowDiagonal;
+    this.doNotCrossCornersBetweenObstacles = options.doNotCrossCornersBetweenObstacles;
+    this.biDirectional = options.biDirectional;
+    this.markCurrentProcessingNode = options.markCurrentProcessingNode;
+    this.heuristic = _utils_Heuristics__WEBPACK_IMPORTED_MODULE_2__["default"][options.heuristic];
+  }
+
+  _createClass(MultiAStar, [{
+    key: "getDistanceFromCurrentProcessignNode",
+    value: function getDistanceFromCurrentProcessignNode(currentProcessingNode, neighbour) {
+      if (Math.abs(currentProcessingNode.x - neighbour.x) + Math.abs(currentProcessingNode.y - neighbour.y) === 1) {
+        return 1;
+      }
+
+      return Math.SQRT2;
+    }
+  }, {
+    key: "findPath",
+    value: function findPath(multiGrid) {
+      this.multiGrid = multiGrid;
+      var endNodesHeap = new heap__WEBPACK_IMPORTED_MODULE_0___default.a(function (node1, node2) {
+        return node1.h - node2.h;
+      }),
+          currentIterationID = 1,
+          startNode = multiGrid.getNodeAtXY(multiGrid.startPoint.x, multiGrid.startPoint.y),
+          endPoint,
+          closestEndNode,
+          endNode,
+          path = [],
+          subPath = [],
+          endPointsList = multiGrid.endPoints();
+
+      while (endPointsList.length) {
+        endPoint = endPointsList.shift();
+        endNodesHeap.insert(multiGrid.getNodeAtXY(endPoint[0], endPoint[1]));
+      }
+
+      while (endNodesHeap.length) {
+        for (var i = 0; endNodesHeap.length; i++) {
+          endNodesHeap[i].h = this.heuristic(endNodesHeap[i], startNode);
+        }
+
+        endNodesHeap.updateItem();
+        closestEndNode = endNodesHeap.pop();
+        subPath = this.finder(startNode, closestEndNode, currentIterationID);
+
+        if (subPath[subPath.length - 1] == closestEndNode) {
+          this.multiGrid.removeEndPoint(closestEndNode);
+        } else {
+          for (var _i = 0; _i < endNodesHeap.length; _i++) {
+            endNode = endNodesHeap.pop();
+
+            if (endNode === subPath[subPath.length - 1]) {
+              break;
+            }
+
+            this.multiGrid.removeEndPoint(endNode);
+          }
+
+          this.multiGrid.removeEndPoint(endNode);
+        }
+
+        if (subPath) {
+          path.concat(subPath);
+          startNode = closestEndNode;
+          currentIterationID++;
+        }
+      }
+
+      return path;
+    }
+  }, {
+    key: "finder",
+    value: function finder(startNode, endNode, currentIterationID) {
+      var _this = this;
+
+      var minHeap = new heap__WEBPACK_IMPORTED_MODULE_0___default.a(function (node1, node2) {
+        return node1.f - node2.f;
+      }),
+          currentProcessingNode,
+          neighbours,
+          neighbourGValFromCurrentProcessingNode;
+      startNode.f = 0;
+      startNode.g = 0;
+      endNode.f = 0;
+      endNode.g = 0;
+      minHeap.insert(startNode);
+      startNode.addedToHeap = true;
+
+      while (!minHeap.empty()) {
+        currentProcessingNode = minHeap.pop();
+        if (this.markCurrentProcessingNode) currentProcessingNode.currentNode = true;
+
+        if (this.multiGrid.isXYEndPoint(currentProcessingNode.x, currentProcessingNode.y)) {
+          return _utils_BackTrace__WEBPACK_IMPORTED_MODULE_1__["default"].backTrace(currentProcessingNode, startNode);
+        }
+
+        neighbours = this.multiGrid.getNeighbours(currentProcessingNode, this.allowDiagonal, this.doNotCrossCornersBetweenObstacles);
+        neighbours.forEach(function (neighbour) {
+          if (neighbour.visited) return; //equivalent to continue in forEach
+
+          neighbourGValFromCurrentProcessingNode = currentProcessingNode.g + _this.getDistanceFromCurrentProcessignNode(currentProcessingNode, neighbour);
+
+          if (!neighbour.addedToHeap) {
+            neighbour.g = neighbourGValFromCurrentProcessingNode;
+            neighbour.h = _this.heuristic(endNode, neighbour);
+            neighbour.f = neighbour.g + neighbour.h;
+            minHeap.insert(neighbour);
+            neighbour.addedToHeap = true;
+            neighbour.parent = {
+              node: currentProcessingNode,
+              iterationID: currentIterationID
+            };
+          } else if (neighbour.g > neighbourGValFromCurrentProcessingNode) {
+            neighbour.g = neighbourGValFromCurrentProcessingNode;
+            neighbour.h = _this.heuristic(endNode, neighbour);
+            neighbour.f = neighbour.g + neighbour.h;
+            minHeap.updateItem(neighbour);
+            neighbour.parent = {
+              node: currentProcessingNode,
+              iterationID: currentIterationID
+            };
+          }
+        });
+        currentProcessingNode.visited = true;
+      }
+
+      return [];
+    }
+  }]);
+
+  return MultiAStar;
+}();
+
+
+
+/***/ }),
+
 /***/ "./src/PathFinding/algorithms/MultiBFS.js":
 /*!************************************************!*\
   !*** ./src/PathFinding/algorithms/MultiBFS.js ***!
@@ -25777,6 +25944,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _algorithms_IDDFS__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./algorithms/IDDFS */ "./src/PathFinding/algorithms/IDDFS.js");
 /* harmony import */ var _algorithms_JumpPointSearch__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./algorithms/JumpPointSearch */ "./src/PathFinding/algorithms/JumpPointSearch.js");
 /* harmony import */ var _algorithms_MultiBFS__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./algorithms/MultiBFS */ "./src/PathFinding/algorithms/MultiBFS.js");
+/* harmony import */ var _algorithms_MultiAStar__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./algorithms/MultiAStar */ "./src/PathFinding/algorithms/MultiAStar.js");
+
 
 
 
@@ -25799,7 +25968,8 @@ __webpack_require__.r(__webpack_exports__);
   IDAStar: _algorithms_IDAStar__WEBPACK_IMPORTED_MODULE_7__["default"],
   IDDFS: _algorithms_IDDFS__WEBPACK_IMPORTED_MODULE_8__["default"],
   JumpPointSearch: _algorithms_JumpPointSearch__WEBPACK_IMPORTED_MODULE_9__["default"],
-  MultiBFS: _algorithms_MultiBFS__WEBPACK_IMPORTED_MODULE_10__["default"]
+  MultiBFS: _algorithms_MultiBFS__WEBPACK_IMPORTED_MODULE_10__["default"],
+  MultiAStar: _algorithms_MultiAStar__WEBPACK_IMPORTED_MODULE_11__["default"]
 });
 
 /***/ }),

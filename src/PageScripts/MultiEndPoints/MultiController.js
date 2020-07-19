@@ -9,7 +9,6 @@ class MultiController extends Controller{
 	// CONSTRUCTOR
 	constructor(options){
 		super(options);
-
 		this.grid = new PathFinding.MultiEPGrid({
 			rows: this.rows,
 			columns: this.columns,
@@ -40,6 +39,7 @@ class MultiController extends Controller{
 		this.viewRenderer.shiftEndPoint(this.endPointBeingShifted, {x, y});
 		this.endPointBeingShifted = {x, y};
 	}
+
 
 	// EVENT LISTENERS
 	bindGridEventListeners(){

@@ -9,6 +9,7 @@ import IDAStar from './algorithms/IDAStar';
 import IDDFS from './algorithms/IDDFS';
 import JumpPointSearch from './algorithms/JumpPointSearch';
 import MultiBFS from './algorithms/MultiBFS';
+import MultiAStar from './algorithms/MultiAStar';
 
 export default {
 	Grid,
@@ -21,5 +22,6 @@ export default {
 	IDAStar,
 	IDDFS,
 	JumpPointSearch,
-	MultiBFS
+	MultiBFS,
+	MultiAStar
 };
