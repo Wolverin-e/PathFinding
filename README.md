@@ -1,4 +1,4 @@
-
+![Node.js CI](https://github.com/Wolverin-e/PathFinding/workflows/Node.js%20CI/badge.svg)
 
 # PathFinder
 Microsoft MentorShip Project as Team StarLight
@@ -153,6 +153,9 @@ This Project is for Visualization of various PathFinding algorithms.
 2. Working
 	- We have used **babel Transpiler and PolyFill to target maximum amount of browsers** possible.
 	- We have used **Standard Jquery** to actuate page related actions.
+3. Continuous Integration
+	- ![Node.js CI](https://github.com/Wolverin-e/PathFinding/workflows/Node.js%20CI/badge.svg)
+	- We have used github actions to lint-test and build code each time we push to the repo.
 # Uniqueness
 1. New UI with no 2D-WebGL **just Jquery/HTML/CSS**.
 2. new [**ControlBar**](#control-bar) to deliver functionalities easily.
