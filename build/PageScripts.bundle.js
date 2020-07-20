@@ -24080,9 +24080,9 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
   }, {
     key: "burstInstantSteps",
     value: function burstInstantSteps(steps) {
-      while (steps--) {
+      do {
         this.instantStep();
-      }
+      } while (steps-- && !opQueue.isEmpty());
     }
   }, {
     key: "instantUndo",
@@ -24103,9 +24103,9 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
   }, {
     key: "burstUndo",
     value: function burstUndo(steps) {
-      while (steps--) {
+      do {
         this.instantUndo();
-      }
+      } while (steps-- && !undoQueue.isEmpty());
     }
   }, {
     key: "onClearPath",
