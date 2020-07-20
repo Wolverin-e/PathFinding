@@ -1,0 +1,47 @@
+.swal-overlay {
+	background-color: rgba(0, 0, 0, 0.1);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+}
+
+.swal-modal {
+	background-color: rgba(0, 0, 0, 0);
+	border: 0px;
+	font-family: 'JuraBold', sans-serif;
+	border-radius: 10px;
+}
+
+.swal-text{
+	color: black;
+}
+
+.swal-modal a{
+	color: black;
+}
+
+.swal-button--cancel:focus {
+	font-family: 'JuraBold', sans-serif;
+	border-radius: 5px;
+	background-color: rgba(0, 0, 0, 0.1);
+	font-size: 13px;
+	border: 0px;
+	box-shadow: none;
+}
+
+.swal-button--cancel {
+	font-family: 'JuraBold', sans-serif;
+	border-radius: 5px;
+	background-color: rgba(0, 0, 0, 0.1);
+	font-size: 13px;
+	border: 0px;
+	box-shadow: none;
+}
+
+.swal-button--cancel:hover {
+	font-family: 'JuraBold', sans-serif;
+	border-radius: 5px;
+	background-color: rgba(0, 0, 0, 0.5);
+	font-size: 13px;
+	border: 0px;
+	box-shadow: none;
+}

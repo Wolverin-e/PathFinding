@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import swal from 'sweetalert';
 
 class PageActionsLogicAttacher{
 
@@ -103,7 +104,22 @@ class PageActionsLogicAttacher{
 				loader.hide();
 			}
 		});
+	}
 
+	showUsageLink(){
+		swal({
+			text: "FOR USER MANUAL",
+			content: {
+				element: "a",
+				attributes: {
+					"href": "https://github.com/Wolverin-e/PathFinding#usage",
+					"text": "GO HERE"
+				}
+			},
+			buttons: {
+				CANCEL: true
+			}
+		});
 	}
 }
 

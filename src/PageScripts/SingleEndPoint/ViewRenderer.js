@@ -21,6 +21,7 @@ class ViewRenderer{
 		pageActionsLogicAttacher.attachAlgorithmOptionsShowHideLogic();
 		pageActionsLogicAttacher.attachControlBarDragLogic();
 		pageActionsLogicAttacher.attachDarkModeLogic();
+		pageActionsLogicAttacher.showUsageLink();
 		this.renderGrid();
 		$("#loader").hide();
 	}
