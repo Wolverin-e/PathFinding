@@ -24101,9 +24101,9 @@
 												"$ref": "AAAAAAFzY11fVHNkLYw="
 											},
 											"font": "Arial;13;0",
-											"left": 154.58642578125,
+											"left": 158.97900390625,
 											"top": 13,
-											"width": 84.0400390625,
+											"width": 97.1416015625,
 											"height": 13,
 											"text": "SnoopSequence"
 										},
@@ -24116,7 +24116,7 @@
 											"font": "Arial;13;1",
 											"left": 93,
 											"top": 13,
-											"width": 56.58642578125,
+											"width": 60.97900390625,
 											"height": 13,
 											"text": "interaction"
 										}
@@ -24633,7 +24633,7 @@
 													"top": 47,
 													"width": 111.8544921875,
 													"height": 13,
-													"text": "MEM: opsQueue"
+													"text": "MEM: opQueue"
 												},
 												{
 													"_type": "LabelView",
@@ -28724,7 +28724,7 @@
 						"$ref": "AAAAAAFzY11fU3NhHpQ="
 					},
 					"name": "Role5",
-					"type": "opsQueue"
+					"type": "opQueue"
 				},
 				{
 					"_type": "UMLAttribute",

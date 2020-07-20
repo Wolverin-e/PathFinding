@@ -247,9 +247,9 @@ class Controller extends StateMachine{
 	}
 
 	burstInstantSteps(steps){
-		while(steps--){
+		do {
 			this.instantStep();
-		}
+		} while(steps-- && !opQueue.isEmpty());
 	}
 
 	instantUndo(){
@@ -267,9 +267,9 @@ class Controller extends StateMachine{
 	}
 
 	burstUndo(steps){
-		while(steps--){
+		do {
 			this.instantUndo();
-		}
+		} while(steps-- && !undoQueue.isEmpty());
 	}
 
 	onClearPath(){
