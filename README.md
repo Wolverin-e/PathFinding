@@ -68,7 +68,7 @@ This Project is for Visualization of various PathFinding algorithms.
 
 6. ## KeyBoard Shortcuts
 	> Keyboard shortcuts can be used for a particular ControlBar action as follows.
-	>  - <kbd>SPACE</kbd> - Play/Pause/Restart
+	>  	- <kbd>SPACE</kbd> - Play/Pause/Restart
 	> 	- <kbd>⌫ BACKSPACE</kbd> - Clear Path/Walls
 	> 	- <kbd>←</kbd> - Undo
 	> 	- <kbd>→</kbd> - Redo/Step
@@ -102,6 +102,11 @@ This Project is for Visualization of various PathFinding algorithms.
 
 4. ## PageScripts Class Diagram
 	- This is the class diagram of the PageScripts Package/Bundle.
+	- In general the Controller maintains a grid and proxies the actions taken on DOM to grid.
+	- When In COMPUTING State, controller [**snoops**](#snoop-layer-sequence-diagram) on the operations of the algorithm and enqueues them in opQueue.
+	- When In PLAYING State, controller dequeues the operations from opQueue and shows them on screen through viewRenderer.
+	- The Controller controls a major part of the UI throught ViewRenderer.
+	- The MultiController and The MultiViewRenderer is for Multi EndPoints Page.
 <p align="center">
 	<img src=".readme/imgs/Diagrams/PageScriptsClassDiagram.jpg">
 </p>
