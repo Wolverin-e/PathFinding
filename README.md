@@ -177,7 +177,8 @@ This Project is for Visualization of various PathFinding algorithms.
 	2. [**MultiBestFirstSearch**](https://github.com/Wolverin-e/PathFinding/blob/master/src/PathFinding/algorithms/MultiBestFirstSearch.js)
 	3. [**MultiAStar**](https://github.com/Wolverin-e/PathFinding/blob/master/src/PathFinding/algorithms/MultiAStar.js)
 	4. [**MultiDijkshtra**](https://github.com/Wolverin-e/PathFinding/blob/master/src/PathFinding/algorithms/MultiDijkshtra.js)
-8. Added Dark Mode🔥.
+8. Added [**Show Cursor**](#control-center) option so that user can visualise the flow of the operations.
+9. Added [**Dark Mode**](#control-bar)🔥.
 <p align="center">
 	<img src=".readme/imgs/ScreenShots/DarkMode.png" height="500px">
 </p>
