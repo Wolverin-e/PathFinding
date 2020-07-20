@@ -37,7 +37,7 @@
     font-family: 'JuraBold', sans-serif;
     margin: 0;
     font-size: 30px;
-    /* text-align: center; */
+    text-align: center;
 }
 
 hr{
@@ -51,6 +51,19 @@ hr{
     margin: 0;
     margin-bottom: 2px;
     font-size: 13px;
+}
+
+#links-container{
+    font-size: 13px;
+    font-family: 'JuraSemiBold', sans-serif;
+    text-align: center;
+    position: relative;
+}
+
+#links-container a{
+    color: black;
+    display: inline-block;
+    margin: 0px auto;
 }
 
 #algorithmSelector{

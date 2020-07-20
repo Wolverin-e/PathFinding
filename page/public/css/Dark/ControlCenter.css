@@ -57,6 +57,19 @@ hr{
     font-size: 13px;
 }
 
+#links-container{
+    font-size: 13px;
+    font-family: 'JuraSemiBold', sans-serif;
+    text-align: center;
+    position: relative;
+}
+
+#links-container a{
+    color: white;
+    display: inline-block;
+    margin: 0px auto;
+}
+
 #algorithmSelector{
     width: 100%;
     height: 20px;

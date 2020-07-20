@@ -1,6 +1,3 @@
-@import url('../Animations.css');
-@import url('./ControlBar.css');
-@import url('./ControlCenter.css');
-@import url('../Fonts.css');
-@import url('./Grid.css');
-@import url('../Page.css');
+@import url('/PathFinding/page/public/css/Dark/ControlBar.css');
+@import url('/PathFinding/page/public/css/Dark/ControlCenter.css');
+@import url('/PathFinding/page/public/css/Dark/Grid.css');
