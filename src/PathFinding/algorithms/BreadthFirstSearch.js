@@ -33,7 +33,7 @@ export default class BreadthFirstSearch{
 				return backTrace.backTrace(endNode, startNode);
 			}
 
-			neighbours = grid.getNeighbours(currentProcessingNode, this.allowDiagonal, this.doNotCrossCorners);
+			neighbours = grid.getNeighbours(currentProcessingNode, this.allowDiagonal, this.doNotCrossCornersBetweenObstacles);
 			neighbours.forEach(neighbour => {
 				if(neighbour.visited || neighbour.addedToQueue){
 					return; // equivalent to CONTINUE in forEach
