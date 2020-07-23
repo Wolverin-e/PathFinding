@@ -3,7 +3,7 @@ import ViewRenderer from './MultiViewRenderer';
 
 const rows = 50,
 	columns = 50,
-	undoRedoBurstSteps = 1000,
+	undoRedoBurstSteps = 200,
 	stepDelay = 1,
 	clientHeight = document.documentElement.clientHeight,
 	clientWidth = document.documentElement.clientWidth,

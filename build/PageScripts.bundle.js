@@ -23463,7 +23463,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var rows = 50,
     columns = 50,
-    undoRedoBurstSteps = 1000,
+    undoRedoBurstSteps = 200,
     stepDelay = 1,
     clientHeight = document.documentElement.clientHeight,
     clientWidth = document.documentElement.clientWidth,
@@ -24626,7 +24626,7 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
             if (event.altKey) {
               increase("delayInpField", 5, "stepDelay");
             } else {
-              increase("stepsInpField", 5, "undoRedoBurstSteps");
+              increase("stepsInpField", 10, "undoRedoBurstSteps");
             }
 
             break;
@@ -24635,7 +24635,7 @@ var Controller = /*#__PURE__*/function (_StateMachine) {
             if (event.altKey) {
               increase("delayInpField", -5, "stepDelay");
             } else {
-              increase("stepsInpField", -5, "undoRedoBurstSteps");
+              increase("stepsInpField", -10, "undoRedoBurstSteps");
             }
 
             break;

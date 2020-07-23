@@ -646,7 +646,7 @@ class Controller extends StateMachine{
 					if(event.altKey){
 						increase("delayInpField", 5, "stepDelay");
 					} else {
-						increase("stepsInpField", 5, "undoRedoBurstSteps");
+						increase("stepsInpField", 10, "undoRedoBurstSteps");
 					}
 					break;
 
@@ -654,7 +654,7 @@ class Controller extends StateMachine{
 					if(event.altKey){
 						increase("delayInpField", -5, "stepDelay");
 					} else {
-						increase("stepsInpField", -5, "undoRedoBurstSteps");
+						increase("stepsInpField", -10, "undoRedoBurstSteps");
 					}
 					break;
 
