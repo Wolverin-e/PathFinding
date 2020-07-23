@@ -97,11 +97,13 @@ class PageActionsLogicAttacher{
 				currentMode = "Dark";
 				$.get(`/PathFinding/page/public/css/${currentMode}/Master.css`, css => {
 					masterStyleElem.text(css);
-				}).done(() => loader.hide());
+				}).done(() => {
+					setTimeout(() => loader.hide(), 400);
+				});
 			} else {
 				currentMode = "Light";
 				masterStyleElem.text('');
-				loader.hide();
+				setTimeout(() => loader.hide(), 100);
 			}
 		});
 	}

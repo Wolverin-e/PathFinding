@@ -23357,18 +23357,18 @@
 										"$ref": "AAAAAAFzaUk124sGYjc="
 									},
 									"font": "Arial;13;0",
-									"left": 682,
+									"left": 602,
 									"top": 762,
-									"width": 109,
+									"width": 261,
 									"height": 13,
-									"text": "$(\"#loader\").hide()",
+									"text": "setTimeout(() => $(\"#loader\").hide(), 300);",
 									"wordWrap": true
 								}
 							],
 							"font": "Arial;13;0",
-							"left": 672,
+							"left": 592,
 							"top": 752,
-							"width": 129,
+							"width": 281,
 							"height": 33,
 							"nameLabel": {
 								"$ref": "AAAAAAFzaUk124sHjcA="
@@ -24018,7 +24018,7 @@
 					"_parent": {
 						"$ref": "AAAAAAFzYvcQj1EYtsk="
 					},
-					"name": "$(\"#loader\").hide()",
+					"name": "setTimeout(() => $(\"#loader\").hide(), 300);",
 					"ownedElements": [
 						{
 							"_type": "FCFlow",

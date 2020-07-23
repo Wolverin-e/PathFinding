@@ -24774,12 +24774,16 @@ var PageActionsLogicAttacher = /*#__PURE__*/function () {
           jquery__WEBPACK_IMPORTED_MODULE_0___default.a.get("/PathFinding/page/public/css/".concat(currentMode, "/Master.css"), function (css) {
             masterStyleElem.text(css);
           }).done(function () {
-            return loader.hide();
+            setTimeout(function () {
+              return loader.hide();
+            }, 400);
           });
         } else {
           currentMode = "Light";
           masterStyleElem.text('');
-          loader.hide();
+          setTimeout(function () {
+            return loader.hide();
+          }, 100);
         }
       });
     }
@@ -24854,7 +24858,9 @@ var ViewRenderer = /*#__PURE__*/function () {
       _Logic__WEBPACK_IMPORTED_MODULE_1__["default"].attachDarkModeLogic();
       _Logic__WEBPACK_IMPORTED_MODULE_1__["default"].showUsageLink();
       this.renderGrid();
-      jquery__WEBPACK_IMPORTED_MODULE_0___default()("#loader").hide();
+      setTimeout(function () {
+        return jquery__WEBPACK_IMPORTED_MODULE_0___default()("#loader").hide();
+      }, 300);
     }
   }, {
     key: "renderGrid",

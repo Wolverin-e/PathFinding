@@ -23,7 +23,7 @@ class ViewRenderer{
 		pageActionsLogicAttacher.attachDarkModeLogic();
 		pageActionsLogicAttacher.showUsageLink();
 		this.renderGrid();
-		$("#loader").hide();
+		setTimeout(() => $("#loader").hide(), 300);
 	}
 
 	renderGrid(){
