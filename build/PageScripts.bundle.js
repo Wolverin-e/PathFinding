@@ -25398,7 +25398,7 @@ var BreadthFirstSearch = /*#__PURE__*/function () {
           return _utils_BackTrace__WEBPACK_IMPORTED_MODULE_1__["default"].backTrace(endNode, startNode);
         }
 
-        neighbours = grid.getNeighbours(currentProcessingNode, this.allowDiagonal, this.doNotCrossCorners);
+        neighbours = grid.getNeighbours(currentProcessingNode, this.allowDiagonal, this.doNotCrossCornersBetweenObstacles);
         neighbours.forEach(function (neighbour) {
           if (neighbour.visited || neighbour.addedToQueue) {
             return; // equivalent to CONTINUE in forEach
