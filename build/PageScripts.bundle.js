@@ -25000,7 +25000,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var rows = 50,
     columns = 50,
-    undoRedoBurstSteps = 2,
+    undoRedoBurstSteps = 5,
     stepDelay = 10,
     clientHeight = document.documentElement.clientHeight,
     clientWidth = document.documentElement.clientWidth,
