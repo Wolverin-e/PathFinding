@@ -24795,7 +24795,7 @@ var PageActionsLogicAttacher = /*#__PURE__*/function () {
         content: {
           element: "a",
           attributes: {
-            "href": "https://github.com/Wolverin-e/PathFinding#usage",
+            "href": "javascript: window.open('https://github.com/Wolverin-e/PathFinding#usage'); swal.close()",
             "text": "GO HERE"
           }
         },
