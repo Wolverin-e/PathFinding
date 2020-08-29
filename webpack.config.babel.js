@@ -46,7 +46,9 @@ export default {
 		contentBase: path.join(__dirname, './page'),
 		contentBasePublicPath: '/PathFinding/page/',
 		watchContentBase: true,
-		port: 8000
+		port: 8000,
+		open: true,
+		openPage: 'PathFinding/page'
 	},
 	devtool: 'source-map'
 };
