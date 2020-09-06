@@ -83,7 +83,7 @@ export default class MultiAStar{
 		let minHeap = new Heap((node1, node2) => node1.f-node2.f),
 			currentProcessingNode,
 			neighbours,
-			neighbourGValFromCurrentProcessingNode;
+			neighbourGVal;
 
 		startNode.f = 0;
 		startNode.g = 0;
@@ -104,10 +104,10 @@ export default class MultiAStar{
 			neighbours.forEach(neighbour => {
 				if(neighbour.visited) return; //equivalent to continue in forEach
 
-				neighbourGValFromCurrentProcessingNode = currentProcessingNode.g+this.getDistanceFromCurrentProcessignNode(currentProcessingNode, neighbour);
+				neighbourGVal = currentProcessingNode.g+this.getDistanceFromCurrentProcessignNode(currentProcessingNode, neighbour);
 
 				if(!neighbour.addedToHeap){
-					neighbour.g = neighbourGValFromCurrentProcessingNode;
+					neighbour.g = neighbourGVal;
 					neighbour.h = this.heuristic(endNode, neighbour);
 					neighbour.f = neighbour.g+neighbour.h;
 
@@ -115,8 +115,8 @@ export default class MultiAStar{
 					neighbour.addedToHeap = true;
 					neighbour.parent = currentProcessingNode;
 
-				} else if(neighbour.g > neighbourGValFromCurrentProcessingNode){
-					neighbour.g = neighbourGValFromCurrentProcessingNode;
+				} else if(neighbour.g > neighbourGVal){
+					neighbour.g = neighbourGVal;
 					neighbour.h = this.heuristic(endNode, neighbour);
 					neighbour.f = neighbour.g+neighbour.h;
 

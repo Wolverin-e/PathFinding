@@ -25126,7 +25126,7 @@ var AStar = /*#__PURE__*/function () {
           endNode = grid.getNodeAtXY(grid.endPoint.x, grid.endPoint.y),
           currentProcessingNode,
           neighbours,
-          neighbourGValFromCurrentProcessingNode;
+          neighbourGVal;
       startNode.f = 0;
       startNode.g = 0;
       endNode.f = 0;
@@ -25146,17 +25146,17 @@ var AStar = /*#__PURE__*/function () {
         neighbours.forEach(function (neighbour) {
           if (neighbour.visited) return; //equivalent to continue in forEach
 
-          neighbourGValFromCurrentProcessingNode = currentProcessingNode.g + _this.getDistanceFromCurrentProcessignNode(currentProcessingNode, neighbour);
+          neighbourGVal = currentProcessingNode.g + _this.getDistanceFromCurrentProcessignNode(currentProcessingNode, neighbour);
 
           if (!neighbour.addedToHeap) {
-            neighbour.g = neighbourGValFromCurrentProcessingNode;
+            neighbour.g = neighbourGVal;
             neighbour.h = _this.heuristic(endNode, neighbour);
             neighbour.f = neighbour.g + neighbour.h;
             minHeap.insert(neighbour);
             neighbour.addedToHeap = true;
             neighbour.parent = currentProcessingNode;
-          } else if (neighbour.g > neighbourGValFromCurrentProcessingNode) {
-            neighbour.g = neighbourGValFromCurrentProcessingNode;
+          } else if (neighbour.g > neighbourGVal) {
+            neighbour.g = neighbourGVal;
             neighbour.h = _this.heuristic(endNode, neighbour);
             neighbour.f = neighbour.g + neighbour.h;
             minHeap.updateItem(neighbour);
@@ -25182,7 +25182,7 @@ var AStar = /*#__PURE__*/function () {
           currentProcessingNode,
           neighbours,
           neighbour,
-          neighbourGValFromCurrentProcessingNode;
+          neighbourGVal;
       startNode.f = 0;
       startNode.g = 0;
       endNode.f = 0;
@@ -25206,10 +25206,10 @@ var AStar = /*#__PURE__*/function () {
             continue;
           }
 
-          neighbourGValFromCurrentProcessingNode = currentProcessingNode.g + this.getDistanceFromCurrentProcessignNode(currentProcessingNode, neighbour);
+          neighbourGVal = currentProcessingNode.g + this.getDistanceFromCurrentProcessignNode(currentProcessingNode, neighbour);
 
           if (!neighbour.addedToHeap) {
-            neighbour.g = neighbourGValFromCurrentProcessingNode;
+            neighbour.g = neighbourGVal;
             neighbour.h = this.heuristic(endNode, neighbour);
             neighbour.f = neighbour.g + neighbour.h;
             minHeapFromStart.insert(neighbour);
@@ -25221,8 +25221,8 @@ var AStar = /*#__PURE__*/function () {
               return _utils_BackTrace__WEBPACK_IMPORTED_MODULE_1__["default"].biBackTrace(currentProcessingNode, startNode, neighbour, endNode);
             }
 
-            if (neighbour.g > neighbourGValFromCurrentProcessingNode) {
-              neighbour.g = neighbourGValFromCurrentProcessingNode;
+            if (neighbour.g > neighbourGVal) {
+              neighbour.g = neighbourGVal;
               neighbour.h = this.heuristic(endNode, neighbour);
               neighbour.f = neighbour.g + neighbour.h;
               minHeapFromStart.updateItem(neighbour);
@@ -25244,10 +25244,10 @@ var AStar = /*#__PURE__*/function () {
             continue;
           }
 
-          neighbourGValFromCurrentProcessingNode = currentProcessingNode.g + this.getDistanceFromCurrentProcessignNode(currentProcessingNode, neighbour);
+          neighbourGVal = currentProcessingNode.g + this.getDistanceFromCurrentProcessignNode(currentProcessingNode, neighbour);
 
           if (!neighbour.addedToHeap) {
-            neighbour.g = neighbourGValFromCurrentProcessingNode;
+            neighbour.g = neighbourGVal;
             neighbour.h = this.heuristic(startNode, neighbour);
             neighbour.f = neighbour.g + neighbour.h;
             minHeapFromEnd.insert(neighbour);
@@ -25259,8 +25259,8 @@ var AStar = /*#__PURE__*/function () {
               return _utils_BackTrace__WEBPACK_IMPORTED_MODULE_1__["default"].biBackTrace(neighbour, startNode, currentProcessingNode, endNode);
             }
 
-            if (neighbour.g > neighbourGValFromCurrentProcessingNode) {
-              neighbour.g = neighbourGValFromCurrentProcessingNode;
+            if (neighbour.g > neighbourGVal) {
+              neighbour.g = neighbourGVal;
               neighbour.h = this.heuristic(startNode, neighbour);
               neighbour.f = neighbour.g + neighbour.h;
               minHeapFromEnd.updateItem(neighbour);
@@ -26063,7 +26063,7 @@ var MultiAStar = /*#__PURE__*/function () {
       }),
           currentProcessingNode,
           neighbours,
-          neighbourGValFromCurrentProcessingNode;
+          neighbourGVal;
       startNode.f = 0;
       startNode.g = 0;
       endNode.f = 0;
@@ -26083,17 +26083,17 @@ var MultiAStar = /*#__PURE__*/function () {
         neighbours.forEach(function (neighbour) {
           if (neighbour.visited) return; //equivalent to continue in forEach
 
-          neighbourGValFromCurrentProcessingNode = currentProcessingNode.g + _this.getDistanceFromCurrentProcessignNode(currentProcessingNode, neighbour);
+          neighbourGVal = currentProcessingNode.g + _this.getDistanceFromCurrentProcessignNode(currentProcessingNode, neighbour);
 
           if (!neighbour.addedToHeap) {
-            neighbour.g = neighbourGValFromCurrentProcessingNode;
+            neighbour.g = neighbourGVal;
             neighbour.h = _this.heuristic(endNode, neighbour);
             neighbour.f = neighbour.g + neighbour.h;
             minHeap.insert(neighbour);
             neighbour.addedToHeap = true;
             neighbour.parent = currentProcessingNode;
-          } else if (neighbour.g > neighbourGValFromCurrentProcessingNode) {
-            neighbour.g = neighbourGValFromCurrentProcessingNode;
+          } else if (neighbour.g > neighbourGVal) {
+            neighbour.g = neighbourGVal;
             neighbour.h = _this.heuristic(endNode, neighbour);
             neighbour.f = neighbour.g + neighbour.h;
             minHeap.updateItem(neighbour);
